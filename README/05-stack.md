@@ -33,4 +33,4 @@ The stack is deliberately small and boring. Every recipe makes the same technica
 
 ### Why these choices
 
-The full rationale lives in [`AGENTS.md`](./AGENTS.md). The short version: every choice optimizes for being **boring**, **fast to onboard**, and **production-safe by default**.
+Every choice optimizes for being **boring**, **fast to onboard**, and **production-safe by default**.

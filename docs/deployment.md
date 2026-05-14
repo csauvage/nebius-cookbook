@@ -78,7 +78,7 @@ docker push registry.nebius.com/<your-project>/<slug>:$(git rev-parse --short HE
 
 ### Deploy
 
-The recommended path is Nebius Compute with a managed container service. Verify the exact target (VM image vs. serverless containers) against the current Nebius docs — this is an open question on the project (see [`AGENTS.md`](../AGENTS.md) §16).
+The recommended path is Nebius Compute with a managed container service. Verify the exact target (VM image vs. serverless containers) against the current Nebius docs — this is still an open question and may evolve before launch.
 
 A reference `make deploy` target lives in each cookbook's Makefile. It is intentionally a no-op stub: customize once you know your deployment target.
 

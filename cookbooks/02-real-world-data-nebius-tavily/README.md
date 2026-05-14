@@ -113,7 +113,7 @@ The writer prompt is strict: every claim must be tagged `[n]` where `n` referenc
 
 ### Everything from cookbook #1, duplicated
 
-Per [`AGENTS.md`](../../AGENTS.md), every cookbook is autonomous. So `app/main.py`, `app/observability/*`, the Dockerfile, the Makefile, the security headers, the rate limiter — all the same shape as cookbook #1. Walk through cookbook #1 first if any of that is unfamiliar.
+Every cookbook is autonomous by design — no shared base package. So `app/main.py`, `app/observability/*`, the Dockerfile, the Makefile, the security headers, the rate limiter — all the same shape as cookbook #1. Walk through cookbook #1 first if any of that is unfamiliar.
 
 ## Cost
 

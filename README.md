@@ -71,7 +71,7 @@ The stack is deliberately small and boring. Every recipe makes the same technica
 
 ### Why these choices
 
-The full rationale lives in [`AGENTS.md`](./AGENTS.md). The short version: every choice optimizes for being **boring**, **fast to onboard**, and **production-safe by default**.
+Every choice optimizes for being **boring**, **fast to onboard**, and **production-safe by default**.
 
 ## Getting started
 
@@ -128,10 +128,9 @@ We welcome new recipes, fixes to existing ones, and improvements to the tooling 
 
 The short version:
 
-1. Read [`AGENTS.md`](./AGENTS.md) — it's the single source of truth for repository conventions
-2. Read [`CONTRIBUTING.md`](./CONTRIBUTING.md) for the contribution workflow
-3. Bootstrap a new cookbook with `bun run new`
-4. Open a PR with green CI
+1. Read [`CONTRIBUTING.md`](./CONTRIBUTING.md) for the contribution workflow
+2. Bootstrap a new cookbook with `bun run new`
+3. Open a PR with green CI
 
 The longer guide for new recipes lives in [`docs/adding-a-cookbook.md`](./docs/adding-a-cookbook.md).
 

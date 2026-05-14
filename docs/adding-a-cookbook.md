@@ -1,6 +1,6 @@
 # Adding a cookbook
 
-A step-by-step guide to shipping a new recipe. The repo conventions are in [`AGENTS.md`](../AGENTS.md) — this doc is the *workflow*.
+A step-by-step guide to shipping a new recipe. For the contribution workflow, see [`../CONTRIBUTING.md`](../CONTRIBUTING.md). For how the monorepo fits together, see [`architecture.md`](./architecture.md).
 
 ## Before you start
 
@@ -113,6 +113,6 @@ make test
 
 Conventional commit prefix `feat(cookbook-NN)` (or `cookbook-NN/<topic>` branch). PR description should answer the four questions from "Before you start." CI must be green before review.
 
-## Step 10 — Update `AGENTS.md` if you broke a convention
+## Step 10 — Flag conventions you had to break
 
-If your recipe needed something that contradicts `AGENTS.md`, that's a signal that `AGENTS.md` is wrong — not that you should hide the deviation. Open the PR with the convention update alongside the code change and explain *why* in the PR description.
+If your recipe needed something that contradicts the existing conventions documented in [`../CONTRIBUTING.md`](../CONTRIBUTING.md) or [`architecture.md`](./architecture.md), don't hide the deviation. Open the PR with the convention update alongside the code change and explain *why* in the PR description — the docs follow the code, not the other way around.

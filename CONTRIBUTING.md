@@ -1,12 +1,12 @@
 # Contributing to the Nebius Cookbook
 
-Thanks for considering a contribution. This file is intentionally short — the long-form rules live in [`AGENTS.md`](./AGENTS.md), which is the single source of truth for repository conventions.
+Thanks for considering a contribution. This file is the entry point for new contributors.
 
 ## Before you start
 
 Read these, in order:
 
-1. [`AGENTS.md`](./AGENTS.md) — repository conventions and hard constraints
+1. [`docs/architecture.md`](./docs/architecture.md) — how the monorepo is organized and why
 2. [`docs/adding-a-cookbook.md`](./docs/adding-a-cookbook.md) — step-by-step for new recipes
 3. The latest two cookbooks under [`cookbooks/`](./cookbooks/) — they are the reference for what "production-shaped" looks like
 
@@ -19,8 +19,6 @@ We accept three kinds of contributions:
 - **Tooling, scripts, or app changes.** The Next.js site, the build scripts, the schemas, the CI workflows.
 
 ## Hard requirements (the short version)
-
-These are repeated in `AGENTS.md` but worth surfacing here:
 
 - Each cookbook is **autonomous**. No imports between cookbooks. Duplication is fine.
 - Code must be **production-shaped**. Type hints, error handling, observability, healthchecks, Dockerfile.
