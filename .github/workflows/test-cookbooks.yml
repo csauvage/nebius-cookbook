@@ -1,0 +1,58 @@
+name: test-cookbooks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: test-cookbooks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      cookbooks: ${{ steps.list.outputs.cookbooks }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: list
+        run: |
+          set -euo pipefail
+          books=$(find cookbooks -maxdepth 1 -mindepth 1 -type d \
+            -not -name '_template' -not -name '.*' \
+            -printf '%f\n' | sort | jq -R . | jq -sc .)
+          echo "cookbooks=$books" >> "$GITHUB_OUTPUT"
+
+  test:
+    needs: discover
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        cookbook: ${{ fromJson(needs.discover.outputs.cookbooks) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v3
+        with:
+          version: "0.5.0"
+
+      - name: Sync deps
+        working-directory: cookbooks/${{ matrix.cookbook }}
+        run: uv sync --frozen
+
+      - name: Lint
+        working-directory: cookbooks/${{ matrix.cookbook }}
+        run: |
+          uv run ruff check
+          uv run ruff format --check
+
+      - name: Test
+        working-directory: cookbooks/${{ matrix.cookbook }}
+        run: uv run pytest -v

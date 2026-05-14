@@ -1,0 +1,36 @@
+name: build-app
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: build-app-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.2"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install
+        run: bun install --frozen-lockfile
+
+      - name: Build recipe manifest
+        run: bun run build:recipes
+
+      - name: Build Next.js app
+        working-directory: app
+        run: bun run build
+        env:
+          NEXT_PUBLIC_SITE_URL: https://cookbook.nebius.com

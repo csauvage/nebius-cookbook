@@ -1,0 +1,51 @@
+name: deploy-app
+
+on:
+  push:
+    branches: [main]
+
+concurrency:
+  group: deploy-app
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # full history needed for Clever Cloud git push
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: "1.3.2"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install
+        run: bun install --frozen-lockfile
+
+      - name: Build recipe manifest
+        run: bun run build:recipes
+
+      - name: Build Next.js app
+        working-directory: app
+        run: bun run build
+        env:
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+
+      - name: Install Clever Cloud CLI
+        run: npm install -g clever-tools
+
+      - name: Deploy to Clever Cloud
+        env:
+          CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+          CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+          CLEVER_APP_ID: ${{ secrets.CLEVER_APP_ID }}
+        run: |
+          clever login --token "$CLEVER_TOKEN" --secret "$CLEVER_SECRET"
+          clever link "$CLEVER_APP_ID"
+          clever deploy --force
