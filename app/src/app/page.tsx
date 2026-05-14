@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowUpRight } from "lucide-react";
 import { getRecipes } from "@/lib/recipes";
+import type { RecipeSummary } from "@/lib/recipes";
 import { Badge, Container, NebiusLogo } from "@/components";
 import { GITHUB_REPO_URL } from "@/lib/site";
 
@@ -31,8 +32,8 @@ export default function HomePage() {
           </div>
 
           <p className="max-w-md text-lg italic leading-snug text-ink-soft sm:justify-self-end sm:text-right">
-            Runnable, observable, deployable recipes for building AI agents on Nebius AgentKit. No
-            magic, no toy code.
+            Runnable, observable, deployable recipes for building AI agents on Nebius Token Factory
+            + Partners. No magic, no toy code.
           </p>
         </header>
 
@@ -58,37 +59,11 @@ export default function HomePage() {
           {recipes.length === 0 ? (
             <p className="font-mono text-sm text-ink-dim">No recipes yet.</p>
           ) : (
-            <ul className="border-t border-edge">
+            <div className="grid gap-5 lg:grid-cols-2">
               {recipes.map((r) => (
-                <li key={r.slug} className="border-b border-edge">
-                  <Link
-                    href={`/recipes/${r.slug}`}
-                    className="group flex flex-col gap-2 py-6 transition sm:flex-row sm:items-baseline sm:gap-6 sm:py-7"
-                  >
-                    <span className="font-mono text-xs text-ink-dim sm:w-16">
-                      {String(r.order).padStart(2, "0")}
-                    </span>
-                    <div className="min-w-0 flex-1 space-y-1">
-                      <div className="flex items-baseline gap-3">
-                        <h3 className="font-display text-3xl leading-none text-ink transition group-hover:text-accent sm:text-4xl">
-                          {r.title}
-                        </h3>
-                        <ArrowUpRight className="size-4 shrink-0 text-ink-dim transition group-hover:text-accent group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                      </div>
-                      <p className="text-sm leading-relaxed text-ink-soft">{r.tagline}</p>
-                    </div>
-                    <div className="flex shrink-0 items-center gap-2 sm:flex-col sm:items-end sm:gap-1.5 sm:text-right">
-                      <Badge tone={r.difficulty === "beginner" ? "neutral" : r.difficulty === "intermediate" ? "accent" : "warn"}>
-                        {r.difficulty}
-                      </Badge>
-                      <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-ink-dim">
-                        {r.estimatedReadingTime}
-                      </span>
-                    </div>
-                  </Link>
-                </li>
+                <RecipeCard key={r.slug} recipe={r} />
               ))}
-            </ul>
+            </div>
           )}
         </section>
 
@@ -115,5 +90,69 @@ function Stat({ label, value }: { label: string; value: string }) {
       <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-dim">{label}</div>
       <div className="mt-1 font-display text-4xl leading-none text-ink">{value}</div>
     </div>
+  );
+}
+
+function RecipeCard({ recipe }: { recipe: RecipeSummary }) {
+  const difficultyTone =
+    recipe.difficulty === "beginner"
+      ? "neutral"
+      : recipe.difficulty === "intermediate"
+        ? "accent"
+        : "warn";
+
+  const stackChips = [...recipe.stack.primary, ...recipe.stack.secondary.slice(0, 2)];
+
+  return (
+    <Link href={`/recipes/${recipe.slug}`} className="group block">
+      <article
+        className={
+          "relative flex h-full flex-col overflow-hidden border border-edge bg-surface/30 transition " +
+          "group-hover:border-accent/60 group-hover:bg-surface/60 group-hover:shadow-[0_0_48px_-24px_var(--color-accent-glow)]"
+        }
+      >
+        {/* Order watermark — bleeds out of the top-right corner */}
+        <span
+          aria-hidden
+          className="pointer-events-none absolute -right-3 -top-12 select-none font-display text-[180px] leading-none text-edge-strong/70 transition group-hover:text-accent/15"
+        >
+          {String(recipe.order).padStart(2, "0")}
+        </span>
+
+        {/* Header strip */}
+        <div className="relative flex items-center justify-between border-b border-edge px-6 py-3 sm:px-7">
+          <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-accent">
+            recipe · {String(recipe.order).padStart(2, "0")}
+          </span>
+          <Badge tone={difficultyTone}>{recipe.difficulty}</Badge>
+        </div>
+
+        {/* Body */}
+        <div className="relative flex-1 space-y-4 px-6 py-7 sm:px-7">
+          <div className="flex items-start justify-between gap-4">
+            <h3 className="font-display text-[44px] leading-[0.9] tracking-[0.01em] text-ink transition group-hover:text-accent sm:text-5xl">
+              {recipe.title}
+            </h3>
+            <ArrowUpRight className="size-5 shrink-0 text-ink-dim transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-accent" />
+          </div>
+          <p className="text-[15px] leading-relaxed text-ink-soft">{recipe.tagline}</p>
+        </div>
+
+        {/* Footer — stack chips + read time */}
+        <div className="relative flex items-center justify-between gap-4 border-t border-edge px-6 py-3 sm:px-7">
+          <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-[0.14em] text-ink-dim">
+            {stackChips.map((s, i) => (
+              <span key={s} className="inline-flex items-center gap-3">
+                {i > 0 ? <span className="text-edge-strong">·</span> : null}
+                {s}
+              </span>
+            ))}
+          </div>
+          <span className="shrink-0 font-mono text-[10px] uppercase tracking-[0.14em] text-ink-dim">
+            {recipe.estimatedReadingTime}
+          </span>
+        </div>
+      </article>
+    </Link>
   );
 }
