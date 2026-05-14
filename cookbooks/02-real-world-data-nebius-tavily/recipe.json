@@ -1,0 +1,72 @@
+{
+  "$schema": "../../schemas/recipe.schema.json",
+  "slug": "real-world-data-nebius-tavily",
+  "order": 2,
+  "title": "Real-World Data: Nebius + Tavily",
+  "tagline": "Ground your agent in this week's news with Tavily and per-step model routing for 10× cost savings.",
+  "difficulty": "intermediate",
+  "estimatedReadingTime": "12 min",
+  "estimatedRunTime": "5 min",
+  "stack": {
+    "primary": ["nebius-agentkit", "tavily"],
+    "secondary": ["fastapi", "structlog", "prometheus", "docker"]
+  },
+  "tags": ["agent", "rag", "web-search", "model-routing", "streaming", "citations"],
+  "story": {
+    "problem": "Cookbook #1 gives you an agent, but it's frozen at its training cutoff and costs the same as OpenAI when run on a 70B model.",
+    "solution": "A three-step agent — plan (cheap small model) → search Tavily for fresh facts → write (mid-tier model with citations). Per-step model routing on Nebius cuts cost 10× without dropping the punchline.",
+    "outcome": "An agent that briefs you on this week's news with inline citations, streams progress as it goes, and shows the cost in the response."
+  },
+  "prerequisites": [
+    "Python 3.12+",
+    "uv installed (https://docs.astral.sh/uv/)",
+    "A Nebius API key",
+    "A Tavily API key (https://tavily.com)",
+    "Docker (optional)"
+  ],
+  "models": [
+    { "id": "Qwen/Qwen3-30B-A3B-Instruct", "role": "planner" },
+    { "id": "meta-llama/Llama-3.3-70B-Instruct", "role": "writer" }
+  ],
+  "assets": {
+    "hero": "assets/hero.png",
+    "architecture": "docs/architecture.svg"
+  },
+  "quickstart": {
+    "clone": "git clone https://github.com/csauvage/nebius-cookbook && cd cookbook/cookbooks/02-real-world-data-nebius-tavily",
+    "configure": "cp .env.example .env  # then fill NEBIUS_API_KEY and TAVILY_API_KEY",
+    "run": "uv sync && make dev"
+  },
+  "endpoints": [
+    {
+      "method": "POST",
+      "path": "/agent/run",
+      "streaming": true,
+      "description": "Stream the three-step agent: planning, searching, writing, citations, cost."
+    },
+    {
+      "method": "GET",
+      "path": "/healthz",
+      "description": "Liveness probe."
+    },
+    {
+      "method": "GET",
+      "path": "/readyz",
+      "description": "Readiness probe."
+    },
+    {
+      "method": "GET",
+      "path": "/metrics",
+      "description": "Prometheus metrics scrape endpoint."
+    }
+  ],
+  "deployment": {
+    "target": "nebius-compute",
+    "instructions": "docs/deployment.md"
+  },
+  "authors": [
+    { "name": "Clément Sauvage", "url": "https://bitsncoffee.co" }
+  ],
+  "publishedAt": "2026-06-04",
+  "updatedAt": "2026-06-04"
+}
