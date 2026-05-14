@@ -13,6 +13,7 @@ import {
   Square,
 } from "lucide-react";
 import { Badge, Button, Field, Input, NebiusLogo, Textarea, cn } from "@/components";
+import { MarkdownText } from "@/components/MarkdownText";
 import { streamAgent, type SseEvent } from "@/lib/sse";
 
 interface Props {
@@ -119,10 +120,14 @@ export function PlayClient({ slug, title, tagline }: Props) {
       abortRef.current = controller;
       const target = `${agentUrl.replace(/\/$/, "")}/agent/run`;
 
+      const history = turns
+        .filter((t) => t.status === "done" && t.text)
+        .map((t) => ({ role: t.role, content: t.text }));
+
       try {
         for await (const event of streamAgent({
           url: target,
-          body: { prompt },
+          body: { prompt, history },
           signal: controller.signal,
         })) {
           setTurns((t) => {
@@ -169,7 +174,7 @@ export function PlayClient({ slug, title, tagline }: Props) {
         textareaRef.current?.focus();
       }
     },
-    [agentUrl, draft, isStreaming],
+    [agentUrl, draft, isStreaming, turns],
   );
 
   return (
@@ -408,8 +413,10 @@ function Turn({ turn }: { turn: ChatTurn }) {
           className="absolute left-0 top-0 h-full w-px bg-edge-strong"
           aria-hidden
         />
-        <div className="whitespace-pre-wrap pl-5 text-[15px] leading-relaxed text-ink">
-          {turn.text || (
+        <div className="pl-5 text-[15px] leading-relaxed text-ink">
+          {turn.text ? (
+            <MarkdownText source={turn.text} />
+          ) : (
             <span className="font-mono text-sm text-ink-dim">
               {turn.status === "streaming" ? "▌" : "(no response)"}
             </span>
@@ -539,12 +546,51 @@ function Sidebar({
   agentUrl: string;
   onAgentUrlChange: (v: string) => void;
 }) {
-  const lastAssistant = useMemo(
-    () => [...turns].reverse().find((t) => t.role === "assistant"),
-    [turns],
-  );
-  const events = lastAssistant?.events ?? [];
-  const sources = extractSources(events);
+  // Build a chronological log of every event across every assistant turn,
+  // with turn separators inserted between them. Tokens stay out (they're
+  // rendered as message text). Heartbeats stay in — they're useful evidence
+  // that the SSE channel is alive when no other events fire.
+  const logEntries = useMemo<LogEntry[]>(() => {
+    const out: LogEntry[] = [];
+    let turnIdx = 0;
+    for (const turn of turns) {
+      if (turn.role !== "assistant") continue;
+      turnIdx++;
+      out.push({
+        kind: "separator",
+        turnIdx,
+        ts: turn.startedAt,
+        key: `sep-${turn.id}`,
+      });
+      for (let i = 0; i < turn.events.length; i++) {
+        const ev = turn.events[i]!;
+        if (ev.name === "token") continue;
+        out.push({ kind: "event", event: ev, key: `ev-${turn.id}-${i}` });
+      }
+    }
+    return out;
+  }, [turns]);
+
+  const visibleEventCount = logEntries.filter((e) => e.kind === "event").length;
+
+  // Sources: take from the latest assistant turn that produced any.
+  const sources = useMemo<Source[]>(() => {
+    for (let i = turns.length - 1; i >= 0; i--) {
+      const t = turns[i];
+      if (!t || t.role !== "assistant") continue;
+      const s = extractSources(t.events);
+      if (s.length > 0) return s;
+    }
+    return [];
+  }, [turns]);
+
+  // Autoscroll the event log to the bottom on new entries.
+  const logRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (logRef.current) {
+      logRef.current.scrollTop = logRef.current.scrollHeight;
+    }
+  }, [logEntries.length]);
 
   return (
     <aside className="hidden w-[380px] shrink-0 flex-col border-l border-edge bg-paper-warm/60 md:flex">
@@ -579,19 +625,26 @@ function Sidebar({
             )}
           </SidebarSection>
 
+          <Diagnostics agentUrl={agentUrl} />
+
           <SidebarSection
             title="event log"
-            badge={events.length > 0 ? `${events.length}` : undefined}
+            badge={visibleEventCount > 0 ? `${visibleEventCount}` : undefined}
           >
-            <div className="space-y-1.5 pt-2">
-              {events.length === 0 ? (
-                <p className="font-mono text-[11px] text-ink-dim">
-                  awaiting first event…
-                </p>
+            <div
+              ref={logRef}
+              className="thin-scroll max-h-[44dvh] space-y-1.5 overflow-y-auto pt-2"
+            >
+              {logEntries.length === 0 ? (
+                <p className="font-mono text-[11px] text-ink-dim">awaiting first event…</p>
               ) : (
-                events
-                  .filter((e) => e.name !== "token")
-                  .map((e, i) => <EventRow key={i} event={e} />)
+                logEntries.map((entry) =>
+                  entry.kind === "separator" ? (
+                    <TurnSeparator key={entry.key} idx={entry.turnIdx} ts={entry.ts} />
+                  ) : (
+                    <EventRow key={entry.key} event={entry.event} />
+                  ),
+                )
               )}
             </div>
           </SidebarSection>
@@ -618,6 +671,98 @@ function Sidebar({
         </div>
       </div>
     </aside>
+  );
+}
+
+/* ── diagnostics ─────────────────────────────────────────────────────────── */
+
+type HealthStatus = "ok" | "down" | "unknown";
+
+const DIAGNOSTIC_ENDPOINTS = [
+  { method: "GET", path: "/healthz", desc: "liveness" },
+  { method: "GET", path: "/readyz", desc: "readiness" },
+  { method: "GET", path: "/metrics", desc: "prometheus" },
+  { method: "GET", path: "/docs", desc: "openapi" },
+] as const;
+
+const HEALTH_POLL_INTERVAL_MS = 5_000;
+
+function Diagnostics({ agentUrl }: { agentUrl: string }) {
+  const base = useMemo(() => agentUrl.replace(/\/$/, ""), [agentUrl]);
+  const [status, setStatus] = useState<HealthStatus>("unknown");
+  const [version, setVersion] = useState<string | null>(null);
+  const [checkedAt, setCheckedAt] = useState<number | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    const tick = async () => {
+      try {
+        const res = await fetch(`${base}/healthz`, { cache: "no-store" });
+        if (cancelled) return;
+        if (res.ok) {
+          const body = (await res.json().catch(() => ({}))) as {
+            status?: string;
+            version?: string;
+          };
+          setStatus(body.status === "ok" ? "ok" : "down");
+          setVersion(typeof body.version === "string" ? body.version : null);
+        } else {
+          setStatus("down");
+        }
+      } catch {
+        if (!cancelled) setStatus("down");
+      } finally {
+        if (!cancelled) setCheckedAt(Date.now());
+      }
+    };
+    tick();
+    const id = setInterval(tick, HEALTH_POLL_INTERVAL_MS);
+    return () => {
+      cancelled = true;
+      clearInterval(id);
+    };
+  }, [base]);
+
+  const badge =
+    status === "ok" ? "live" : status === "down" ? "down" : "checking…";
+
+  return (
+    <SidebarSection title="diagnostics" badge={badge}>
+      <ul className="space-y-1.5 pt-2 font-mono text-[11px]">
+        {DIAGNOSTIC_ENDPOINTS.map((e) => (
+          <li key={e.path} className="flex items-center gap-2">
+            <span className="shrink-0 text-accent">{e.method}</span>
+            <a
+              href={`${base}${e.path}`}
+              target="_blank"
+              rel="noreferrer"
+              className="min-w-0 flex-1 truncate text-ink-soft underline decoration-edge-strong underline-offset-2 hover:text-accent hover:decoration-accent"
+            >
+              {e.path}
+            </a>
+            <span className="shrink-0 text-ink-dim">{e.desc}</span>
+          </li>
+        ))}
+      </ul>
+      <div className="mt-2 flex items-center justify-between border-t border-edge pt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-ink-dim">
+        <span>{version ? `v${version}` : "—"}</span>
+        <span>{checkedAt ? `polled ${fmtTime(checkedAt)}` : "polling…"}</span>
+      </div>
+    </SidebarSection>
+  );
+}
+
+type LogEntry =
+  | { kind: "separator"; turnIdx: number; ts: number; key: string }
+  | { kind: "event"; event: SseEvent; key: string };
+
+function TurnSeparator({ idx, ts }: { idx: number; ts: number }) {
+  return (
+    <div className="flex items-center gap-2 pt-3 font-mono text-[10px] uppercase tracking-[0.14em] text-ink-dim first:pt-0">
+      <span className="text-accent/80">▸ turn {String(idx).padStart(2, "0")}</span>
+      <span className="h-px flex-1 bg-edge" />
+      <span>{fmtTime(ts)}</span>
+    </div>
   );
 }
 
@@ -651,15 +796,31 @@ function SidebarSection({
 }
 
 function EventRow({ event }: { event: SseEvent }) {
+  const isHeartbeat = event.name === "heartbeat";
+
   const summary = useMemo(() => {
+    if (isHeartbeat) return "—";
     const keys = Object.keys(event.data);
     if (keys.length === 0) return "{}";
     return keys.map((k) => `${k}=${formatVal(event.data[k])}`).join(" ");
-  }, [event.data]);
+  }, [event.data, isHeartbeat]);
 
   return (
-    <div className="group flex gap-2 border-l border-edge pl-2 font-mono text-[11px] leading-relaxed">
-      <span className="shrink-0 text-accent">{event.name}</span>
+    <div
+      className={cn(
+        "group flex gap-2 border-l pl-2 font-mono text-[11px] leading-relaxed",
+        isHeartbeat ? "border-edge/50 opacity-50" : "border-edge",
+      )}
+    >
+      <span
+        className={cn(
+          "shrink-0 inline-flex items-center gap-1",
+          isHeartbeat ? "text-ink-dim" : "text-accent",
+        )}
+      >
+        {isHeartbeat ? <span aria-hidden>♥</span> : null}
+        {event.name}
+      </span>
       <span className="min-w-0 flex-1 truncate text-ink-dim group-hover:text-ink-soft">
         {summary}
       </span>
