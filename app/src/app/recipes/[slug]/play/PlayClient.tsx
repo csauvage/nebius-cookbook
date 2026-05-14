@@ -1,0 +1,710 @@
+"use client";
+
+import Link from "next/link";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  ArrowLeft,
+  ChevronDown,
+  ChevronUp,
+  PanelRight,
+  PanelRightClose,
+  Send,
+  Settings,
+  Square,
+} from "lucide-react";
+import { Badge, Button, Field, Input, NebiusLogo, Textarea, cn } from "@/components";
+import { streamAgent, type SseEvent } from "@/lib/sse";
+
+interface Props {
+  slug: string;
+  title: string;
+  tagline: string;
+}
+
+interface ChatTurn {
+  id: string;
+  role: "user" | "assistant";
+  text: string;
+  events: SseEvent[];
+  status: "streaming" | "done" | "error" | "cancelled";
+  startedAt: number;
+}
+
+const DEFAULT_AGENT_URL = "http://localhost:8000";
+const STORAGE_KEY = (slug: string) => `nebius-cookbook:agent-url:${slug}`;
+
+function newId(): string {
+  return crypto.randomUUID();
+}
+
+function fmtTime(ts: number): string {
+  const d = new Date(ts);
+  return d.toLocaleTimeString("en-US", { hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit" });
+}
+
+const SAMPLE_PROMPTS = [
+  "What is Nebius AgentKit in one paragraph?",
+  "Explain Server-Sent Events to me like I write API clients.",
+  "Compare async streaming and polling for LLM responses.",
+];
+
+export function PlayClient({ slug, title, tagline }: Props) {
+  const [agentUrl, setAgentUrl] = useState(DEFAULT_AGENT_URL);
+  const [draft, setDraft] = useState("");
+  const [turns, setTurns] = useState<ChatTurn[]>([]);
+  const [isStreaming, setIsStreaming] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [headerExpanded, setHeaderExpanded] = useState(true);
+  const abortRef = useRef<AbortController | null>(null);
+  const transcriptRef = useRef<HTMLDivElement | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  useEffect(() => {
+    const stored = window.localStorage.getItem(STORAGE_KEY(slug));
+    if (stored) setAgentUrl(stored);
+  }, [slug]);
+
+  const persistAgentUrl = useCallback(
+    (next: string) => {
+      setAgentUrl(next);
+      window.localStorage.setItem(STORAGE_KEY(slug), next);
+    },
+    [slug],
+  );
+
+  useEffect(() => {
+    if (transcriptRef.current) {
+      transcriptRef.current.scrollTop = transcriptRef.current.scrollHeight;
+    }
+  }, [turns]);
+
+  // Collapse the header chrome the moment the conversation begins.
+  useEffect(() => {
+    if (turns.length > 0 && headerExpanded) setHeaderExpanded(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [turns.length === 0]);
+
+  const cancel = useCallback(() => {
+    abortRef.current?.abort();
+  }, []);
+
+  const send = useCallback(
+    async (overridePrompt?: string) => {
+      const prompt = (overridePrompt ?? draft).trim();
+      if (!prompt || isStreaming) return;
+      if (!overridePrompt) setDraft("");
+
+      const now = Date.now();
+      const userTurn: ChatTurn = {
+        id: newId(),
+        role: "user",
+        text: prompt,
+        events: [],
+        status: "done",
+        startedAt: now,
+      };
+      const assistantTurn: ChatTurn = {
+        id: newId(),
+        role: "assistant",
+        text: "",
+        events: [],
+        status: "streaming",
+        startedAt: now,
+      };
+      setTurns((t) => [...t, userTurn, assistantTurn]);
+      setIsStreaming(true);
+
+      const controller = new AbortController();
+      abortRef.current = controller;
+      const target = `${agentUrl.replace(/\/$/, "")}/agent/run`;
+
+      try {
+        for await (const event of streamAgent({
+          url: target,
+          body: { prompt },
+          signal: controller.signal,
+        })) {
+          setTurns((t) => {
+            const copy = [...t];
+            const last = copy[copy.length - 1];
+            if (!last || last.id !== assistantTurn.id) return t;
+            const next: ChatTurn = { ...last, events: [...last.events, event] };
+            if (event.name === "token") {
+              const piece = typeof event.data.text === "string" ? event.data.text : "";
+              next.text = last.text + piece;
+            }
+            if (event.name === "done") next.status = "done";
+            if (event.name === "error") next.status = "error";
+            copy[copy.length - 1] = next;
+            return copy;
+          });
+        }
+        setTurns((t) => {
+          const copy = [...t];
+          const last = copy[copy.length - 1];
+          if (last && last.status === "streaming") {
+            copy[copy.length - 1] = { ...last, status: "done" };
+          }
+          return copy;
+        });
+      } catch (err) {
+        const cancelled = controller.signal.aborted;
+        const message =
+          err instanceof Error ? err.message : typeof err === "string" ? err : "unknown error";
+        setTurns((t) => {
+          const copy = [...t];
+          const last = copy[copy.length - 1];
+          if (!last) return t;
+          copy[copy.length - 1] = {
+            ...last,
+            status: cancelled ? "cancelled" : "error",
+            text: last.text || (cancelled ? "(cancelled)" : `(error) ${message}`),
+          };
+          return copy;
+        });
+      } finally {
+        abortRef.current = null;
+        setIsStreaming(false);
+        textareaRef.current?.focus();
+      }
+    },
+    [agentUrl, draft, isStreaming],
+  );
+
+  return (
+    <div className="fixed inset-0 flex h-dvh w-screen overflow-hidden bg-paper">
+      <FloatingHeader
+        slug={slug}
+        title={title}
+        tagline={tagline}
+        expanded={headerExpanded}
+        onToggle={() => setHeaderExpanded((v) => !v)}
+        sidebarOpen={sidebarOpen}
+        onToggleSidebar={() => setSidebarOpen((v) => !v)}
+        agentUrl={agentUrl}
+        isStreaming={isStreaming}
+        onOpenSettings={() => {
+          setSidebarOpen(true);
+          setSettingsOpen(true);
+        }}
+      />
+
+      {/* Transcript column */}
+      <section className="flex min-w-0 flex-1 flex-col">
+        <div ref={transcriptRef} className="thin-scroll flex-1 overflow-y-auto" aria-live="polite">
+          <div className="mx-auto max-w-3xl space-y-8 px-6 pt-36 pb-8">
+            {turns.length === 0 ? (
+              <EmptyState onPick={(prompt) => send(prompt)} />
+            ) : (
+              turns.map((t) => <Turn key={t.id} turn={t} />)
+            )}
+          </div>
+        </div>
+
+        <div className="border-t border-edge bg-paper/80 backdrop-blur-md">
+          <div className="mx-auto max-w-3xl px-6 py-4">
+            <Composer
+              value={draft}
+              onChange={setDraft}
+              onSend={() => send()}
+              onCancel={cancel}
+              isStreaming={isStreaming}
+              textareaRef={textareaRef}
+            />
+            <div className="mt-2 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.14em] text-ink-dim">
+              <span>↵ send · shift+↵ newline</span>
+              <span>{isStreaming ? "▸ stream open" : "○ idle"}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {sidebarOpen ? (
+        <Sidebar
+          turns={turns}
+          settingsOpen={settingsOpen}
+          onToggleSettings={() => setSettingsOpen((v) => !v)}
+          agentUrl={agentUrl}
+          onAgentUrlChange={persistAgentUrl}
+        />
+      ) : null}
+    </div>
+  );
+}
+
+/* ── header ──────────────────────────────────────────────────────────────── */
+
+function FloatingHeader({
+  slug,
+  title,
+  tagline,
+  expanded,
+  onToggle,
+  sidebarOpen,
+  onToggleSidebar,
+  agentUrl,
+  isStreaming,
+  onOpenSettings,
+}: {
+  slug: string;
+  title: string;
+  tagline: string;
+  expanded: boolean;
+  onToggle: () => void;
+  sidebarOpen: boolean;
+  onToggleSidebar: () => void;
+  agentUrl: string;
+  isStreaming: boolean;
+  onOpenSettings: () => void;
+}) {
+  const host = useMemo(() => {
+    try {
+      return new URL(agentUrl).host;
+    } catch {
+      return agentUrl;
+    }
+  }, [agentUrl]);
+
+  return (
+    <header className="pointer-events-none absolute inset-x-0 top-0 z-20 flex justify-center px-4 pt-4">
+      <div
+        className={cn(
+          "pointer-events-auto w-full max-w-5xl border border-edge-strong bg-paper/80 backdrop-blur-xl",
+          "shadow-[0_24px_48px_-24px_rgba(0,0,0,0.6)]",
+        )}
+      >
+        {/* Command bar */}
+        <div className="flex items-center gap-2 px-3 py-2.5">
+          <Link
+            href="/"
+            className="inline-flex items-center pr-1"
+            title="AgentKit Cookbook"
+          >
+            <NebiusLogo height={18} />
+          </Link>
+
+          <span className="font-mono text-[11px] text-ink-dim">/</span>
+
+          <Link
+            href={`/recipes/${slug}`}
+            className="inline-flex items-center gap-1.5 px-1 py-1 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-soft transition hover:text-accent"
+          >
+            <ArrowLeft className="size-3" />
+            recipes
+          </Link>
+
+          <span className="font-mono text-[11px] text-ink-dim">/</span>
+
+          <span className="font-mono text-[11px] uppercase tracking-[0.12em] text-ink truncate">
+            {slug}
+          </span>
+
+          <div className="ml-auto flex items-center gap-1">
+            <button
+              type="button"
+              onClick={onOpenSettings}
+              className="group inline-flex items-center gap-2 border border-edge px-2 py-1 font-mono text-[10px] uppercase tracking-[0.14em] text-ink-soft transition hover:border-accent hover:text-accent"
+              title="Configure agent endpoint"
+            >
+              <span
+                className={cn(
+                  "size-1.5 rounded-full",
+                  isStreaming ? "bg-accent phosphor-dot" : "bg-ink-dim",
+                )}
+                aria-hidden
+              />
+              {host}
+            </button>
+
+            <button
+              type="button"
+              onClick={onToggleSidebar}
+              aria-label={sidebarOpen ? "Hide event log" : "Show event log"}
+              className="ml-1 inline-flex size-8 items-center justify-center border border-transparent text-ink-soft transition hover:border-edge hover:text-ink"
+            >
+              {sidebarOpen ? (
+                <PanelRightClose className="size-4" />
+              ) : (
+                <PanelRight className="size-4" />
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={onToggle}
+              aria-label={expanded ? "Collapse header" : "Expand header"}
+              className="inline-flex size-8 items-center justify-center border border-transparent text-ink-soft transition hover:border-edge hover:text-ink"
+            >
+              {expanded ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Expanded body — title + tagline */}
+        <div
+          className={cn(
+            "grid overflow-hidden border-t border-edge/0 transition-all duration-300 ease-out",
+            expanded ? "grid-rows-[1fr] border-t-edge" : "grid-rows-[0fr]",
+          )}
+        >
+          <div className="min-h-0 overflow-hidden">
+            <div className="px-5 py-5">
+              <h1 className="font-display text-5xl leading-[0.9] tracking-[0.01em] text-ink sm:text-6xl">
+                {title}
+              </h1>
+              <p className="mt-2 max-w-2xl text-base italic leading-snug text-ink-soft sm:text-lg">
+                {tagline}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+}
+
+/* ── transcript ──────────────────────────────────────────────────────────── */
+
+function Turn({ turn }: { turn: ChatTurn }) {
+  if (turn.role === "user") {
+    return (
+      <div className="flex flex-col items-end gap-1.5">
+        <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink-dim">
+          you · {fmtTime(turn.startedAt)}
+        </span>
+        <div className="max-w-[85%] border border-accent/40 bg-accent-soft px-4 py-2.5 text-[15px] leading-relaxed text-ink">
+          {turn.text}
+        </div>
+      </div>
+    );
+  }
+
+  const phase = latestStatusPhase(turn.events);
+  const statusLabel =
+    turn.status === "streaming" ? (phase ?? "thinking") : turn.status === "done" ? "ready" : turn.status;
+  const tone: "accent" | "warn" | "critical" =
+    turn.status === "error"
+      ? "critical"
+      : turn.status === "cancelled"
+        ? "warn"
+        : "accent";
+
+  return (
+    <div className="space-y-1.5">
+      <div className="flex items-center gap-2">
+        <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink-dim">
+          agent · {fmtTime(turn.startedAt)}
+        </span>
+        <Badge tone={tone} bracket>
+          {statusLabel}
+        </Badge>
+        {turn.status === "streaming" ? (
+          <span className="size-1.5 rounded-full bg-accent phosphor-dot" aria-hidden />
+        ) : null}
+      </div>
+      <div className="relative">
+        <div
+          className="absolute left-0 top-0 h-full w-px bg-edge-strong"
+          aria-hidden
+        />
+        <div className="whitespace-pre-wrap pl-5 text-[15px] leading-relaxed text-ink">
+          {turn.text || (
+            <span className="font-mono text-sm text-ink-dim">
+              {turn.status === "streaming" ? "▌" : "(no response)"}
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── composer ────────────────────────────────────────────────────────────── */
+
+function Composer({
+  value,
+  onChange,
+  onSend,
+  onCancel,
+  isStreaming,
+  textareaRef,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  onSend: () => void;
+  onCancel: () => void;
+  isStreaming: boolean;
+  textareaRef: React.MutableRefObject<HTMLTextAreaElement | null>;
+}) {
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        onSend();
+      }}
+      className="relative"
+    >
+      <div className="group relative border border-edge-strong bg-surface/70 focus-within:border-accent focus-within:shadow-[0_0_0_1px_var(--color-accent),0_0_32px_-8px_var(--color-accent-glow)]">
+        <span
+          aria-hidden
+          className="pointer-events-none absolute left-3 top-3 select-none font-mono text-xs text-accent"
+        >
+          ▸
+        </span>
+        <Textarea
+          ref={textareaRef}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder="prompt the agent…"
+          rows={2}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              onSend();
+            }
+          }}
+          disabled={isStreaming}
+          className="min-h-[64px] resize-none border-0 bg-transparent pl-9 pr-32 focus-visible:ring-0"
+        />
+        <div className="absolute bottom-2 right-2 flex items-center gap-2">
+          {isStreaming ? (
+            <Button type="button" variant="secondary" size="sm" onClick={onCancel}>
+              <Square className="size-3" /> stop
+            </Button>
+          ) : (
+            <Button type="submit" size="sm" disabled={!value.trim()}>
+              send <Send className="size-3" />
+            </Button>
+          )}
+        </div>
+      </div>
+    </form>
+  );
+}
+
+/* ── empty state ─────────────────────────────────────────────────────────── */
+
+function EmptyState({ onPick }: { onPick: (prompt: string) => void }) {
+  return (
+    <div className="flex min-h-[44dvh] flex-col items-center justify-center text-center">
+      <div className="max-w-md space-y-4">
+        <Badge bracket>session ready</Badge>
+        <h2 className="font-display text-5xl leading-none tracking-[0.01em] text-ink">
+          A console for your agent.
+        </h2>
+        <p className="font-mono text-[12px] leading-relaxed text-ink-soft">
+          POST <span className="text-accent">/agent/run</span> on your local cookbook.
+          <br />
+          Every SSE event arrives here — token, status, sources, errors.
+        </p>
+      </div>
+
+      <div className="mt-10 w-full max-w-md space-y-2">
+        <span className="block font-mono text-[10px] uppercase tracking-[0.18em] text-ink-dim">
+          try
+        </span>
+        <div className="space-y-1.5">
+          {SAMPLE_PROMPTS.map((p) => (
+            <button
+              key={p}
+              type="button"
+              onClick={() => onPick(p)}
+              className="group flex w-full items-center gap-3 border border-edge bg-surface/40 px-3 py-2.5 text-left transition hover:border-accent/60 hover:bg-surface"
+            >
+              <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-ink-dim group-hover:text-accent">
+                ▸
+              </span>
+              <span className="text-sm text-ink-soft group-hover:text-ink">{p}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── sidebar ─────────────────────────────────────────────────────────────── */
+
+function Sidebar({
+  turns,
+  settingsOpen,
+  onToggleSettings,
+  agentUrl,
+  onAgentUrlChange,
+}: {
+  turns: ChatTurn[];
+  settingsOpen: boolean;
+  onToggleSettings: () => void;
+  agentUrl: string;
+  onAgentUrlChange: (v: string) => void;
+}) {
+  const lastAssistant = useMemo(
+    () => [...turns].reverse().find((t) => t.role === "assistant"),
+    [turns],
+  );
+  const events = lastAssistant?.events ?? [];
+  const sources = extractSources(events);
+
+  return (
+    <aside className="hidden w-[380px] shrink-0 flex-col border-l border-edge bg-paper-warm/60 md:flex">
+      <div className="thin-scroll flex-1 overflow-y-auto pt-36">
+        <div className="space-y-6 px-5 pb-8">
+          <SidebarSection
+            title="settings"
+            badge={settingsOpen ? "open" : undefined}
+            action={
+              <button
+                type="button"
+                onClick={onToggleSettings}
+                className="font-mono text-[10px] uppercase tracking-[0.14em] text-ink-soft transition hover:text-accent"
+              >
+                <Settings className="inline size-3" />
+              </button>
+            }
+          >
+            {settingsOpen ? (
+              <div className="space-y-3 pt-2">
+                <Field label="agent url" hint="Stored per recipe in localStorage.">
+                  <Input
+                    value={agentUrl}
+                    onChange={(e) => onAgentUrlChange(e.target.value)}
+                    spellCheck={false}
+                    autoComplete="off"
+                  />
+                </Field>
+              </div>
+            ) : (
+              <p className="font-mono text-[11px] text-ink-dim">{agentUrl}</p>
+            )}
+          </SidebarSection>
+
+          <SidebarSection
+            title="event log"
+            badge={events.length > 0 ? `${events.length}` : undefined}
+          >
+            <div className="space-y-1.5 pt-2">
+              {events.length === 0 ? (
+                <p className="font-mono text-[11px] text-ink-dim">
+                  awaiting first event…
+                </p>
+              ) : (
+                events
+                  .filter((e) => e.name !== "token")
+                  .map((e, i) => <EventRow key={i} event={e} />)
+              )}
+            </div>
+          </SidebarSection>
+
+          {sources.length > 0 ? (
+            <SidebarSection title="sources" badge={`${sources.length}`}>
+              <ol className="space-y-2 pt-2">
+                {sources.map((s) => (
+                  <li key={s.index} className="flex gap-2 font-mono text-[11px]">
+                    <span className="text-accent">[{s.index}]</span>
+                    <a
+                      href={s.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="min-w-0 flex-1 truncate text-ink-soft underline decoration-edge-strong underline-offset-2 hover:text-accent hover:decoration-accent"
+                    >
+                      {s.title || s.url}
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </SidebarSection>
+          ) : null}
+        </div>
+      </div>
+    </aside>
+  );
+}
+
+function SidebarSection({
+  title,
+  badge,
+  action,
+  children,
+}: {
+  title: string;
+  badge?: string;
+  action?: React.ReactNode;
+  children: React.ReactNode;
+}) {
+  return (
+    <section>
+      <div className="flex items-center gap-2 border-b border-edge pb-2">
+        <span className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-dim">
+          {title}
+        </span>
+        {badge ? (
+          <span className="font-mono text-[10px] uppercase tracking-[0.16em] text-accent">
+            ▸ {badge}
+          </span>
+        ) : null}
+        {action ? <span className="ml-auto">{action}</span> : null}
+      </div>
+      {children}
+    </section>
+  );
+}
+
+function EventRow({ event }: { event: SseEvent }) {
+  const summary = useMemo(() => {
+    const keys = Object.keys(event.data);
+    if (keys.length === 0) return "{}";
+    return keys.map((k) => `${k}=${formatVal(event.data[k])}`).join(" ");
+  }, [event.data]);
+
+  return (
+    <div className="group flex gap-2 border-l border-edge pl-2 font-mono text-[11px] leading-relaxed">
+      <span className="shrink-0 text-accent">{event.name}</span>
+      <span className="min-w-0 flex-1 truncate text-ink-dim group-hover:text-ink-soft">
+        {summary}
+      </span>
+    </div>
+  );
+}
+
+/* ── helpers ─────────────────────────────────────────────────────────────── */
+
+function formatVal(v: unknown): string {
+  if (typeof v === "string") return v.length > 24 ? `"${v.slice(0, 24)}…"` : `"${v}"`;
+  if (typeof v === "number" || typeof v === "boolean") return String(v);
+  if (Array.isArray(v)) return `[${v.length}]`;
+  if (v && typeof v === "object") return `{${Object.keys(v).length}}`;
+  return "null";
+}
+
+function latestStatusPhase(events: SseEvent[]): string | undefined {
+  for (let i = events.length - 1; i >= 0; i--) {
+    const ev = events[i];
+    if (ev?.name === "status" && typeof ev.data.phase === "string") return ev.data.phase;
+  }
+  return undefined;
+}
+
+interface Source {
+  index: number;
+  title: string;
+  url: string;
+}
+
+function extractSources(events: SseEvent[]): Source[] {
+  for (let i = events.length - 1; i >= 0; i--) {
+    const ev = events[i];
+    if (ev?.name !== "sources") continue;
+    const items = ev.data.items;
+    if (!Array.isArray(items)) continue;
+    return items.map((it) => {
+      const o = it as Record<string, unknown>;
+      return {
+        index: typeof o.index === "number" ? o.index : 0,
+        title: typeof o.title === "string" ? o.title : "",
+        url: typeof o.url === "string" ? o.url : "",
+      };
+    });
+  }
+  return [];
+}
