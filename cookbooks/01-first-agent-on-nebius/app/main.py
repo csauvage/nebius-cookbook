@@ -33,6 +33,11 @@ logger = structlog.get_logger()
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    """Runs once on startup (before `yield`) and once on shutdown (after).
+
+    Use this for things that need the event loop: warm caches, open connection
+    pools, register background tasks. Replaces the older `@app.on_event(...)`.
+    """
     settings = get_settings()
     configure_logging(settings.log_level, settings.env)
     logger.info(
@@ -61,6 +66,10 @@ app = FastAPI(
 settings = get_settings()
 app.state.limiter = limiter
 
+# Middleware order matters: ASGI wraps last-added → first-added, so the LAST
+# `add_middleware` call runs FIRST on the request (and LAST on the response).
+# Read the list bottom-up to follow the request path: size check → security
+# headers → request ID → metrics timing → CORS → route.
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,

@@ -12,6 +12,8 @@ from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 class Settings(BaseSettings):
     """Application settings. Read once at boot, then injected via Depends()."""
 
+    # Pydantic-Settings reads env vars first, then falls back to .env.
+    # `extra="ignore"` lets unrelated env vars coexist without raising.
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
@@ -56,5 +58,9 @@ class Settings(BaseSettings):
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
-    """Memoized settings accessor. Use this everywhere — never call Settings() directly."""
+    """Memoized settings accessor. Use this everywhere — never call Settings() directly.
+
+    The cache means env-parsing happens once at first call; FastAPI's `Depends(get_settings)`
+    then becomes a near-free lookup on every request.
+    """
     return Settings()  # type: ignore[call-arg]

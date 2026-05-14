@@ -26,6 +26,8 @@ class NebiusClient:
 
     def __init__(self, settings: Settings) -> None:
         self._settings = settings
+        # Nebius AgentKit is OpenAI-compatible: point the OpenAI SDK at its
+        # base URL and the same `chat.completions` calls work unchanged.
         self._client = AsyncOpenAI(
             api_key=settings.nebius_api_key,
             base_url=str(settings.nebius_base_url),
@@ -33,6 +35,8 @@ class NebiusClient:
             max_retries=0,  # we own retries via tenacity
         )
 
+    # Retry only on transport errors. Logical errors (4xx, bad payload) propagate
+    # immediately — retrying them just wastes quota.
     @retry(
         retry=retry_if_exception_type((httpx.HTTPError, httpx.TimeoutException)),
         wait=wait_exponential(multiplier=0.5, min=0.5, max=8.0),
@@ -69,7 +73,11 @@ class NebiusClient:
 
 
 def build_nebius_client() -> NebiusClient:
-    """FastAPI dependency. Reuses a single client per process."""
+    """FastAPI dependency. Reuses a single client per process.
+
+    Sharing one `AsyncOpenAI` instance is important: it keeps the underlying httpx
+    connection pool alive, so we don't pay TLS handshake cost on every request.
+    """
     return _cached_client(get_settings())
 
 
