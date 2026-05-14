@@ -1,0 +1,47 @@
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+
+# Build outputs
+.next/
+out/
+app/src/content/recipes/
+app/src/content/recipes-manifest.json
+
+# Environment
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+bun-debug.log*
+
+# Coverage
+coverage/
+.nyc_output/
