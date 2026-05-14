@@ -29,6 +29,10 @@ jobs:
       - name: Build recipe manifest
         run: bun run build:recipes
 
+      - name: Install Playwright Chromium (for rehype-mermaid)
+        working-directory: app
+        run: bunx playwright install --with-deps chromium
+
       - name: Build Next.js app
         working-directory: app
         run: bun run build
