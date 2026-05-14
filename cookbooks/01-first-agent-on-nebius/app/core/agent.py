@@ -7,6 +7,7 @@ from collections.abc import AsyncIterator
 from dataclasses import dataclass
 
 from app.core.nebius_client import NebiusClient
+from app.schemas.agent import Message
 
 SYSTEM_PROMPT = (
     "You are a helpful, concise assistant. Answer the user's question directly, "
@@ -31,19 +32,27 @@ class Agent:
         self,
         prompt: str,
         *,
+        history: list[Message] | None = None,
         cancel_event: asyncio.Event | None = None,
     ) -> AsyncIterator[Event]:
+        # Async generator: each `yield` is a discrete event the route can turn
+        # into an SSE frame. Status events bracket the response; token events
+        # carry incremental text.
         yield Event("status", {"phase": "thinking"})
 
-        messages = [
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": prompt},
-        ]
+        # Chat-completion message shape: [system, ...history, new user turn].
+        # The server is stateless — the client must replay history each call.
+        messages: list[dict[str, str]] = [{"role": "system", "content": SYSTEM_PROMPT}]
+        if history:
+            messages.extend({"role": m.role, "content": m.content} for m in history)
+        messages.append({"role": "user", "content": prompt})
 
         async for token in self._client.stream_chat(
             model=self._model,
             messages=messages,  # type: ignore[arg-type]
         ):
+            # Cooperative cancellation: the route sets this when the client
+            # disconnects, letting us stop pulling from upstream mid-stream.
             if cancel_event is not None and cancel_event.is_set():
                 return
             yield Event("token", {"text": token})
