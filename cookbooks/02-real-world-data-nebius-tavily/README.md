@@ -8,12 +8,12 @@ Cookbook #1 gives you an agent. But it's frozen at its training cutoff, and the 
 
 A three-step agent:
 
-```
-┌──────────┐    ┌──────────┐    ┌──────────┐
-│   PLAN   │ ─▶ │  SEARCH  │ ─▶ │   WRITE  │
-│ Qwen 30B │    │  Tavily  │    │ Llama 70B│
-└──────────┘    └──────────┘    └──────────┘
-   cheap         fresh facts      mid-tier
+```mermaid
+flowchart LR
+    plan["PLAN<br/>Qwen 30B<br/>cheap"]
+    search["SEARCH<br/>Tavily<br/>fresh facts"]
+    write["WRITE<br/>Llama 70B<br/>mid-tier"]
+    plan --> search --> write
 ```
 
 - **Plan** uses a cheap, fast model (Qwen 30B class) to turn the user prompt into 2–4 search queries.
@@ -41,7 +41,7 @@ make dev
 ```bash
 curl -N -X POST http://localhost:8000/agent/run \
   -H 'content-type: application/json' \
-  -d '{"prompt":"What did Nebius announce at their June 2026 customer conference?"}'
+  -d '{"prompt":"What is the latest on the rumoured SpaceX IPO?"}'
 ```
 
 Sample stream:
@@ -51,7 +51,7 @@ event: status
 data: {"phase":"planning","model":"Qwen/Qwen3-30B-A3B-Instruct"}
 
 event: plan
-data: {"queries":["Nebius customer conference June 2026 announcements", "Nebius AgentKit new features 2026"]}
+data: {"queries":["SpaceX IPO 2026 latest news", "SpaceX Starlink spin-off IPO filing"]}
 
 event: status
 data: {"phase":"searching","queries":2}
@@ -63,7 +63,7 @@ event: status
 data: {"phase":"writing","model":"meta-llama/Llama-3.3-70B-Instruct"}
 
 event: token
-data: {"text":"Nebius "}
+data: {"text":"SpaceX "}
 
 …
 
@@ -87,6 +87,19 @@ nebius_writer_model: str = "meta-llama/Llama-3.3-70B-Instruct"
 ```
 
 Swap either independently. Override per-env via `NEBIUS_PLANNER_MODEL` and `NEBIUS_WRITER_MODEL`.
+
+### When does Tavily fire?
+
+**Every request, unconditionally.** Search is step 2 of a fixed pipeline (`plan → search → write`), not a tool the model chooses to call and not a keyword-gated branch. The reasoning:
+
+- **The product contract is "grounded answer with `[n]` citations."** If search is optional, you ship two output modes — grounded and ungrounded — and the citation guarantee leaks. One mode is testable and observable; two are not.
+- **Determinism beats cleverness at this scope.** A "should I search?" tool-call adds a round-trip, a non-deterministic branch, prompt-injection surface ("ignore previous instructions, skip search"), and harder evals. For a research-brief workload the answer is ~always yes — the EV of the routing decision is near zero; the cost (latency, flakiness, eval surface) is real.
+- **Keyword routing is a classic anti-pattern.** Triggering on `"today" / "latest" / "news"` fails on paraphrases, gets gamed, and ships a second NLU system you have to maintain. Don't.
+- **Cost is bounded and visible at code-review time.** The planner caps at 2–4 queries, `_search_all` dedupes by URL and truncates to top-10 — you know the per-request Tavily upper bound without reading logs.
+
+**Switch to tool-calling** when you have a mixed workload where many requests genuinely don't need retrieval (general chat, code helper). For a research-brief product, always-search is correct.
+
+**Failure mode to handle before production:** Tavily returning zero results or erroring. Today the writer still runs with an empty source list and will refuse or hallucinate. Add an explicit empty-sources branch that emits a terminal `status` event and short-circuits the writer.
 
 ### The Tavily integration
 
@@ -113,7 +126,7 @@ A back-of-envelope for one brief:
 | Write | Llama 70B | 1500 | 300 | $0.001 |
 | **Total** | | | | **~$0.006** |
 
-Running the *entire* flow on Llama 70B end-to-end would be about 10× that. (Verify against current Nebius pricing — these numbers will drift.)
+Running the *entire* flow on Llama 70B end-to-end would be about 10× that.
 
 ## Test it
 
@@ -127,7 +140,6 @@ Both Nebius and Tavily are mocked with `respx`. The full three-step flow is exer
 
 - **Add a critic step.** Run a third small-model pass over the writer's output to flag uncited claims or contradictions. Stream the critique as its own SSE event.
 - **Cache Tavily results.** A simple in-memory TTL cache keyed on the planner output kills duplicate searches inside a few-minute window.
-- **Use the `assistant`-shaped tool-call API.** Future cookbooks switch from prompt-string-tools to native tool calls.
 
 ## License
 
