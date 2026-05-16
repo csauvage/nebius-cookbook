@@ -1,8 +1,12 @@
-# Real-World Data: Nebius + Tavily
+# Real-Time Data with Tavily
 
 > Ground your agent in this week's news with Tavily and per-step model routing for 10× cost savings.
 
-Cookbook #1 gives you an agent. But it's frozen at its training cutoff, and the moment you put it on a 70B model, it costs the same as OpenAI. This cookbook fixes both problems in the same flow.
+Recipe **03 of 6** in the Nebius Cookbook arc:
+
+> Foundation → Retrieval → **Awareness** → Memory → Reliability → Confidence
+
+Cookbooks #1 and #2 gave you an agent that can answer fluently and retrieve from compiled domain knowledge. But that knowledge is still bounded — it cannot tell you what shipped this week. And the moment you put the agent on a 70B model, it costs the same as OpenAI. This cookbook fixes both problems in the same flow.
 
 ## The story
 
@@ -111,6 +115,17 @@ Search queries run in parallel via `asyncio.gather`. Results are deduplicated by
 
 The writer prompt is strict: every claim must be tagged `[n]` where `n` references a source. The route emits a `sources` SSE event with the index → URL mapping, so a frontend can render `[1]` as a clickable link without re-parsing the brief.
 
+### Concurrency and failure modes
+
+The three steps are sequential — `write` needs `search` needs `plan` — but the searches *within* step 2 run concurrently via `asyncio.gather`. That is the only place fan-out helps: planning and writing are single LLM calls.
+
+| Symptom | Cause | Handling |
+|---|---|---|
+| Empty / generic brief | Tavily returned zero results | **Known gap** — add an empty-sources branch that short-circuits the writer (see *When does Tavily fire?*) |
+| One slow search stalls the brief | `gather` waits for the slowest query | Add `asyncio.wait_for` per query; drop laggards rather than block the brief |
+| `[n]` citations missing | Writer ignored the citation contract | Caught by the test suite; in production, gate on a critic pass (see *Going further*) |
+| Planner emits malformed JSON | Small model drift | Validate planner output against a Pydantic model; on failure, fall back to a single verbatim query |
+
 ### Everything from cookbook #1, duplicated
 
 Every cookbook is autonomous by design — no shared base package. So `app/main.py`, `app/observability/*`, the Dockerfile, the Makefile, the security headers, the rate limiter — all the same shape as cookbook #1. Walk through cookbook #1 first if any of that is unfamiliar.
@@ -138,8 +153,10 @@ Both Nebius and Tavily are mocked with `respx`. The full three-step flow is exer
 
 ## Going further
 
+- **Cookbook #4 — [Persistent Context with Mem0](../04-persistent-context-mem0/)** — give the agent a durable, per-user memory so it can personalise the brief.
 - **Add a critic step.** Run a third small-model pass over the writer's output to flag uncited claims or contradictions. Stream the critique as its own SSE event.
 - **Cache Tavily results.** A simple in-memory TTL cache keyed on the planner output kills duplicate searches inside a few-minute window.
+- **Make `top-k` adaptive.** A broad question wants more sources; a specific one wants fewer. Let the planner emit a target source count alongside its queries.
 
 ## License
 

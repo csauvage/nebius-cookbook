@@ -1,8 +1,10 @@
 {
   "$schema": "../../schemas/recipe.schema.json",
-  "slug": "real-world-data-nebius-tavily",
-  "order": 2,
-  "title": "Real-World Data: Nebius + Tavily",
+  "slug": "real-time-data-tavily",
+  "order": 3,
+  "eyebrow": "Awareness",
+  "title": "Real-Time Data with Tavily",
+  "upcoming": false,
   "tagline": "Ground your agent in this week's news with Tavily and per-step model routing for 10× cost savings.",
   "difficulty": "intermediate",
   "estimatedReadingTime": "12 min",
@@ -13,7 +15,7 @@
   },
   "tags": ["agent", "rag", "web-search", "model-routing", "streaming", "citations"],
   "story": {
-    "problem": "Cookbook #1 gives you an agent, but it's frozen at its training cutoff and costs the same as OpenAI when run on a 70B model.",
+    "problem": "Cookbooks #1 and #2 give you an agent that can answer and retrieve, but it's still frozen at its training cutoff and costs the same as OpenAI when run on a 70B model.",
     "solution": "A three-step agent — plan (cheap small model) → search Tavily for fresh facts → write (mid-tier model with citations). Per-step model routing on Nebius cuts cost 10× without dropping the punchline.",
     "outcome": "An agent that briefs you on this week's news with inline citations, streams progress as it goes, and shows the cost in the response."
   },
@@ -33,7 +35,7 @@
     "architecture": "docs/architecture.svg"
   },
   "quickstart": {
-    "clone": "git clone https://github.com/csauvage/nebius-cookbook && cd cookbook/cookbooks/02-real-world-data-nebius-tavily",
+    "clone": "git clone https://github.com/csauvage/nebius-cookbook && cd nebius-cookbook/cookbooks/03-real-time-data-tavily",
     "configure": "cp .env.example .env  # then fill NEBIUS_API_KEY and TAVILY_API_KEY",
     "run": "uv sync && make dev"
   },
@@ -64,8 +66,9 @@
     "target": "nebius-compute",
     "instructions": "docs/deployment.md"
   },
+  "nextRecipe": "persistent-context-mem0",
   "authors": [
-    { "name": "Clément Sauvage", "url": "https://bitsncoffee.co" }
+    { "name": "Clément Sauvage", "url": "https://clementsauvage.me" }
   ],
   "publishedAt": "2026-06-04",
   "updatedAt": "2026-06-04"
