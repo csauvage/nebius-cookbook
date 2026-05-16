@@ -51,7 +51,9 @@ export interface Recipe {
   $schema?: string;
   slug: string;
   order: number;
+  eyebrow: string;
   title: string;
+  upcoming?: boolean;
   tagline: string;
   difficulty: Difficulty;
   estimatedReadingTime: string;
