@@ -2,7 +2,9 @@
   "$schema": "../../schemas/recipe.schema.json",
   "slug": "first-agent-on-nebius",
   "order": 1,
+  "eyebrow": "Foundation",
   "title": "Your First Agent on Nebius",
+  "upcoming": false,
   "tagline": "A production-grade FastAPI agent with streaming, observability, and zero magic.",
   "difficulty": "beginner",
   "estimatedReadingTime": "8 min",
@@ -31,7 +33,7 @@
     "architecture": "docs/architecture.svg"
   },
   "quickstart": {
-    "clone": "git clone https://github.com/csauvage/nebius-cookbook && cd cookbook/cookbooks/01-first-agent-on-nebius",
+    "clone": "git clone https://github.com/csauvage/nebius-cookbook && cd nebius-cookbook/cookbooks/01-first-agent-on-nebius",
     "configure": "cp .env.example .env  # then fill NEBIUS_API_KEY",
     "run": "uv sync && make dev"
   },
@@ -62,9 +64,9 @@
     "target": "nebius-compute",
     "instructions": "docs/deployment.md"
   },
-  "nextRecipe": "real-world-data-nebius-tavily",
+  "nextRecipe": "domain-knowledge-pinecone-nexus",
   "authors": [
-    { "name": "Clément Sauvage", "url": "https://bitsncoffee.co" }
+    { "name": "Clément Sauvage", "url": "https://clementsauvage.me" }
   ],
   "publishedAt": "2026-06-04",
   "updatedAt": "2026-06-04"
