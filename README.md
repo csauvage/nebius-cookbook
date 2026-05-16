@@ -33,8 +33,12 @@ Each recipe is **autonomous**. Cloning a single cookbook directory is enough to 
 
 | # | Recipe | Stack | Difficulty | Reading |
 | --- | --- | --- | --- | --- |
-| 01 | [Your First Agent on Nebius](./cookbooks/01-first-agent-on-nebius/) | `nebius-agentkit` `fastapi` `structlog` `prometheus` `docker` | beginner | 8 min |
-| 02 | [Real-World Data: Nebius + Tavily](./cookbooks/02-real-world-data-nebius-tavily/) | `nebius-agentkit` `tavily` `fastapi` `structlog` `prometheus` `docker` | intermediate | 12 min |
+| 01 | [Foundation — Your First Agent on Nebius](./cookbooks/01-first-agent-on-nebius/) | `nebius-agentkit` `fastapi` `structlog` `prometheus` `docker` | beginner | 8 min |
+| 02 | [Retrieval — Domain Knowledge with Pinecone Nexus](./cookbooks/02-domain-knowledge-pinecone-nexus/) | `nebius-agentkit` `pinecone-nexus` `fastapi` `structlog` `prometheus` `docker` | intermediate | 13 min |
+| 03 | [Awareness — Real-Time Data with Tavily](./cookbooks/03-real-time-data-tavily/) | `nebius-agentkit` `tavily` `fastapi` `structlog` `prometheus` `docker` | intermediate | 12 min |
+| 04 | [Memory — Persistent Context with Mem0](./cookbooks/04-persistent-context-mem0/) | `nebius-agentkit` `mem0` `fastapi` `structlog` `prometheus` `docker` | intermediate | 12 min |
+| 05 | [Reliability — Hardening Agents with Guardrails](./cookbooks/05-hardening-agents-guardrails/) | `nebius-agentkit` `guardrails-ai` `fastapi` `structlog` `prometheus` `docker` | advanced | 14 min |
+| 06 | [Confidence — Stress-Testing Agents with Snowglobe](./cookbooks/06-stress-testing-agents-snowglobe/) | `nebius-agentkit` `snowglobe` `langsmith` `fastapi` `structlog` `prometheus` `docker` | advanced | 14 min |
 
 ## Stack
 
