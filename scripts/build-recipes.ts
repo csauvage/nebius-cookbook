@@ -53,7 +53,9 @@ for (const { dir, recipe } of recipes) {
   manifest.push({
     slug: recipe.slug,
     order: recipe.order,
+    eyebrow: recipe.eyebrow,
     title: recipe.title,
+    upcoming: recipe.upcoming ?? false,
     tagline: recipe.tagline,
     difficulty: recipe.difficulty,
     estimatedReadingTime: recipe.estimatedReadingTime,

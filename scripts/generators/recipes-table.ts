@@ -37,8 +37,12 @@ export async function generate(
       switch (col) {
         case "order":
           return String(recipe.order).padStart(2, "0");
-        case "title":
-          return `[${recipe.title}](./cookbooks/${dir}/)`;
+        case "title": {
+          const label = recipe.eyebrow
+            ? `${recipe.eyebrow} — ${recipe.title}`
+            : recipe.title;
+          return `[${label}](./cookbooks/${dir}/)`;
+        }
         case "stack": {
           const all = [...recipe.stack.primary, ...recipe.stack.secondary];
           return all.map((s) => `\`${s}\``).join(" ");

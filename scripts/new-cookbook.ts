@@ -28,6 +28,12 @@ if (!title) {
   process.exit(1);
 }
 
+const eyebrow = await prompt("Eyebrow / arc label (e.g. 'Foundation')");
+if (!eyebrow) {
+  console.error("Eyebrow is required.");
+  process.exit(1);
+}
+
 const suggestedSlug = slugify(title);
 const slugAnswer = await prompt(`Slug [${suggestedSlug}]`);
 const slug = slugify(slugAnswer || suggestedSlug);
@@ -51,6 +57,7 @@ const recipeRaw = await readFile(recipePath, "utf8");
 const recipe = JSON.parse(recipeRaw);
 recipe.slug = slug;
 recipe.order = nextOrder;
+recipe.eyebrow = eyebrow;
 recipe.title = title;
 recipe.difficulty = difficulty;
 recipe.publishedAt = new Date().toISOString().slice(0, 10);
