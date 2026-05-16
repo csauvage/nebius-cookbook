@@ -20,6 +20,7 @@ dist/
 out/
 app/src/content/recipes/
 app/src/content/recipes-manifest.json
+*.tsbuildinfo
 
 # Environment
 .env
