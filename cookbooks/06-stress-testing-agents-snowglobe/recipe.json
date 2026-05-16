@@ -1,0 +1,75 @@
+{
+  "$schema": "../../schemas/recipe.schema.json",
+  "slug": "stress-testing-agents-snowglobe",
+  "order": 6,
+  "eyebrow": "Confidence",
+  "title": "Stress-Testing Agents with Snowglobe",
+  "upcoming": true,
+  "tagline": "Know your agent holds up before users do: simulate thousands of conversations with Snowglobe.",
+  "difficulty": "advanced",
+  "estimatedReadingTime": "14 min",
+  "estimatedRunTime": "10 min",
+  "stack": {
+    "primary": ["nebius-agentkit", "snowglobe"],
+    "secondary": ["langsmith", "fastapi", "structlog", "prometheus", "docker"]
+  },
+  "tags": ["agent", "testing", "simulation", "evaluation", "snowglobe", "ci"],
+  "story": {
+    "problem": "You've built, grounded, and hardened your agent — but you still don't know how it behaves across the thousands of conversations you'll never hand-test.",
+    "solution": "Use Snowglobe to generate synthetic personas and conversation scenarios, run them against the agent at scale, and score the transcripts for failures, regressions, and edge-case behaviour.",
+    "outcome": "A simulation suite that runs in CI and tells you — with evidence — whether a change made the agent better or worse before it ships."
+  },
+  "prerequisites": [
+    "Python 3.12+",
+    "uv installed (https://docs.astral.sh/uv/)",
+    "A Nebius API key",
+    "A LangSmith API key (https://docs.langchain.com/langsmith/home) — Snowglobe (https://snowglobetx.com) runs on LangChain's platform",
+    "Docker (optional)"
+  ],
+  "models": [
+    { "id": "meta-llama/Llama-3.3-70B-Instruct", "role": "primary" },
+    { "id": "Qwen/Qwen3-30B-A3B-Instruct", "role": "critic" }
+  ],
+  "quickstart": {
+    "clone": "git clone https://github.com/csauvage/nebius-cookbook && cd nebius-cookbook/cookbooks/06-stress-testing-agents-snowglobe",
+    "configure": "cp .env.example .env  # then fill NEBIUS_API_KEY and LANGSMITH_API_KEY",
+    "run": "uv sync && make dev"
+  },
+  "endpoints": [
+    {
+      "method": "POST",
+      "path": "/agent/run",
+      "streaming": true,
+      "description": "Run the agent under test and stream SSE events back."
+    },
+    {
+      "method": "POST",
+      "path": "/simulate",
+      "description": "Launch a Snowglobe simulation batch against the agent and return scored results."
+    },
+    {
+      "method": "GET",
+      "path": "/healthz",
+      "description": "Liveness probe."
+    },
+    {
+      "method": "GET",
+      "path": "/readyz",
+      "description": "Readiness probe."
+    },
+    {
+      "method": "GET",
+      "path": "/metrics",
+      "description": "Prometheus metrics scrape endpoint."
+    }
+  ],
+  "deployment": {
+    "target": "nebius-compute",
+    "instructions": "docs/deployment.md"
+  },
+  "authors": [
+    { "name": "Clément Sauvage", "url": "https://clementsauvage.me" }
+  ],
+  "publishedAt": "2026-06-04",
+  "updatedAt": "2026-05-16"
+}

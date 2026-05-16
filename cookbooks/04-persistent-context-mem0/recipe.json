@@ -1,0 +1,81 @@
+{
+  "$schema": "../../schemas/recipe.schema.json",
+  "slug": "persistent-context-mem0",
+  "order": 4,
+  "eyebrow": "Memory",
+  "title": "Persistent Context with Mem0",
+  "upcoming": true,
+  "tagline": "Let your agent remember users across sessions: durable, per-user memory with Mem0.",
+  "difficulty": "intermediate",
+  "estimatedReadingTime": "12 min",
+  "estimatedRunTime": "6 min",
+  "stack": {
+    "primary": ["nebius-agentkit", "mem0"],
+    "secondary": ["fastapi", "structlog", "prometheus", "docker"]
+  },
+  "tags": ["agent", "memory", "personalization", "mem0", "streaming", "sessions"],
+  "story": {
+    "problem": "Every previous cookbook's agent is amnesiac — it forgets the user the moment the request ends, so it can never personalize or build on past conversations.",
+    "solution": "Wire Mem0 into the agent loop: extract durable facts from each turn, store them per user, and recall the relevant ones to condition future responses.",
+    "outcome": "An agent that remembers a user's preferences, history, and context across sessions — without resending the entire transcript on every call."
+  },
+  "prerequisites": [
+    "Python 3.12+",
+    "uv installed (https://docs.astral.sh/uv/)",
+    "A Nebius API key",
+    "A Mem0 API key (https://mem0.ai) — or a self-hosted Mem0 store",
+    "Docker (optional)"
+  ],
+  "models": [
+    { "id": "meta-llama/Llama-3.3-70B-Instruct", "role": "primary" },
+    { "id": "BAAI/bge-en-icl", "role": "embed" }
+  ],
+  "quickstart": {
+    "clone": "git clone https://github.com/csauvage/nebius-cookbook && cd nebius-cookbook/cookbooks/04-persistent-context-mem0",
+    "configure": "cp .env.example .env  # then fill NEBIUS_API_KEY and MEM0_API_KEY",
+    "run": "uv sync && make dev"
+  },
+  "endpoints": [
+    {
+      "method": "POST",
+      "path": "/agent/run",
+      "streaming": true,
+      "description": "Run the agent with per-user memory recall and stream SSE events back."
+    },
+    {
+      "method": "GET",
+      "path": "/memory/{user_id}",
+      "description": "List the durable memories stored for a user."
+    },
+    {
+      "method": "DELETE",
+      "path": "/memory/{user_id}",
+      "description": "Forget everything stored for a user."
+    },
+    {
+      "method": "GET",
+      "path": "/healthz",
+      "description": "Liveness probe."
+    },
+    {
+      "method": "GET",
+      "path": "/readyz",
+      "description": "Readiness probe."
+    },
+    {
+      "method": "GET",
+      "path": "/metrics",
+      "description": "Prometheus metrics scrape endpoint."
+    }
+  ],
+  "deployment": {
+    "target": "nebius-compute",
+    "instructions": "docs/deployment.md"
+  },
+  "nextRecipe": "hardening-agents-guardrails",
+  "authors": [
+    { "name": "Clément Sauvage", "url": "https://clementsauvage.me" }
+  ],
+  "publishedAt": "2026-06-04",
+  "updatedAt": "2026-05-16"
+}
