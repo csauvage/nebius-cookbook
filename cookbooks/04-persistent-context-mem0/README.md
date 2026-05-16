@@ -39,7 +39,10 @@ request ──► Mem0 recall (user_id) ──► relevant memories ──► ch
 ```
 
 - **Answer model:** `meta-llama/Llama-3.3-70B-Instruct`.
-- **Embedding model:** `BAAI/bge-en-icl` — Mem0 uses it to index and search memories.
+- **Embedding model:** `Qwen/Qwen3-Embedding-8B` on Nebius — Mem0 uses it to
+  index and search memories. Served from the OpenAI-compatible embeddings
+  endpoint, `POST {NEBIUS_BASE_URL}/embeddings` (same base URL as chat
+  completions, default `https://api.studio.nebius.ai/v1/`).
 
 ## Design decisions
 

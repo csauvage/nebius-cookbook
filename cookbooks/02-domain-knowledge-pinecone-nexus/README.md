@@ -50,6 +50,9 @@ question ──► KnowQL query ──► Composable Retriever ──► typed, 
 ```
 
 - **Answer model:** `meta-llama/Llama-3.3-70B-Instruct` on Nebius.
+- **Embedding model:** `Qwen/Qwen3-Embedding-8B` on Nebius — the vector
+  representation behind compilation and KnowQL retrieval. Served from the
+  OpenAI-compatible embeddings endpoint, `POST {NEBIUS_BASE_URL}/embeddings`.
 - **Knowledge engine:** Pinecone Nexus — compilation, retrieval, and governance
   (PII tagging, versioning, RBAC) happen here, not in app code.
 

@@ -28,7 +28,8 @@
   ],
   "models": [
     { "id": "Qwen/Qwen3-30B-A3B-Instruct", "role": "planner" },
-    { "id": "meta-llama/Llama-3.3-70B-Instruct", "role": "writer" }
+    { "id": "meta-llama/Llama-3.3-70B-Instruct", "role": "writer" },
+    { "id": "Qwen/Qwen3-Embedding-8B", "role": "embed" }
   ],
   "assets": {
     "hero": "assets/hero.png",

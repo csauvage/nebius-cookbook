@@ -27,7 +27,8 @@
     "Docker (optional)"
   ],
   "models": [
-    { "id": "meta-llama/Llama-3.3-70B-Instruct", "role": "primary" }
+    { "id": "meta-llama/Llama-3.3-70B-Instruct", "role": "primary" },
+    { "id": "Qwen/Qwen3-Embedding-8B", "role": "embed" }
   ],
   "quickstart": {
     "clone": "git clone https://github.com/csauvage/nebius-cookbook && cd nebius-cookbook/cookbooks/02-domain-knowledge-pinecone-nexus",
