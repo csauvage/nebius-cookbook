@@ -6,4 +6,5 @@ export { Container } from "./Container";
 export { Field, Input, Textarea } from "./Field";
 export { MarkdownText } from "./MarkdownText";
 export { NebiusLogo } from "./NebiusLogo";
+export { ThemeToggle } from "./ThemeToggle";
 export { cn } from "./cn";

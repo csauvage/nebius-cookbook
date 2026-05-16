@@ -40,6 +40,41 @@
   --color-success: #86efac;
 }
 
+/* ── theme ───────────────────────────────────────────────────────────────────
+ *   Dark is the default — the values above. The light theme re-points the same
+ *   tokens; every `bg-paper` / `text-ink` / `text-accent` utility tracks them
+ *   via var(), so the whole UI follows a single `data-theme` attribute on <html>.
+ *   `--canvas-glow` is the r,g,b tint behind the body gradient and dot-grid.
+ */
+:root {
+  color-scheme: dark;
+  --canvas-glow: 221, 255, 70;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+
+  --color-paper: #f4f6f9;
+  --color-paper-warm: #eef1f5;
+  --color-surface: #ffffff;
+  --color-surface-raised: #ffffff;
+
+  --color-ink: #06263a;
+  --color-ink-soft: #3f5870;
+  --color-ink-dim: #6c8398;
+
+  --color-edge: #dde3ea;
+  --color-edge-strong: #c2cdd7;
+
+  /* Lime is unreadable as text on white — darken the accent, keep lime for fills */
+  --color-accent: #5e7200;
+  --color-accent-strong: #4a5b00;
+  --color-accent-soft: rgba(221, 255, 70, 0.4);
+  --color-accent-glow: rgba(150, 180, 20, 0.3);
+
+  --canvas-glow: 90, 110, 0;
+}
+
 /* ── canvas ──────────────────────────────────────────────────────────────── */
 html,
 body {
@@ -51,8 +86,8 @@ body {
 
 body {
   background:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(221, 255, 70, 0.07) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(221, 255, 70, 0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(var(--canvas-glow), 0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(var(--canvas-glow), 0.04) 0%, transparent 60%),
     var(--color-paper);
   background-attachment: fixed;
   min-height: 100vh;
@@ -63,16 +98,20 @@ body::before {
   content: "";
   position: fixed;
   inset: 0;
-  background-image: radial-gradient(circle at 1px 1px, rgba(221, 255, 70, 0.06) 1px, transparent 0);
+  background-image: radial-gradient(circle at 1px 1px, rgba(var(--canvas-glow), 0.06) 1px, transparent 0);
   background-size: 32px 32px;
   pointer-events: none;
   z-index: 0;
   mask-image: radial-gradient(ellipse 70% 60% at 50% 30%, black 0%, transparent 100%);
 }
 
-body > * {
-  position: relative;
-  z-index: 1;
+/* Lift page content above the body::before dot-grid. In @layer base so a
+ * Tailwind positioning utility (.fixed, .absolute) still wins on a child. */
+@layer base {
+  body > * {
+    position: relative;
+    z-index: 1;
+  }
 }
 
 ::selection {
