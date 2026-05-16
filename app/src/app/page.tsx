@@ -69,7 +69,7 @@ export default function HomePage() {
 
         {/* Footer */}
         <footer className="mt-24 flex flex-wrap items-center justify-between gap-4 border-t border-edge pt-6 font-mono text-[11px] uppercase tracking-[0.16em] text-ink-dim">
-          <span>// June 4, 2026 · 5 recipes for launch</span>
+          <span>// June 4, 2026 · {recipes.length} recipes for launch</span>
           <a
             href={GITHUB_REPO_URL}
             className="transition hover:text-accent"
@@ -108,7 +108,8 @@ function RecipeCard({ recipe }: { recipe: RecipeSummary }) {
       <article
         className={
           "relative flex h-full flex-col overflow-hidden border border-edge bg-surface/30 transition " +
-          "group-hover:border-accent/60 group-hover:bg-surface/60 group-hover:shadow-[0_0_48px_-24px_var(--color-accent-glow)]"
+          "group-hover:border-accent/60 group-hover:bg-surface/60 group-hover:shadow-[0_0_48px_-24px_var(--color-accent-glow)] " +
+          (recipe.upcoming ? "opacity-50" : "")
         }
       >
         {/* Order watermark — bleeds out of the top-right corner */}
@@ -130,9 +131,14 @@ function RecipeCard({ recipe }: { recipe: RecipeSummary }) {
         {/* Body */}
         <div className="relative flex-1 space-y-4 px-6 py-7 sm:px-7">
           <div className="flex items-start justify-between gap-4">
-            <h3 className="font-display text-[44px] leading-[0.9] tracking-[0.01em] text-ink transition group-hover:text-accent sm:text-5xl">
-              {recipe.title}
-            </h3>
+            <div className="space-y-1.5">
+              <span className="block font-mono text-sm font-bold uppercase tracking-[0.16em] text-accent">
+                {recipe.eyebrow}
+              </span>
+              <h3 className="font-display text-[44px] leading-[0.9] tracking-[0.01em] text-ink transition group-hover:text-accent sm:text-5xl">
+                {recipe.title}
+              </h3>
+            </div>
             <ArrowUpRight className="size-5 shrink-0 text-ink-dim transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-accent" />
           </div>
           <p className="text-[15px] leading-relaxed text-ink-soft">{recipe.tagline}</p>
