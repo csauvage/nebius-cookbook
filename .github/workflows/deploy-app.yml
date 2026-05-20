@@ -49,7 +49,15 @@ jobs:
           CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
           CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
           CLEVER_APP_ID: ${{ secrets.CLEVER_APP_ID }}
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+          NEXT_PUBLIC_GITHUB_REPO: ${{ vars.NEXT_PUBLIC_GITHUB_REPO }}
         run: |
           clever login --token "$CLEVER_TOKEN" --secret "$CLEVER_SECRET"
           clever link "$CLEVER_APP_ID"
+          clever env set NODE_ENV production
+          clever env set CC_NODE_BUILD_TOOL custom
+          clever env set CC_CUSTOM_BUILD_TOOL "bun run build"
+          clever env set CC_RUN_COMMAND 'cd app && node ../node_modules/next/dist/bin/next start -p $PORT'
+          clever env set NEXT_PUBLIC_SITE_URL "$NEXT_PUBLIC_SITE_URL"
+          clever env set NEXT_PUBLIC_GITHUB_REPO "$NEXT_PUBLIC_GITHUB_REPO"
           clever deploy --force
