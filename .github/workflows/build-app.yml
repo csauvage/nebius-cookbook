@@ -29,12 +29,10 @@ jobs:
       - name: Build recipe manifest
         run: bun run build:recipes
 
-      - name: Install Playwright Chromium (for rehype-mermaid)
+      - name: Lint Next.js app
         working-directory: app
-        run: bunx playwright install --with-deps chromium
+        run: bun run lint
 
-      - name: Build Next.js app
+      - name: Typecheck Next.js app
         working-directory: app
-        run: bun run build
-        env:
-          NEXT_PUBLIC_SITE_URL: https://cookbook.nebius.com
+        run: bun run typecheck

@@ -69,7 +69,7 @@ export default function HomePage() {
 
         {/* Footer */}
         <footer className="mt-24 flex flex-wrap items-center justify-between gap-4 border-t border-edge pt-6 font-mono text-[11px] uppercase tracking-[0.16em] text-ink-dim">
-          <span>// June 4, 2026 · {recipes.length} recipes for launch</span>
+          <span>{`// June 4, 2026 · ${recipes.length} recipes for launch`}</span>
           <a
             href={GITHUB_REPO_URL}
             className="transition hover:text-accent"
