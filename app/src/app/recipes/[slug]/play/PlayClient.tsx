@@ -49,6 +49,12 @@ const SAMPLE_PROMPTS = [
   "Compare async streaming and polling for LLM responses.",
 ];
 
+const BOOK_RECOMMENDER_PROMPTS = [
+  "Recommend books about political intrigue and empire-building for someone who liked Dune.",
+  "I just read The Left Hand of Darkness. What should I read next?",
+  "Find thoughtful books about climate, power, and social collapse.",
+];
+
 export function PlayClient({ slug, title, tagline }: Props) {
   const [agentUrl, setAgentUrl] = useState(DEFAULT_AGENT_URL);
   const [draft, setDraft] = useState("");
@@ -200,7 +206,7 @@ export function PlayClient({ slug, title, tagline }: Props) {
         <div ref={transcriptRef} className="thin-scroll flex-1 overflow-y-auto" aria-live="polite">
           <div className="mx-auto max-w-3xl space-y-8 px-6 pt-36 pb-8">
             {turns.length === 0 ? (
-              <EmptyState onPick={(prompt) => send(prompt)} />
+              <EmptyState slug={slug} onPick={(prompt) => send(prompt)} />
             ) : (
               turns.map((t) => <Turn key={t.id} turn={t} />)
             )}
@@ -492,18 +498,31 @@ function Composer({
 
 /* ── empty state ─────────────────────────────────────────────────────────── */
 
-function EmptyState({ onPick }: { onPick: (prompt: string) => void }) {
+function EmptyState({ slug, onPick }: { slug: string; onPick: (prompt: string) => void }) {
+  const isBookRecommender = slug === "domain-knowledge-pinecone-nexus";
+  const prompts = isBookRecommender ? BOOK_RECOMMENDER_PROMPTS : SAMPLE_PROMPTS;
+
   return (
     <div className="flex min-h-[44dvh] flex-col items-center justify-center text-center">
       <div className="max-w-md space-y-4">
         <Badge bracket>session ready</Badge>
         <h2 className="font-display text-5xl leading-none tracking-[0.01em] text-ink">
-          A console for your agent.
+          {isBookRecommender ? "📚 A book recommender for your agent." : "A console for your agent."}
         </h2>
         <p className="font-mono text-[12px] leading-relaxed text-ink-soft">
-          POST <span className="text-accent">/agent/run</span> on your local cookbook.
-          <br />
-          Every SSE event arrives here — token, status, sources, errors.
+          {isBookRecommender ? (
+            <>
+              Ask for books by topic, author, year, or after a recent read.
+              <br />
+              Pinecone retrieves candidates; Nebius synthesizes the shortlist.
+            </>
+          ) : (
+            <>
+              POST <span className="text-accent">/agent/run</span> on your local cookbook.
+              <br />
+              Every SSE event arrives here — token, status, sources, errors.
+            </>
+          )}
         </p>
       </div>
 
@@ -512,7 +531,7 @@ function EmptyState({ onPick }: { onPick: (prompt: string) => void }) {
           try
         </span>
         <div className="space-y-1.5">
-          {SAMPLE_PROMPTS.map((p) => (
+          {prompts.map((p) => (
             <button
               key={p}
               type="button"
