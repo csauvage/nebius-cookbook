@@ -120,9 +120,10 @@ The vectorization flow is intentionally simple and production-shaped:
 That split matters.
 Embedding is the expensive semantic step, while Pinecone upsert is the indexing
 step, so the script exposes separate knobs for each.
-The notes currently use small embedding batches and Pinecone write batches of
-`150` or `200`, which is a practical default when you want predictable progress
-without overloading either side of the pipeline.
+For normal ingestion throughput, the practical default is to batch embeddings in
+groups of `100` and Pinecone writes in groups of `200`.
+That amortizes network overhead on the Nebius side without making Pinecone
+upserts unwieldy.
 
 There is also an **analysis-only** mode before you write anything.
 That gives you a way to inspect the dataset footprint and confirm the estate is
@@ -144,15 +145,28 @@ cp .env.vectorize.example .env.local
 There is no separate `.venv_vectorize` workflow to maintain or commit.
 The script loads `.env.local` or `.env` automatically if present.
 
-For example, the current notes use this command to embed one record at a time
-and print progress every 500 upserts:
+For a normal ingestion run, use batched embeddings and batched Pinecone upserts:
 
 ```bash
 uv run python scripts/vectorize_goodreads_to_pinecone.py \
   --data-dir ../../data \
-  --embed-batch-size 1 \
-  --progress-interval 500
+  --embed-batch-size 100 \
+  --embed-concurrency 6 \
+  --pinecone-batch-size 200 \
+  --progress-interval 1000
 ```
+
+The script now pipelines those phases instead of running them in strict lockstep.
+While one batch is being upserted into Pinecone, the next embedding requests can
+already be in flight to Nebius.
+For bigger runs, `--embed-concurrency` is the main throughput lever, and
+`--max-pending-embed-batches` lets you cap memory and backpressure the pipeline.
+
+If you want a slower, more granular debug mode, you can still force one
+embedding request per record with `--embed-batch-size 1`.
+That is useful for inspection and troubleshooting, but it is not the right
+setting for high-throughput ingestion because it pays the full API round-trip
+cost for every single vector.
 
 The point is not Goodreads specifically.
 This cookbook pattern is meant to transfer to **your own domain data** too:
