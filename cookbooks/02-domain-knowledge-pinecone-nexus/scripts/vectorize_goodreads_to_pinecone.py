@@ -16,8 +16,10 @@ import json
 import os
 import time
 from collections import Counter
+from concurrent.futures import ALL_COMPLETED, FIRST_COMPLETED, Future, ThreadPoolExecutor, wait
 from dataclasses import dataclass, field
 from pathlib import Path
+from threading import Lock
 from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 try:
@@ -101,6 +103,14 @@ class DatasetStats:
 
 
 Record = Dict[str, Any]
+
+
+@dataclass
+class VectorBatch:
+    source: str
+    ids: List[str]
+    texts: List[str]
+    metadata_rows: List[Dict[str, Any]]
 
 
 def load_dotenv_if_present() -> None:
@@ -379,10 +389,14 @@ class GoodreadsVectorizer:
         nebius_model: str,
         batch_size: int = 200,
         embed_batch: int = 64,
+        embed_concurrency: int = 4,
+        max_pending_embed_batches: Optional[int] = None,
         progress_interval: int = 500,
     ) -> None:
         self.batch_size = batch_size
         self.embed_batch = embed_batch
+        self.embed_concurrency = max(1, embed_concurrency)
+        self.max_pending_embed_batches = max_pending_embed_batches or (self.embed_concurrency * 2)
         self.namespace = pinecone_namespace
         self.progress_interval = max(1, progress_interval)
 
@@ -410,9 +424,11 @@ class GoodreadsVectorizer:
         self.start_time = time.time()
         self.embedding_calls = 0
         self.last_progress = 0
+        self._stats_lock = Lock()
 
     def _embed_texts(self, texts: List[str]) -> List[List[float]]:
-        self.embedding_calls += 1
+        with self._stats_lock:
+            self.embedding_calls += 1
         response = self.embedding_client.embeddings.create(
             model=self.embedding_model,
             input=texts,
@@ -424,26 +440,30 @@ class GoodreadsVectorizer:
         if not vectors:
             return
         self.index.upsert(vectors=vectors, namespace=self.namespace)
-        self.total_vectors += len(vectors)
+        with self._stats_lock:
+            self.total_vectors += len(vectors)
+            should_log = self.total_vectors - self.last_progress >= self.progress_interval
+            if should_log:
+                self.last_progress = self.total_vectors
+                elapsed = time.time() - self.start_time
+                rate = self.total_vectors / elapsed if elapsed > 0 else 0.0
+                embedding_calls = self.embedding_calls
         # Emit progress in steady intervals to avoid log spam while still showing
         # live ingestion throughput on long runs.
-        if self.total_vectors - self.last_progress >= self.progress_interval:
-            self.last_progress = self.total_vectors
-            elapsed = time.time() - self.start_time
-            rate = self.total_vectors / elapsed if elapsed > 0 else 0.0
+        if should_log:
             print(
                 f"[progress] upserted={self.total_vectors} source={source} "
-                f"batch={len(vectors)} embeddings_calls={self.embedding_calls} "
+                f"batch={len(vectors)} embeddings_calls={embedding_calls} "
                 f"rate={rate:.2f} vectors/s",
                 flush=True,
             )
 
-    def _upsert_records(
+    def _records_to_payload(
         self,
         source_records: Iterable[Tuple[str, List[float], Dict[str, Any]]],
-        source: str,
-    ) -> None:
+    ) -> List[List[Dict[str, Any]]]:
         payload: List[Dict[str, Any]] = []
+        batches: List[List[Dict[str, Any]]] = []
         for doc_id, embedding, metadata in source_records:
             payload.append(
                 {
@@ -453,10 +473,71 @@ class GoodreadsVectorizer:
                 }
             )
             if len(payload) >= self.batch_size:
-                self._upsert(payload, source)
+                batches.append(payload)
                 payload = []
         if payload:
-            self._upsert(payload, source)
+            batches.append(payload)
+        return batches
+
+    def _embed_batch(self, batch: VectorBatch) -> Tuple[str, List[List[Dict[str, Any]]]]:
+        embeddings = self._embed_texts(batch.texts)
+        rows = [
+            (doc_id, embedding, metadata)
+            for doc_id, embedding, metadata in zip(batch.ids, embeddings, batch.metadata_rows)
+        ]
+        return batch.source, self._records_to_payload(rows)
+
+    def _drain_completed_embeddings(
+        self,
+        pending_embeddings: Dict[Future[Tuple[str, List[List[Dict[str, Any]]]]], str],
+        upsert_executor: ThreadPoolExecutor,
+        pending_upserts: List[Future[None]],
+        wait_for_all: bool = False,
+    ) -> None:
+        if not pending_embeddings:
+            return
+
+        done, _ = wait(
+            pending_embeddings.keys(),
+            return_when=ALL_COMPLETED if wait_for_all else FIRST_COMPLETED,
+        )
+        for future in done:
+            source = pending_embeddings.pop(future)
+            batch_source, payload_batches = future.result()
+            for payload in payload_batches:
+                pending_upserts.append(
+                    upsert_executor.submit(self._upsert, payload, batch_source or source)
+                )
+
+    def _await_upserts(self, pending_upserts: List[Future[None]]) -> None:
+        while pending_upserts:
+            future = pending_upserts.pop(0)
+            future.result()
+
+    def _process_vector_batches(self, batches: Iterable[VectorBatch]) -> None:
+        pending_embeddings: Dict[Future[Tuple[str, List[List[Dict[str, Any]]]]], str] = {}
+        pending_upserts: List[Future[None]] = []
+
+        with ThreadPoolExecutor(max_workers=self.embed_concurrency) as embed_executor:
+            with ThreadPoolExecutor(max_workers=1) as upsert_executor:
+                for batch in batches:
+                    future = embed_executor.submit(self._embed_batch, batch)
+                    pending_embeddings[future] = batch.source
+
+                    while len(pending_embeddings) >= self.max_pending_embed_batches:
+                        self._drain_completed_embeddings(
+                            pending_embeddings,
+                            upsert_executor,
+                            pending_upserts,
+                        )
+
+                self._drain_completed_embeddings(
+                    pending_embeddings,
+                    upsert_executor,
+                    pending_upserts,
+                    wait_for_all=True,
+                )
+                self._await_upserts(pending_upserts)
 
     def upsert_books(
         self,
@@ -465,6 +546,22 @@ class GoodreadsVectorizer:
         genres: Dict[str, List[str]],
         include_empty: bool,
     ) -> None:
+        self._process_vector_batches(
+            self._iter_book_batches(
+                books_path,
+                authors=authors,
+                genres=genres,
+                include_empty=include_empty,
+            )
+        )
+
+    def _iter_book_batches(
+        self,
+        books_path: Path,
+        authors: Dict[str, Record],
+        genres: Dict[str, List[str]],
+        include_empty: bool,
+    ) -> Iterable[VectorBatch]:
         texts: List[str] = []
         metadata_rows: List[Dict[str, Any]] = []
         ids: List[str] = []
@@ -502,25 +599,34 @@ class GoodreadsVectorizer:
             ids.append(f"book::{book_id}")
 
             if len(texts) >= self.embed_batch:
-                self._flush_book_vectors(ids, texts, metadata_rows)
+                yield VectorBatch(
+                    source="books",
+                    ids=ids,
+                    texts=texts,
+                    metadata_rows=metadata_rows,
+                )
                 texts, metadata_rows, ids = [], [], []
 
         if texts:
-            self._flush_book_vectors(ids, texts, metadata_rows)
-
-    def _flush_book_vectors(self, ids: List[str], texts: List[str], metas: List[Dict[str, Any]]) -> None:
-        embeddings = self._embed_texts(texts)
-        rows = [
-            (doc_id, embedding, metadata)
-            for doc_id, embedding, metadata in zip(ids, embeddings, metas)
-        ]
-        self._upsert_records(rows, source="books")
+            yield VectorBatch(
+                source="books",
+                ids=ids,
+                texts=texts,
+                metadata_rows=metadata_rows,
+            )
 
     def upsert_other_records(
         self,
         source: str,
         path: Path,
     ) -> None:
+        self._process_vector_batches(self._iter_other_record_batches(source, path))
+
+    def _iter_other_record_batches(
+        self,
+        source: str,
+        path: Path,
+    ) -> Iterable[VectorBatch]:
         texts: List[str] = []
         metadata_rows: List[Dict[str, Any]] = []
         ids: List[str] = []
@@ -566,25 +672,21 @@ class GoodreadsVectorizer:
             ids.append(f"{source[:-1]}::{record_id}")
 
             if len(texts) >= self.embed_batch:
-                self._flush_generic_vectors(source, ids, texts, metadata_rows)
+                yield VectorBatch(
+                    source=source,
+                    ids=ids,
+                    texts=texts,
+                    metadata_rows=metadata_rows,
+                )
                 texts, metadata_rows, ids = [], [], []
 
         if texts:
-            self._flush_generic_vectors(source, ids, texts, metadata_rows)
-
-    def _flush_generic_vectors(
-        self,
-        source: str,
-        ids: List[str],
-        texts: List[str],
-        metas: List[Dict[str, Any]],
-    ) -> None:
-        embeddings = self._embed_texts(texts)
-        rows = [
-            (doc_id, embedding, metadata)
-            for doc_id, embedding, metadata in zip(ids, embeddings, metas)
-        ]
-        self._upsert_records(rows, source=source)
+            yield VectorBatch(
+                source=source,
+                ids=ids,
+                texts=texts,
+                metadata_rows=metadata_rows,
+            )
 
 
 def parse_args() -> argparse.Namespace:
@@ -593,7 +695,19 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--pinecone-index", default=None)
     parser.add_argument("--pinecone-namespace", default=None)
     parser.add_argument("--pinecone-batch-size", type=int, default=200, choices=[150, 200])
-    parser.add_argument("--embed-batch-size", type=int, default=64)
+    parser.add_argument("--embed-batch-size", type=int, default=100)
+    parser.add_argument(
+        "--embed-concurrency",
+        type=int,
+        default=6,
+        help="Number of concurrent Nebius embedding requests to run.",
+    )
+    parser.add_argument(
+        "--max-pending-embed-batches",
+        type=int,
+        default=None,
+        help="Maximum number of embedding batches buffered in flight before backpressure kicks in.",
+    )
     parser.add_argument(
         "--progress-interval",
         type=int,
@@ -622,6 +736,10 @@ def validate_preflight(
 
     if args.embed_batch_size < 1:
         errors.append("--embed-batch-size must be greater than 0.")
+    if args.embed_concurrency < 1:
+        errors.append("--embed-concurrency must be greater than 0.")
+    if args.max_pending_embed_batches is not None and args.max_pending_embed_batches < 1:
+        errors.append("--max-pending-embed-batches must be greater than 0 when set.")
     if args.progress_interval < 1:
         errors.append("--progress-interval must be greater than 0.")
 
@@ -681,7 +799,7 @@ def validate_preflight(
                     "- Fill the required values in `.env.local` or `.env`.",
                     "",
                     colorize("Example command:", ANSI_CYAN, ANSI_BOLD),
-                    "- `uv run python scripts/vectorize_goodreads_to_pinecone.py --data-dir ../../data --embed-batch-size 1 --progress-interval 500`",
+                    "- `uv run python scripts/vectorize_goodreads_to_pinecone.py --data-dir ../../data --embed-batch-size 100 --embed-concurrency 6 --pinecone-batch-size 200 --progress-interval 1000`",
                 ]
             )
 
@@ -718,6 +836,17 @@ def main() -> None:
     if args.analyze_only:
         return
 
+    if args.embed_batch_size == 1:
+        print(
+            colorize(
+                "[warn] --embed-batch-size 1 sends one embedding request per record. "
+                "This is useful for debugging, but it is much slower than batched embedding. "
+                "Use 100 for normal ingestion throughput.",
+                ANSI_YELLOW,
+                ANSI_BOLD,
+            )
+        )
+
     # Use credentials and defaults from the process environment (for example .env.local).
     nebius_api_key = os.environ["NEBIUS_API_KEY"]
     nebius_base_url = os.environ.get("NEBIUS_BASE_URL", "https://api.studio.nebius.ai")
@@ -736,6 +865,8 @@ def main() -> None:
         nebius_model=nebius_model,
         batch_size=args.pinecone_batch_size,
         embed_batch=args.embed_batch_size,
+        embed_concurrency=args.embed_concurrency,
+        max_pending_embed_batches=args.max_pending_embed_batches,
         progress_interval=args.progress_interval,
     )
 
