@@ -1,4 +1,4 @@
-"""Shared test fixtures. No network — respx mocks Nebius and Tavily."""
+"""Shared test fixtures."""
 
 from __future__ import annotations
 
@@ -6,11 +6,11 @@ import os
 
 import pytest
 
-os.environ.setdefault("NEBIUS_API_KEY", "test-key")
+os.environ.setdefault("NEBIUS_API_KEY", "test-nebius")
+os.environ.setdefault("PINECONE_API_KEY", "test-pinecone")
+os.environ.setdefault("PINECONE_INDEX_NAME", "test-index")
 os.environ.setdefault("TAVILY_API_KEY", "test-tavily")
-os.environ.setdefault("ENV", "development")
-os.environ.setdefault("LOG_LEVEL", "warning")
-os.environ.setdefault("CORS_ORIGINS", "http://localhost:3000")
+os.environ.setdefault("NEBIUS_ENABLE_PRICING_LOOKUP", "false")
 
 
 @pytest.fixture(autouse=True)

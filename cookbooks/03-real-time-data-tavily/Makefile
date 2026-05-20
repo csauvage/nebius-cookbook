@@ -1,30 +1,10 @@
-.PHONY: dev test lint format docker run-docker deploy clean
-
-PORT ?= 8000
+.PHONY: dev query vectorize
 
 dev:
-	uv run uvicorn app.main:app --reload --host 0.0.0.0 --port $(PORT)
+	uv run uvicorn app.main:app --host $${HOST:-0.0.0.0} --port $${PORT:-8000} --reload
 
-test:
-	uv run pytest -v
+query:
+	uv run python scripts/query_goodreads_pinecone.py "Recommend books about political intrigue and empire-building for someone who liked Dune" --show-matches
 
-lint:
-	uv run ruff check
-	uv run ruff format --check
-
-format:
-	uv run ruff format
-	uv run ruff check --fix
-
-docker:
-	docker build -t real-world-data-nebius-tavily:dev .
-
-run-docker:
-	docker run --rm -p $(PORT):8000 --env-file .env real-world-data-nebius-tavily:dev
-
-deploy:
-	@echo "See docs/deployment.md for Nebius Compute deployment instructions."
-
-clean:
-	rm -rf .pytest_cache .ruff_cache __pycache__ .venv
-	find . -type d -name __pycache__ -exec rm -rf {} +
+vectorize:
+	uv run python scripts/vectorize_goodreads_to_pinecone.py --data-dir ../../data --embed-batch-size 100 --embed-concurrency 6 --pinecone-batch-size 200 --progress-interval 1000

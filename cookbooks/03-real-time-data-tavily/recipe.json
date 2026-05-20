@@ -5,29 +5,29 @@
   "eyebrow": "Awareness",
   "title": "Real-Time Data with Tavily",
   "upcoming": false,
-  "tagline": "Add live Tavily search to a Pinecone-backed book agent so stale domain knowledge can answer current questions.",
+  "tagline": "Add Tavily fresh web context to a Pinecone-backed book recommender so stale vectors can answer current questions.",
   "difficulty": "intermediate",
   "estimatedReadingTime": "12 min",
-  "estimatedRunTime": "5 min",
+  "estimatedRunTime": "6 min",
   "stack": {
-    "primary": ["nebius-agentkit", "tavily"],
-    "secondary": ["fastapi", "structlog", "prometheus", "docker"]
+    "primary": ["nebius-agentkit", "pinecone", "tavily"],
+    "secondary": ["fastapi", "openai-sdk", "sse", "docker"]
   },
-  "tags": ["agent", "rag", "web-search", "model-routing", "streaming", "citations"],
+  "tags": ["agent", "rag", "web-search", "book-recommendations", "streaming", "citations"],
   "story": {
     "problem": "Cookbook #2 can recommend from a Pinecone-backed Goodreads corpus, but that corpus stops around 2017 and cannot carry constantly changing pricing, availability, editions, or newly released books.",
-    "solution": "Keep Pinecone for curated domain memory, then add Tavily — a Nebius partner — for live web awareness. A three-step agent plans searches on a cheaper model, fetches fresh facts, then writes cited recommendations on Llama 70B.",
-    "outcome": "An agent that can combine static book knowledge with fresh web context, stream every phase to the client, cite sources inline, and keep cost visible."
+    "solution": "Keep Pinecone for curated book memory, then add Tavily — a Nebius partner — for live web awareness before the Nebius answer model writes the final recommendation.",
+    "outcome": "A streaming book recommender that combines static semantic retrieval with fresh web context, cites both retrieved books and live sources, and keeps time, tokens, and cost visible."
   },
   "prerequisites": [
     "Python 3.12+",
     "uv installed (https://docs.astral.sh/uv/)",
     "A Nebius API key",
+    "A Pinecone API key and the Goodreads book vectors from Cookbook #2",
     "A Tavily API key (https://tavily.com)",
     "Docker (optional)"
   ],
   "models": [
-    { "id": "Qwen/Qwen3-30B-A3B-Instruct", "role": "planner" },
     { "id": "meta-llama/Llama-3.3-70B-Instruct", "role": "writer" },
     { "id": "Qwen/Qwen3-Embedding-8B", "role": "embed" }
   ],
@@ -37,7 +37,7 @@
   },
   "quickstart": {
     "clone": "git clone https://github.com/csauvage/nebius-cookbook && cd nebius-cookbook/cookbooks/03-real-time-data-tavily",
-    "configure": "cp .env.example .env  # then fill NEBIUS_API_KEY and TAVILY_API_KEY",
+    "configure": "cp .env.example .env  # then fill NEBIUS_API_KEY, PINECONE_API_KEY, and TAVILY_API_KEY",
     "run": "uv sync && make dev"
   },
   "endpoints": [
@@ -45,7 +45,7 @@
       "method": "POST",
       "path": "/agent/run",
       "streaming": true,
-      "description": "Stream the three-step agent: planning, searching, writing, citations, cost."
+      "description": "Recommend books from Pinecone, augment with Tavily freshness, and stream SSE events back."
     },
     {
       "method": "GET",
@@ -56,11 +56,6 @@
       "method": "GET",
       "path": "/readyz",
       "description": "Readiness probe."
-    },
-    {
-      "method": "GET",
-      "path": "/metrics",
-      "description": "Prometheus metrics scrape endpoint."
     }
   ],
   "deployment": {

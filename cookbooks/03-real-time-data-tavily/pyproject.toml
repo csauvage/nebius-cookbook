@@ -1,27 +1,22 @@
 [project]
-name = "real-world-data-nebius-tavily"
+name = "real-time-data-tavily"
 version = "0.1.0"
-description = "A grounded agent on Nebius + Tavily with planner/writer model routing and inline citations."
+description = "A Pinecone-backed book recommender on Nebius with Tavily fresh web context."
 requires-python = ">=3.12"
 dependencies = [
     "fastapi>=0.115",
     "uvicorn[standard]>=0.32",
     "openai>=1.50",
+    "httpx>=0.27",
     "pydantic>=2.9",
     "pydantic-settings>=2.6",
-    "structlog>=24.4",
-    "slowapi>=0.1.9",
-    "prometheus-client>=0.21",
-    "httpx>=0.27",
+    "pinecone>=5.0.0",
     "tenacity>=9.0",
-    "tavily-python>=0.5",
 ]
 
 [dependency-groups]
 dev = [
     "pytest>=8.3",
-    "pytest-asyncio>=0.24",
-    "respx>=0.22",
     "ruff>=0.7",
     "httpx>=0.27",
 ]
@@ -33,17 +28,13 @@ target-version = "py312"
 [tool.ruff.lint]
 select = ["E", "F", "W", "I", "B", "UP", "N", "ASYNC", "S", "RUF"]
 ignore = [
-    "S101",  # asserts allowed in tests
-    "S104",  # binding to 0.0.0.0 is intentional for a containerized service
-    "B008",  # FastAPI uses Depends() in argument defaults by design
+    "S101",
+    "S104",
+    "B008",
 ]
 
-[tool.ruff.lint.flake8-bugbear]
-extend-immutable-calls = ["fastapi.Depends", "fastapi.Query", "fastapi.Path", "fastapi.Body", "fastapi.Header"]
+[tool.ruff.lint.per-file-ignores]
+"scripts/*.py" = ["E501", "UP006", "UP015", "UP035", "UP045", "B905", "F402"]
 
 [tool.ruff.format]
 quote-style = "double"
-
-[tool.pytest.ini_options]
-asyncio_mode = "auto"
-testpaths = ["tests"]

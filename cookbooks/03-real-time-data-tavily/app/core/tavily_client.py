@@ -1,84 +1,80 @@
-"""Thin async wrapper around the Tavily search API."""
+"""Thin Tavily search client for fresh book context."""
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from typing import Any
 
 import httpx
-import structlog
-from tenacity import (
-    retry,
-    retry_if_exception_type,
-    stop_after_attempt,
-    wait_exponential,
-)
+from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 
-from app.config import Settings, get_settings
-
-logger = structlog.get_logger()
+from app.config import Settings
 
 TAVILY_ENDPOINT = "https://api.tavily.com/search"
 
 
+@dataclass
 class TavilyResult:
-    __slots__ = ("content", "score", "title", "url")
+    citation_id: int
+    title: str
+    url: str
+    content: str
+    score: float
 
-    def __init__(self, title: str, url: str, content: str, score: float) -> None:
-        self.title = title
-        self.url = url
-        self.content = content
-        self.score = score
+    def to_public_dict(self) -> dict[str, object]:
+        return {
+            "citation": self.citation_id,
+            "title": self.title,
+            "url": self.url,
+            "content": self.content,
+            "score": self.score,
+        }
 
-    def to_dict(self) -> dict[str, Any]:
-        return {"title": self.title, "url": self.url, "content": self.content, "score": self.score}
+    def to_context_line(self) -> str:
+        return (
+            f"[W{self.citation_id}] title={self.title}; url={self.url}; "
+            f"score={self.score:.4f}; excerpt={self.content}"
+        )
 
 
 class TavilyClient:
-    """Async client for Tavily search. No SDK — keeps the dep surface small."""
-
     def __init__(self, settings: Settings) -> None:
-        self._settings = settings
-        self._http = httpx.AsyncClient(
-            timeout=httpx.Timeout(connect=5.0, read=30.0, write=10.0, pool=5.0)
-        )
+        self.settings = settings
 
     @retry(
         retry=retry_if_exception_type((httpx.HTTPError, httpx.TimeoutException)),
-        wait=wait_exponential(multiplier=0.5, min=0.5, max=8.0),
+        wait=wait_exponential(multiplier=0.5, min=0.5, max=6.0),
         stop=stop_after_attempt(3),
         reraise=True,
     )
-    async def search(self, query: str) -> list[TavilyResult]:
+    def search(self, query: str) -> list[TavilyResult]:
         payload = {
-            "api_key": self._settings.tavily_api_key,
+            "api_key": self.settings.tavily_api_key,
             "query": query,
-            "search_depth": self._settings.tavily_search_depth,
-            "max_results": self._settings.tavily_max_results,
+            "search_depth": self.settings.tavily_search_depth,
+            "max_results": self.settings.tavily_max_results,
             "include_answer": False,
         }
-        response = await self._http.post(TAVILY_ENDPOINT, json=payload)
+        response = httpx.post(TAVILY_ENDPOINT, json=payload, timeout=20.0)
         response.raise_for_status()
         body = response.json()
-        return [
-            TavilyResult(
-                title=item.get("title", ""),
-                url=item.get("url", ""),
-                content=item.get("content", ""),
-                score=float(item.get("score", 0.0)),
+        return self._parse_results(body)
+
+    def _parse_results(self, body: dict[str, Any]) -> list[TavilyResult]:
+        parsed: list[TavilyResult] = []
+        for index, item in enumerate(body.get("results", []), start=1):
+            if not isinstance(item, dict):
+                continue
+            url = str(item.get("url") or "").strip()
+            if not url:
+                continue
+            parsed.append(
+                TavilyResult(
+                    citation_id=index,
+                    title=str(item.get("title") or url).strip(),
+                    url=url,
+                    content=str(item.get("content") or "").strip(),
+                    score=float(item.get("score") or 0.0),
+                )
             )
-            for item in body.get("results", [])
-        ]
-
-    async def aclose(self) -> None:
-        await self._http.aclose()
-
-
-_singleton: TavilyClient | None = None
-
-
-def build_tavily_client() -> TavilyClient:
-    """FastAPI dependency. Reuses a single client per process."""
-    global _singleton
-    if _singleton is None:
-        _singleton = TavilyClient(get_settings())
-    return _singleton
+        return parsed

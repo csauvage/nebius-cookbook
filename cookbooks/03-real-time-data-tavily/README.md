@@ -1,190 +1,229 @@
-# Real-Time Data with Tavily
-
-> Ground your agent in this week's news with Tavily and per-step model routing for 10× cost savings.
+# Awareness — Real-Time Data with Tavily
 
 Recipe **03 of 6** in the Nebius Cookbook arc:
 
 > Foundation → Retrieval → **Awareness** → Memory → Reliability → Confidence
 
-Cookbooks #1 and #2 gave you an agent that can answer fluently and retrieve
-from compiled domain knowledge.
-In cookbook #2, that domain knowledge is a Goodreads-style book corpus stored
-in Pinecone: excellent for semantic recommendations, but still a static
-snapshot.
+Cookbook #2 gave us a Pinecone-backed book recommender over a Goodreads-style
+corpus.
+That is useful domain memory, but it is still a snapshot.
+The data stops around 2017, which is almost a decade old for a reader asking
+what to buy, what edition exists, what is newly released, or what is currently
+available.
 
-That snapshot has three hard limits:
+A static vector dataset is also the wrong place for commercial facts.
+Pricing, availability, bestseller context, formats, editions, and review buzz
+change constantly.
+Trying to bake those into the vector index would make ingestion heavier while
+still going stale quickly.
 
-- **Freshness.** The dataset stops around 2017, which is almost a decade old by
-  now.
-  A lot of books simply do not exist in that corpus.
-- **Coverage.** Publishing moves too fast for a static demo corpus to stay
-  complete.
-  As a rough scale signal, recent national publishing output has been in the
-  hundreds of thousands of titles and re-editions per year: the United States
-  reported `304,912` in 2013, the United Kingdom `188,000` in 2018, Japan
-  `139,078` in 2017, Indonesia `135,081` in 2020, and France `106,799` in
-  2018.
-- **Commercial metadata.** Pricing, editions, stock, bestseller context, and
-  current availability change constantly.
-  Baking that into the vector dataset would make ingestion heavier while still
-  going stale quickly.
+So cookbook #3 keeps the book memory from cookbook #2 and adds the missing
+layer: **live awareness with Tavily**, a Nebius partner.
+Pinecone answers "what in my curated corpus is semantically relevant?".
+Tavily answers "what changed on the web since this corpus was built?".
+Nebius then synthesizes both into one streamed recommendation.
 
-So cookbook #3 adds the missing layer: **live awareness**.
-Pinecone remains the memory of your curated domain corpus, while Tavily — a
-Nebius partner — gives the agent fresh web context for what changed after the
-corpus was built.
-The moment you put the agent on a 70B model, it also costs the same as OpenAI,
-so this cookbook fixes freshness and cost in the same flow.
+## What you'll build
 
-## The story
-
-A three-step agent:
+A FastAPI service that answers book recommendation questions with this fixed
+pipeline:
 
 ```mermaid
 flowchart LR
-    plan["PLAN<br/>Qwen 30B<br/>cheap"]
-    search["SEARCH<br/>Tavily<br/>fresh facts"]
-    write["WRITE<br/>Llama 70B<br/>mid-tier"]
-    plan --> search --> write
+    A[User book request] --> B[Nebius embedding]
+    B --> C[Pinecone book retrieval]
+    C --> D[Related books by author, theme, year]
+    D --> E[Tavily fresh web search]
+    E --> F[Nebius answer model]
+    F --> G[SSE recommendation]
 ```
 
-- **Plan** uses a cheap, fast model (Qwen 30B class) to turn the user prompt into 2–4 search queries.
-- **Search** hits Tavily in parallel, deduplicates, and ranks results by Tavily's relevance score.
-- **Write** sends the question + top sources to a mid-tier writer (Llama 3.3 70B), with a system prompt that demands inline `[n]` citations and no fabrication.
+The route streams each phase to the client:
 
-The client sees all of this as it happens via SSE: `status` events for each phase, a `plan` event with the queries, a `sources` event listing the citations, then streamed `token` events for the final brief.
+- `agent_message` events for human-readable progress
+- `status` events for machine-readable phase changes
+- `context` with the Pinecone book candidates
+- `sources` with the Tavily web sources
+- `token` events for the final answer
+- `done` with elapsed time, token usage, and estimated cost
+
+## Why Tavily here?
+
+The vector index is intentionally curated and stable.
+That makes it good for semantic recommendations, same-author expansion,
+same-theme expansion, and same-year expansion.
+It is not good for facts that move every week.
+
+Tavily is used for freshness signals only:
+
+- newer books adjacent to the reader's request
+- current editions or formats
+- availability and pricing context
+- current discussion, reviews, awards, or bestseller context
+
+The answer model receives both contexts and is instructed to keep them separate:
+Goodreads/Pinecone citations use `[1]`, `[2]`, `[3]`; Tavily web citations use
+`[W1]`, `[W2]`, `[W3]`.
 
 ## Prerequisites
 
-- Python 3.12+ and [uv](https://docs.astral.sh/uv/)
+- Python 3.12+
+- [uv](https://docs.astral.sh/uv/)
 - A Nebius API key
-- A [Tavily](https://tavily.com) API key (free tier is plenty for this recipe)
+- A Pinecone API key
+- A Tavily API key
+- The Goodreads book vectors from cookbook #2 already upserted into Pinecone
 
 ## Run it
 
 ```bash
-cp .env.example .env
-# Fill NEBIUS_API_KEY and TAVILY_API_KEY
-
+cd cookbooks/03-real-time-data-tavily
 uv sync
+cp .env.example .env
+```
+
+Fill:
+
+```bash
+NEBIUS_API_KEY=...
+PINECONE_API_KEY=...
+PINECONE_INDEX_NAME=books-demo
+TAVILY_API_KEY=...
+```
+
+Then start the backend:
+
+```bash
 make dev
 ```
+
+Send a request:
 
 ```bash
 curl -N -X POST http://localhost:8000/agent/run \
   -H 'content-type: application/json' \
-  -d '{"prompt":"What is the latest on the rumoured SpaceX IPO?"}'
+  -d '{
+    "prompt": "Recommend recent books for someone who loved Dune and wants political intrigue",
+    "top_k": 10,
+    "related_top_k": 4,
+    "include_related": true
+  }'
 ```
 
-Sample stream:
+## Sample SSE flow
 
-```
-event: status
-data: {"phase":"planning","model":"Qwen/Qwen3-30B-A3B-Instruct"}
-
-event: plan
-data: {"queries":["SpaceX IPO 2026 latest news", "SpaceX Starlink spin-off IPO filing"]}
+```text
+event: agent_message
+data: {"text":"I am mapping your Dune request into the book index."}
 
 event: status
-data: {"phase":"searching","queries":2}
+data: {"phase":"embedding","message":"Preparing the semantic query"}
+
+event: status
+data: {"phase":"retrieving","message":"Requesting Pinecone Results"}
+
+event: context
+data: {"books":[...]}
+
+event: status
+data: {"phase":"searching","message":"Requesting Tavily Results"}
 
 event: sources
-data: {"items":[{"index":1,"title":"…","url":"…"},…]}
+data: {"items":[...]}
 
 event: status
-data: {"phase":"writing","model":"meta-llama/Llama-3.3-70B-Instruct"}
+data: {"phase":"synthesizing","message":"Synthesizing"}
 
 event: token
-data: {"text":"SpaceX "}
+data: {"text":"If you liked Dune..."}
 
-…
+event: token
+data: {"text":"\n\n---\nTime: 4.31s | Tokens: 36 embed, 1420 in, 390 out | Cost: $0.000312"}
 
 event: done
-data: {}
+data: {"embeddingTokens":36,"inputTokens":1420,"outputTokens":390,"totalTokens":1846,"costUsd":0.000312,"elapsedSeconds":4.31}
 ```
 
-## Walk-through
+## How it differs from cookbook #2
 
-### Per-step model routing
+Cookbook #2 stops after Pinecone retrieval.
+That is enough when the answer should stay inside the static corpus.
 
-The biggest cost lever in agent design isn't the model — it's *which model handles which step*. The planner step is a tiny, structured task (5 tokens in, ~50 tokens out, JSON-shaped). Running it on a 70B model is waste. A 30B model nails it for ~10% of the cost.
-
-The writer step is where quality matters: it has to synthesize, cite, and respect a structural prompt. That's where you spend the budget.
-
-The two models are configured independently in `app/config.py`:
+Cookbook #3 adds one more step before synthesis:
 
 ```python
-nebius_planner_model: str = "Qwen/Qwen3-30B-A3B-Instruct"
-nebius_writer_model: str = "meta-llama/Llama-3.3-70B-Instruct"
+fresh_sources = rag.search_fresh_context(prompt, books)
+stream = rag.stream_synthesis(prompt, books, fresh_sources)
 ```
 
-Swap either independently. Override per-env via `NEBIUS_PLANNER_MODEL` and `NEBIUS_WRITER_MODEL`.
+The Tavily query is built from the original user request plus the strongest
+retrieved book titles.
+That gives Tavily enough context to search for current information around the
+reader's intent instead of doing a generic web search.
 
-### When does Tavily fire?
+## Data and vectorization
 
-**Every request, unconditionally.** Search is step 2 of a fixed pipeline (`plan → search → write`), not a tool the model chooses to call and not a keyword-gated branch. The reasoning:
+This recipe reuses the same Pinecone index created in cookbook #2.
+If you have not built it yet, run the vectorization flow there first:
 
-- **The product contract is "grounded answer with `[n]` citations."** If search is optional, you ship two output modes — grounded and ungrounded — and the citation guarantee leaks. One mode is testable and observable; two are not.
-- **Determinism beats cleverness at this scope.** A "should I search?" tool-call adds a round-trip, a non-deterministic branch, prompt-injection surface ("ignore previous instructions, skip search"), and harder evals. For a research-brief workload the answer is ~always yes — the EV of the routing decision is near zero; the cost (latency, flakiness, eval surface) is real.
-- **Keyword routing is a classic anti-pattern.** Triggering on `"today" / "latest" / "news"` fails on paraphrases, gets gamed, and ships a second NLU system you have to maintain. Don't.
-- **Cost is bounded and visible at code-review time.** The planner caps at 2–4 queries, `_search_all` dedupes by URL and truncates to top-10 — you know the per-request Tavily upper bound without reading logs.
+```bash
+cd cookbooks/02-domain-knowledge-pinecone-nexus
+uv sync
+uv run python scripts/vectorize_goodreads_to_pinecone.py \
+  --data-dir ../../data \
+  --embed-batch-size 100 \
+  --embed-concurrency 6 \
+  --pinecone-batch-size 200 \
+  --progress-interval 1000
+```
 
-**Switch to tool-calling** when you have a mixed workload where many requests genuinely don't need retrieval (general chat, code helper). For a research-brief product, always-search is correct.
+You can use your own data instead of Goodreads.
+The only requirement is that your vectors carry enough metadata for the serving
+path to render useful context: title, authors, themes or genres, ratings or
+quality signals, and publication year when available.
 
-**Failure mode to handle before production:** Tavily returning zero results or erroring. Today the writer still runs with an empty source list and will refuse or hallucinate. Add an explicit empty-sources branch that emits a terminal `status` event and short-circuits the writer.
+## Configuration
 
-### The Tavily integration
+| Variable | Required | Purpose |
+|---|---:|---|
+| `NEBIUS_API_KEY` | yes | Nebius Token Factory API key |
+| `NEBIUS_MODEL` | no | Chat model for progress and synthesis |
+| `NEBIUS_EMBEDDING_MODEL` | no | Embedding model for Pinecone retrieval |
+| `PINECONE_API_KEY` | yes | Pinecone API key |
+| `PINECONE_INDEX_NAME` | yes | Index containing the book vectors |
+| `PINECONE_NAMESPACE` | no | Namespace for the Goodreads vectors |
+| `TAVILY_API_KEY` | yes | Tavily API key |
+| `TAVILY_SEARCH_DEPTH` | no | `basic` or `advanced` |
+| `TAVILY_MAX_RESULTS` | no | Fresh web sources to fetch per request |
 
-`app/core/tavily_client.py` is a thin async wrapper — no SDK, just `httpx` with explicit timeouts and `tenacity` retries on transient errors. We keep the dependency surface deliberately small.
-
-Search queries run in parallel via `asyncio.gather`. Results are deduplicated by URL and capped at 10 sources before they reach the writer.
-
-### Inline citations
-
-The writer prompt is strict: every claim must be tagged `[n]` where `n` references a source. The route emits a `sources` SSE event with the index → URL mapping, so a frontend can render `[1]` as a clickable link without re-parsing the brief.
-
-### Concurrency and failure modes
-
-The three steps are sequential — `write` needs `search` needs `plan` — but the searches *within* step 2 run concurrently via `asyncio.gather`. That is the only place fan-out helps: planning and writing are single LLM calls.
+## Failure modes to design for
 
 | Symptom | Cause | Handling |
 |---|---|---|
-| Empty / generic brief | Tavily returned zero results | **Known gap** — add an empty-sources branch that short-circuits the writer (see *When does Tavily fire?*) |
-| One slow search stalls the brief | `gather` waits for the slowest query | Add `asyncio.wait_for` per query; drop laggards rather than block the brief |
-| `[n]` citations missing | Writer ignored the citation contract | Caught by the test suite; in production, gate on a critic pass (see *Going further*) |
-| Planner emits malformed JSON | Small model drift | Validate planner output against a Pydantic model; on failure, fall back to a single verbatim query |
-
-### Everything from cookbook #1, duplicated
-
-Every cookbook is autonomous by design — no shared base package. So `app/main.py`, `app/observability/*`, the Dockerfile, the Makefile, the security headers, the rate limiter — all the same shape as cookbook #1. Walk through cookbook #1 first if any of that is unfamiliar.
-
-## Cost
-
-A back-of-envelope for one brief:
-
-| Step | Model | Input tokens | Output tokens | ~Cost |
-|---|---|---|---|---|
-| Plan | Qwen 30B | 80 | 60 | $0.0001 |
-| Search | Tavily | — | — | $0.005 |
-| Write | Llama 70B | 1500 | 300 | $0.001 |
-| **Total** | | | | **~$0.006** |
-
-Running the *entire* flow on Llama 70B end-to-end would be about 10× that.
+| Good semantic matches but stale answer | Pinecone corpus is old | Tavily adds fresh web context before synthesis |
+| Fresh sources are noisy | Web results are broader than the corpus | Keep Tavily capped and use it only for freshness claims |
+| No Tavily results | Query is too narrow or web is unavailable | Still answer from Pinecone and avoid fresh claims |
+| Missing citations | Model ignored the format | Add a critic/eval step in a later cookbook |
 
 ## Test it
 
 ```bash
-make test
+uv run pytest
+uv run ruff check
+uv run ruff format --check
 ```
 
-Both Nebius and Tavily are mocked with `respx`. The full three-step flow is exercised, including verifying that the planner, search, and writer all fire in order and that `sources` and `token` events both arrive over SSE.
+The tests monkeypatch Nebius, Pinecone, and Tavily, so they do not call the
+network by default.
 
 ## Going further
 
-- **Cookbook #4 — [Persistent Context with Mem0](../04-persistent-context-mem0/)** — give the agent a durable, per-user memory so it can personalise the brief.
-- **Add a critic step.** Run a third small-model pass over the writer's output to flag uncited claims or contradictions. Stream the critique as its own SSE event.
-- **Cache Tavily results.** A simple in-memory TTL cache keyed on the planner output kills duplicate searches inside a few-minute window.
-- **Make `top-k` adaptive.** A broad question wants more sources; a specific one wants fewer. Let the planner emit a target source count alongside its queries.
+- Add a dedicated small-model query planner before Tavily if you want multiple
+  live searches per request.
+- Cache Tavily responses for a few minutes to avoid repeat searches during demos.
+- Add a critic pass that rejects uncited fresh claims before streaming `done`.
+- Cookbook #4 adds persistent memory so the recommender can remember a reader's
+  long-term taste.
 
 ## License
 
