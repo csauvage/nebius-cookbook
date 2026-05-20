@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Sans, IBM_Plex_Mono, Jersey_15 } from "next/font/google";
 import { ThemeToggle } from "@/components";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 // Runs before first paint: resolves the stored theme (or the OS preference)
@@ -46,7 +47,7 @@ export const metadata: Metadata = {
     template: "%s — Nebius Cookbook",
   },
   description: "Production-grade recipes for building AI agents on Nebius AgentKit.",
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://cookbook.nebius.com"),
+  metadataBase: new URL(SITE_URL),
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
