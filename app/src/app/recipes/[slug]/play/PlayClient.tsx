@@ -141,9 +141,9 @@ export function PlayClient({ slug, title, tagline }: Props) {
             const last = copy[copy.length - 1];
             if (!last || last.id !== assistantTurn.id) return t;
             const next: ChatTurn = { ...last, events: [...last.events, event] };
-            if (event.name === "token") {
+            if (event.name === "token" || event.name === "answer") {
               const piece = typeof event.data.text === "string" ? event.data.text : "";
-              next.text = last.text + piece;
+              next.text = event.name === "answer" ? piece : last.text + piece;
             }
             if (event.name === "done") next.status = "done";
             if (event.name === "error") next.status = "error";
