@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from dataclasses import dataclass
 from typing import Any
 
@@ -10,6 +11,13 @@ from pinecone import Pinecone
 
 from app.config import Settings
 from app.core.nebius_pricing import NebiusPricing
+
+MAX_RAG_BOOKS = 10
+DEFAULT_PROGRESS_MESSAGES = [
+    "I am turning your request into a search vector for the book index.",
+    "The query embedding is ready. I am checking Pinecone for matching books.",
+    "I have a shortlist. Now I am asking Nebius to turn it into recommendations.",
+]
 
 
 @dataclass
@@ -87,6 +95,13 @@ class SynthesisResult:
     usage: UsageSummary
 
 
+@dataclass
+class CompletionRequest:
+    messages: list[dict[str, str]]
+    temperature: float
+    max_tokens: int
+
+
 class BookRag:
     def __init__(self, settings: Settings) -> None:
         base_url = str(settings.nebius_base_url).rstrip("/")
@@ -133,11 +148,12 @@ class BookRag:
                 books,
                 self._query_related_books(query_vector, related_top_k, direct),
             )
-        return books
+        return books[:MAX_RAG_BOOKS]
 
-    def synthesize(self, prompt: str, books: list[RetrievedBook]) -> SynthesisResult:
-        response = self.nebius.chat.completions.create(
-            model=self.settings.nebius_model,
+    def build_completion_request(
+        self, prompt: str, books: list[RetrievedBook]
+    ) -> CompletionRequest:
+        return CompletionRequest(
             messages=[
                 {
                     "role": "system",
@@ -151,6 +167,15 @@ class BookRag:
             ],
             temperature=self.settings.answer_temperature,
             max_tokens=self.settings.answer_max_tokens,
+        )
+
+    def synthesize(self, prompt: str, books: list[RetrievedBook]) -> SynthesisResult:
+        request = self.build_completion_request(prompt, books)
+        response = self.nebius.chat.completions.create(
+            model=self.settings.nebius_model,
+            messages=request.messages,
+            temperature=request.temperature,
+            max_tokens=request.max_tokens,
         )
         input_tokens = int(getattr(response.usage, "prompt_tokens", 0) or 0)
         output_tokens = int(getattr(response.usage, "completion_tokens", 0) or 0)
@@ -176,6 +201,60 @@ class BookRag:
         retrieval = self.retrieve(prompt, top_k, related_top_k, include_related)
         synthesis = self.synthesize(prompt, retrieval.books)
         return synthesis.answer, retrieval.books
+
+    def narrate_progress(self, prompt: str) -> list[str]:
+        try:
+            response = self.nebius.chat.completions.create(
+                model=self.settings.nebius_model,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "Write concise progress messages for a book recommendation RAG agent. "
+                            'Return only JSON: {"messages":["...","...","..."]}. '
+                            "Each message must be under 110 characters, natural, varied, "
+                            "and in first person. "
+                            "Use the user's book theme or reading context when it helps. "
+                            "Do not mention hidden reasoning."
+                        ),
+                    },
+                    {
+                        "role": "user",
+                        "content": (
+                            "Create exactly three progress messages for these phases: "
+                            "1) prepare a Nebius embedding, 2) search Pinecone, "
+                            "3) synthesize book recommendations. "
+                            "Make them specific to this request without pretending results "
+                            "are known yet.\n"
+                            f"User request / theme: {prompt}"
+                        ),
+                    },
+                ],
+                temperature=0.9,
+                max_tokens=160,
+            )
+            content = response.choices[0].message.content or ""
+            parsed = json.loads(content)
+            messages = parsed.get("messages", [])
+            if not isinstance(messages, list):
+                return DEFAULT_PROGRESS_MESSAGES
+            clean = [str(item).strip() for item in messages if str(item).strip()]
+            if len(clean) != 3:
+                return DEFAULT_PROGRESS_MESSAGES
+            return [message[:160] for message in clean]
+        except Exception:
+            return DEFAULT_PROGRESS_MESSAGES
+
+    def stream_synthesis(self, prompt: str, books: list[RetrievedBook]):
+        request = self.build_completion_request(prompt, books)
+        return self.nebius.chat.completions.create(
+            model=self.settings.nebius_model,
+            messages=request.messages,
+            temperature=request.temperature,
+            max_tokens=request.max_tokens,
+            stream=True,
+            stream_options={"include_usage": True},
+        )
 
     def _embed_query(self, prompt: str) -> tuple[list[float], int]:
         query_text = (
