@@ -38,14 +38,9 @@
   "endpoints": [
     {
       "method": "POST",
-      "path": "/ingest",
-      "description": "Feed source documents into the Nexus data estate for knowledge compilation."
-    },
-    {
-      "method": "POST",
       "path": "/agent/run",
       "streaming": true,
-      "description": "Answer a question against Nexus-compiled knowledge artifacts and stream SSE events back."
+      "description": "Recommend books from Pinecone-backed Goodreads retrieval and stream SSE events back."
     },
     {
       "method": "GET",
@@ -56,11 +51,6 @@
       "method": "GET",
       "path": "/readyz",
       "description": "Readiness probe."
-    },
-    {
-      "method": "GET",
-      "path": "/metrics",
-      "description": "Prometheus metrics scrape endpoint."
     }
   ],
   "deployment": {

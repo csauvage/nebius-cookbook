@@ -1,9 +1,5 @@
 # Retrieval — Domain Knowledge with Pinecone Nexus
 
-> 🚧 **Scaffold only.** This recipe is planned but not yet implemented. This
-> folder currently holds metadata (`recipe.json`) and this documentation. The
-> `app/`, tests, and Docker setup will land in a later pass.
-
 Recipe **02 of 6** in the Nebius Cookbook arc:
 
 > Foundation → **Retrieval** → Awareness → Memory → Reliability → Confidence
@@ -176,6 +172,43 @@ compose into text payloads, embed on Nebius, and upsert into Pinecone.
 Goodreads is just the example estate used to make the ingestion and
 vectorization flow concrete.
 
+## Querying the book RAG
+
+Once the Goodreads book vectors are stored in Pinecone, the query script runs a
+simple RAG loop:
+
+1. Embed the user's book request with Nebius.
+2. Retrieve matching `book` vectors from Pinecone.
+3. Expand around the first matches with related retrieval for the same author,
+   same theme, and same publication year.
+4. Pass the retrieved book context to the Nebius chat model.
+5. Return grounded recommendations with citation markers.
+
+That supports two common reader workflows:
+
+- asking for books on a topic, such as books about Cold War espionage or
+  climate fiction
+- asking what to read after a book, such as recommendations after *Dune* or
+  *The Left Hand of Darkness*
+
+For example:
+
+```bash
+uv run python scripts/query_goodreads_pinecone.py \
+  "Recommend books about political intrigue and empire-building for someone who liked Dune" \
+  --top-k 10 \
+  --related-top-k 4 \
+  --show-matches
+```
+
+By default, retrieval is filtered to `record_type=book`, so author and genre
+helper vectors do not leak into the answer set.
+The related pass uses metadata from the first retrieved books.
+Same-author and same-year retrieval work with the existing book metadata.
+Same-theme retrieval uses the `genres` metadata written by the current
+vectorizer, so older vectors created before that field was added need to be
+upserted again before explicit theme filtering can work.
+
 This is the main retrieval lesson of the cookbook: **vectorization is not just
 "chunk and embed."**
 The quality of the final knowledge engine depends on source selection, record
@@ -216,23 +249,80 @@ live web search instead.
 | Conflicting facts | Two sources disagree | Lean on Nexus's deterministic conflict resolution; expose the resolved provenance in citations |
 | Cold start — no artifacts | Service deployed before first `/ingest` | `/readyz` should report not-ready until at least one artifact set is compiled |
 
-## Planned endpoints
+## Run the FastAPI book recommender
+
+After vectorizing books into Pinecone, run the cookbook backend:
+
+```bash
+cd cookbooks/02-domain-knowledge-pinecone-nexus
+uv sync
+cp .env.example .env
+make dev
+```
+
+Then call the SSE endpoint:
+
+```bash
+curl -N http://localhost:8000/agent/run \
+  -H "Content-Type: application/json" \
+  -d '{
+    "prompt": "Recommend books about political intrigue and empire-building for someone who liked Dune",
+    "top_k": 10,
+    "related_top_k": 4,
+    "include_related": true
+  }'
+```
+
+The backend emits named SSE events:
+
+```text
+event: status
+data: {"phase": "sending_to_nebius","message":"Sending to Nebius Token Factory"}
+
+event: status
+data: {"phase": "retrieving","message":"Requesting Pinecone Results"}
+
+event: context
+data: {"books": [...]}
+
+event: status
+data: {"phase": "synthesizing","message":"Synthesizing"}
+
+event: answer
+data: {"text": "..."}
+
+event: status
+data: {"phase":"done","message":"Done (742 token in | 219 token out | Cost: 0.000000 USD)","usage":{...}}
+
+event: done
+data: {"embeddingTokens":31,"inputTokens":742,"outputTokens":219,"totalTokens":992,"costUsd":0.0}
+```
+
+The model sees more retrieved candidates than it returns, but the answer is
+limited to at most **5 recommended books**.
+Cost is estimated from Nebius `GET /v1/models?verbose=true` when the model
+catalog exposes pricing fields.
+If lookup fails, the app falls back to optional pricing env vars in `.env`:
+`NEBIUS_INPUT_PRICE_PER_MILLION_TOKENS`,
+`NEBIUS_OUTPUT_PRICE_PER_MILLION_TOKENS`, and
+`NEBIUS_EMBEDDING_PRICE_PER_MILLION_TOKENS`.
+
+## Endpoints
 
 | Method | Path          | Purpose                                                  |
 | ------ | ------------- | -------------------------------------------------------- |
-| POST   | `/ingest`     | Feed source documents into the Nexus data estate.        |
-| POST   | `/agent/run`  | Answer from Nexus-compiled knowledge, streamed as SSE.   |
+| POST   | `/agent/run`  | Recommend books from Pinecone-backed Goodreads retrieval, streamed as SSE. |
 | GET    | `/healthz`    | Liveness probe.                                          |
-| GET    | `/readyz`     | Readiness probe — not-ready until knowledge is compiled. |
-| GET    | `/metrics`    | Prometheus scrape endpoint.                              |
+| GET    | `/readyz`     | Readiness probe.                                         |
 
 ## Status
 
 - [x] `recipe.json` metadata
-- [x] Documentation scaffold
-- [ ] `app/` implementation
+- [x] Documentation
+- [x] `app/` implementation
+- [x] Makefile
 - [ ] Tests
-- [ ] Dockerfile + Makefile
+- [ ] Dockerfile
 - [ ] `docs/deployment.md`
 
 ## Reference
