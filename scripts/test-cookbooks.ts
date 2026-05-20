@@ -1,5 +1,5 @@
 #!/usr/bin/env bun
-import { readdir } from "node:fs/promises";
+import { access, readdir } from "node:fs/promises";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
@@ -16,10 +16,26 @@ function run(cmd: string, args: string[], cwd: string): Promise<number> {
 }
 
 const entries = await readdir(cookbooksDir, { withFileTypes: true });
-const cookbooks = entries
+const cookbookNames = entries
   .filter((e) => e.isDirectory() && e.name !== "_template" && !e.name.startsWith("."))
   .map((e) => e.name)
   .sort();
+
+async function hasPyproject(name: string): Promise<boolean> {
+  try {
+    await access(join(cookbooksDir, name, "pyproject.toml"));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+const cookbooks = [];
+for (const name of cookbookNames) {
+  if (await hasPyproject(name)) {
+    cookbooks.push(name);
+  }
+}
 
 let failed = 0;
 

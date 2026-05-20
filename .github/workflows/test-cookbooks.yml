@@ -19,9 +19,9 @@ jobs:
       - id: list
         run: |
           set -euo pipefail
-          books=$(find cookbooks -maxdepth 1 -mindepth 1 -type d \
-            -not -name '_template' -not -name '.*' \
-            -printf '%f\n' | sort | jq -R . | jq -sc .)
+          books=$(find cookbooks -maxdepth 2 -mindepth 2 -name pyproject.toml \
+            -not -path 'cookbooks/_template/*' \
+            | sed 's#/pyproject.toml$##' | xargs -n1 basename | sort | jq -R . | jq -sc .)
           echo "cookbooks=$books" >> "$GITHUB_OUTPUT"
 
   test:
