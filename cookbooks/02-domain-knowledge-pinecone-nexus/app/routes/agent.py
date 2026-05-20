@@ -13,7 +13,6 @@ from app.config import Settings, get_settings
 from app.core.book_rag import BookRag, UsageSummary
 from app.schemas.agent import AgentRunRequest
 
-
 router = APIRouter()
 
 
@@ -46,8 +45,13 @@ async def run_agent(
         rag = BookRag(settings)
 
         try:
-            yield _sse("status", {"phase": "sending_to_nebius", "message": "Sending to Nebius Token Factory"})
-            query_vector, embedding_tokens = await asyncio.to_thread(rag.embed_query, payload.prompt)
+            yield _sse(
+                "status",
+                {"phase": "sending_to_nebius", "message": "Sending to Nebius Token Factory"},
+            )
+            query_vector, embedding_tokens = await asyncio.to_thread(
+                rag.embed_query, payload.prompt
+            )
             prices = await asyncio.to_thread(rag.pricing.get_prices)
             embedding_cost = embedding_tokens * prices.embedding_per_million / 1_000_000
             retrieval_usage = UsageSummary(

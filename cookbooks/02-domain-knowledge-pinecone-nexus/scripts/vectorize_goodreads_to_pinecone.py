@@ -24,6 +24,7 @@ from typing import Any, Dict, Iterable, List, Optional, Tuple
 
 try:
     from openai import OpenAI
+
     OPENAI_AVAILABLE = True
 except ImportError:
     OpenAI = None  # type: ignore[assignment]
@@ -31,6 +32,7 @@ except ImportError:
 
 try:
     from pinecone import Pinecone
+
     PINECONE_AVAILABLE = True
 except ImportError:
     Pinecone = None  # type: ignore[assignment]
@@ -50,7 +52,11 @@ ANSI_RED = "\033[31m"
 
 
 def supports_color() -> bool:
-    return os.getenv("NO_COLOR") is None and hasattr(os.sys.stdout, "isatty") and os.sys.stdout.isatty()
+    return (
+        os.getenv("NO_COLOR") is None
+        and hasattr(os.sys.stdout, "isatty")
+        and os.sys.stdout.isatty()
+    )
 
 
 def colorize(text: str, *styles: str) -> str:
@@ -239,7 +245,8 @@ def build_genres_index(path: Path) -> Dict[str, List[str]]:
         if not isinstance(raw, dict):
             continue
         genres[book_id] = [
-            g for g, count in sorted(raw.items(), key=lambda item: (-int(item[1]), item[0]))
+            g
+            for g, count in sorted(raw.items(), key=lambda item: (-int(item[1]), item[0]))
             if str(count).isdigit() or isinstance(count, int)
         ]
     return genres
@@ -268,9 +275,8 @@ def resolve_book_authors(
         linked.append(
             {
                 "id": author_id,
-                "name": coerce_str(
-                    author_record.get("name") or item.get("name")
-                ) or coerce_str(item.get("name")),
+                "name": coerce_str(author_record.get("name") or item.get("name"))
+                or coerce_str(item.get("name")),
             }
         )
     return linked
@@ -662,7 +668,12 @@ class GoodreadsVectorizer:
             if source == "genres":
                 raw_genres = record.get("genres", {})
                 if isinstance(raw_genres, dict):
-                    ordered = sorted(raw_genres.items(), key=lambda item: (-int(item[1]), item[0]) if str(item[1]).isdigit() else (-1, item[0]))
+                    ordered = sorted(
+                        raw_genres.items(),
+                        key=lambda item: (
+                            (-int(item[1]), item[0]) if str(item[1]).isdigit() else (-1, item[0])
+                        ),
+                    )
                     top = [name for name, _ in ordered[:15]]
                     extra = f"Top genres: {', '.join(top)}"
 
@@ -771,15 +782,11 @@ def validate_preflight(
 
     for source, enabled in requested_sources.items():
         if enabled and datasets.get(source) is None:
-            errors.append(
-                f"Missing required dataset for enabled source '{source}' in {data_dir}."
-            )
+            errors.append(f"Missing required dataset for enabled source '{source}' in {data_dir}.")
 
     if not args.analyze_only:
         if not OPENAI_AVAILABLE:
-            errors.append(
-                "Missing dependency 'openai'. Install vectorization dependencies first."
-            )
+            errors.append("Missing dependency 'openai'. Install vectorization dependencies first.")
         if not PINECONE_AVAILABLE:
             errors.append(
                 "Missing dependency 'pinecone'. Install vectorization dependencies first."
@@ -787,9 +794,7 @@ def validate_preflight(
         if not os.environ.get("NEBIUS_API_KEY"):
             errors.append("Missing required environment variable: NEBIUS_API_KEY.")
         if not (args.pinecone_index or os.environ.get("PINECONE_INDEX_NAME")):
-            errors.append(
-                "Missing Pinecone index. Set --pinecone-index or PINECONE_INDEX_NAME."
-            )
+            errors.append("Missing Pinecone index. Set --pinecone-index or PINECONE_INDEX_NAME.")
         if not os.environ.get("PINECONE_API_KEY"):
             errors.append("Missing required environment variable: PINECONE_API_KEY.")
 
@@ -806,7 +811,9 @@ def validate_preflight(
             lines.extend(
                 [
                     "",
-                    colorize("Expected configuration for a full vectorization run:", ANSI_CYAN, ANSI_BOLD),
+                    colorize(
+                        "Expected configuration for a full vectorization run:", ANSI_CYAN, ANSI_BOLD
+                    ),
                     "- Set `NEBIUS_API_KEY`.",
                     "- Set `PINECONE_API_KEY`.",
                     "- Set `PINECONE_INDEX_NAME` or pass `--pinecone-index <name>`.",

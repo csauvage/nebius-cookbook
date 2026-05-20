@@ -9,7 +9,6 @@ from app import __version__
 from app.config import get_settings
 from app.routes import agent, health
 
-
 settings = get_settings()
 
 app = FastAPI(

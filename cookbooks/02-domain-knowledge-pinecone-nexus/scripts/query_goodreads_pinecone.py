@@ -17,7 +17,6 @@ from typing import Any
 from openai import OpenAI
 from pinecone import Pinecone
 
-
 DEFAULT_EMBEDDING_MODEL = "Qwen/Qwen3-Embedding-8B"
 DEFAULT_ANSWER_MODEL = "meta-llama/Llama-3.3-70B-Instruct"
 DEFAULT_RETRIEVAL_INSTRUCTION = (
@@ -88,7 +87,11 @@ def load_dotenv_if_present() -> None:
 
 
 def supports_color() -> bool:
-    return os.getenv("NO_COLOR") is None and hasattr(os.sys.stdout, "isatty") and os.sys.stdout.isatty()
+    return (
+        os.getenv("NO_COLOR") is None
+        and hasattr(os.sys.stdout, "isatty")
+        and os.sys.stdout.isatty()
+    )
 
 
 def colorize(text: str, *styles: str) -> str:
@@ -222,7 +225,9 @@ def build_retrieved_books(matches: list[Any], reason: str) -> list[RetrievedBook
     return books
 
 
-def merge_books(existing: list[RetrievedBook], additions: list[RetrievedBook]) -> list[RetrievedBook]:
+def merge_books(
+    existing: list[RetrievedBook], additions: list[RetrievedBook]
+) -> list[RetrievedBook]:
     seen = {book.vector_id for book in existing}
     merged = [*existing]
     for book in additions:
@@ -258,7 +263,9 @@ def book_filter() -> dict[str, Any]:
     return {"record_type": {"$eq": "book"}}
 
 
-def combine_book_filter(extra_filter: dict[str, Any] | None, include_non_books: bool) -> dict[str, Any] | None:
+def combine_book_filter(
+    extra_filter: dict[str, Any] | None, include_non_books: bool
+) -> dict[str, Any] | None:
     if include_non_books:
         return extra_filter
     if extra_filter is None:
@@ -351,9 +358,7 @@ def main() -> None:
         nebius_base_url = f"{nebius_base_url}/v1"
 
     embedding_model = (
-        args.embedding_model
-        or os.environ.get("NEBIUS_EMBEDDING_MODEL")
-        or DEFAULT_EMBEDDING_MODEL
+        args.embedding_model or os.environ.get("NEBIUS_EMBEDDING_MODEL") or DEFAULT_EMBEDDING_MODEL
     )
     answer_model = args.answer_model or os.environ.get("NEBIUS_MODEL") or DEFAULT_ANSWER_MODEL
     query_text = f"Instruct: {args.instruction}\nQuery: {args.query}"

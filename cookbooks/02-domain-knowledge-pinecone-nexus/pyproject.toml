@@ -13,6 +13,13 @@ dependencies = [
     "pinecone>=5.0.0",
 ]
 
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "ruff>=0.7",
+    "httpx>=0.27",
+]
+
 [tool.ruff]
 line-length = 100
 target-version = "py312"
@@ -24,6 +31,9 @@ ignore = [
     "S104",
     "B008",
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"scripts/*.py" = ["E501", "UP006", "UP015", "UP035", "UP045", "B905", "F402"]
 
 [tool.ruff.format]
 quote-style = "double"

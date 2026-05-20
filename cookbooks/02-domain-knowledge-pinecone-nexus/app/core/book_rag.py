@@ -161,7 +161,9 @@ class BookRag:
         )
         return SynthesisResult(
             answer=response.choices[0].message.content or "",
-            usage=UsageSummary(input_tokens=input_tokens, output_tokens=output_tokens, cost_usd=cost),
+            usage=UsageSummary(
+                input_tokens=input_tokens, output_tokens=output_tokens, cost_usd=cost
+            ),
         )
 
     def answer(
@@ -217,7 +219,9 @@ class BookRag:
         for author in authors:
             related = self._merge_books(
                 related,
-                self._query_books(vector, top_k, {"author_names": {"$in": [author]}}, "same author"),
+                self._query_books(
+                    vector, top_k, {"author_names": {"$in": [author]}}, "same author"
+                ),
             )
         for genre in genres:
             related = self._merge_books(
@@ -227,7 +231,9 @@ class BookRag:
         for year in years:
             related = self._merge_books(
                 related,
-                self._query_books(vector, top_k, {"publication_year": {"$eq": int(year)}}, "same year"),
+                self._query_books(
+                    vector, top_k, {"publication_year": {"$eq": int(year)}}, "same year"
+                ),
             )
 
         return related
@@ -265,7 +271,8 @@ Use only the retrieved candidates.
 Recommend at most 5 books.
 Recommend the strongest matches first.
 For each recommendation, explain briefly why it fits the request.
-When useful, mention whether a book was retrieved because it shares an author, theme, or publication year with another strong candidate.
+When useful, mention whether a book was retrieved because it shares an author,
+theme, or publication year with another strong candidate.
 Include citation markers like [1], [2], or [3] next to each recommended title.
 If the retrieved books are weak matches, say that clearly and suggest how to refine the query."""
 
