@@ -43,6 +43,11 @@ Thumbs.db
 npm-debug.log*
 bun-debug.log*
 
+# Local Goodreads datasets
+data/*.json
+data/*.json.gz
+data/*.json.gz.*
+
 # Coverage
 coverage/
 .nyc_output/
