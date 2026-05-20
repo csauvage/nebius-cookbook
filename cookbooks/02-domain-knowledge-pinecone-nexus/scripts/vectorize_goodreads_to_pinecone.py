@@ -545,6 +545,7 @@ class GoodreadsVectorizer:
         authors: Dict[str, Record],
         genres: Dict[str, List[str]],
         include_empty: bool,
+        book_offset: int = 0,
     ) -> None:
         self._process_vector_batches(
             self._iter_book_batches(
@@ -552,6 +553,7 @@ class GoodreadsVectorizer:
                 authors=authors,
                 genres=genres,
                 include_empty=include_empty,
+                book_offset=book_offset,
             )
         )
 
@@ -561,10 +563,12 @@ class GoodreadsVectorizer:
         authors: Dict[str, Record],
         genres: Dict[str, List[str]],
         include_empty: bool,
+        book_offset: int = 0,
     ) -> Iterable[VectorBatch]:
         texts: List[str] = []
         metadata_rows: List[Dict[str, Any]] = []
         ids: List[str] = []
+        seen_books = 0
 
         for _line_no, record in iterate_records(books_path):
             if not isinstance(record, dict):
@@ -572,11 +576,16 @@ class GoodreadsVectorizer:
             book_id = coerce_str(record.get("book_id"))
             if not book_id:
                 continue
+            if seen_books < book_offset:
+                seen_books += 1
+                continue
+            seen_books += 1
 
             linked_authors = resolve_book_authors(record, authors)
             text = build_book_text(record, genres, linked_authors)
             if not text and not include_empty:
                 continue
+            book_genres = genres.get(book_id, [])
 
             meta = {
                 "source": "goodreads_books",
@@ -585,6 +594,7 @@ class GoodreadsVectorizer:
                 "author_ids": [author["id"] for author in linked_authors if author.get("id")],
                 "author_names": [author["name"] for author in linked_authors if author.get("name")],
                 "author_count": len(linked_authors),
+                "genres": book_genres[:15],
                 "title": coerce_str(record.get("title")),
                 "work_id": coerce_str(record.get("work_id")),
                 "average_rating": coerce_str(record.get("average_rating")),
@@ -697,6 +707,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--pinecone-batch-size", type=int, default=200, choices=[150, 200])
     parser.add_argument("--embed-batch-size", type=int, default=100)
     parser.add_argument(
+        "--book-offset",
+        type=int,
+        default=0,
+        help="Skip the first N valid book records before embedding books.",
+    )
+    parser.add_argument(
         "--embed-concurrency",
         type=int,
         default=6,
@@ -736,6 +752,8 @@ def validate_preflight(
 
     if args.embed_batch_size < 1:
         errors.append("--embed-batch-size must be greater than 0.")
+    if args.book_offset < 0:
+        errors.append("--book-offset must be greater than or equal to 0.")
     if args.embed_concurrency < 1:
         errors.append("--embed-concurrency must be greater than 0.")
     if args.max_pending_embed_batches is not None and args.max_pending_embed_batches < 1:
@@ -878,7 +896,13 @@ def main() -> None:
     genres = build_genres_index(genres_file) if genres_file and not args.skip_genres else {}
     if not args.skip_books:
         print("Indexing books...")
-        vectorizer.upsert_books(book_file, authors=authors, genres=genres, include_empty=args.include_empty_text)
+        vectorizer.upsert_books(
+            book_file,
+            authors=authors,
+            genres=genres,
+            include_empty=args.include_empty_text,
+            book_offset=args.book_offset,
+        )
     if not args.skip_authors and author_file:
         print("Indexing authors...")
         vectorizer.upsert_other_records("authors", author_file)
