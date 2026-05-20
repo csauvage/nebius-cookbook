@@ -6,7 +6,35 @@ Recipe **03 of 6** in the Nebius Cookbook arc:
 
 > Foundation → Retrieval → **Awareness** → Memory → Reliability → Confidence
 
-Cookbooks #1 and #2 gave you an agent that can answer fluently and retrieve from compiled domain knowledge. But that knowledge is still bounded — it cannot tell you what shipped this week. And the moment you put the agent on a 70B model, it costs the same as OpenAI. This cookbook fixes both problems in the same flow.
+Cookbooks #1 and #2 gave you an agent that can answer fluently and retrieve
+from compiled domain knowledge.
+In cookbook #2, that domain knowledge is a Goodreads-style book corpus stored
+in Pinecone: excellent for semantic recommendations, but still a static
+snapshot.
+
+That snapshot has three hard limits:
+
+- **Freshness.** The dataset stops around 2017, which is almost a decade old by
+  now.
+  A lot of books simply do not exist in that corpus.
+- **Coverage.** Publishing moves too fast for a static demo corpus to stay
+  complete.
+  As a rough scale signal, recent national publishing output has been in the
+  hundreds of thousands of titles and re-editions per year: the United States
+  reported `304,912` in 2013, the United Kingdom `188,000` in 2018, Japan
+  `139,078` in 2017, Indonesia `135,081` in 2020, and France `106,799` in
+  2018.
+- **Commercial metadata.** Pricing, editions, stock, bestseller context, and
+  current availability change constantly.
+  Baking that into the vector dataset would make ingestion heavier while still
+  going stale quickly.
+
+So cookbook #3 adds the missing layer: **live awareness**.
+Pinecone remains the memory of your curated domain corpus, while Tavily — a
+Nebius partner — gives the agent fresh web context for what changed after the
+corpus was built.
+The moment you put the agent on a 70B model, it also costs the same as OpenAI,
+so this cookbook fixes freshness and cost in the same flow.
 
 ## The story
 

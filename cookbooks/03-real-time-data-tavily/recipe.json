@@ -5,7 +5,7 @@
   "eyebrow": "Awareness",
   "title": "Real-Time Data with Tavily",
   "upcoming": false,
-  "tagline": "Ground your agent in this week's news with Tavily and per-step model routing for 10× cost savings.",
+  "tagline": "Add live Tavily search to a Pinecone-backed book agent so stale domain knowledge can answer current questions.",
   "difficulty": "intermediate",
   "estimatedReadingTime": "12 min",
   "estimatedRunTime": "5 min",
@@ -15,9 +15,9 @@
   },
   "tags": ["agent", "rag", "web-search", "model-routing", "streaming", "citations"],
   "story": {
-    "problem": "Cookbooks #1 and #2 give you an agent that can answer and retrieve, but it's still frozen at its training cutoff and costs the same as OpenAI when run on a 70B model.",
-    "solution": "A three-step agent — plan (cheap small model) → search Tavily for fresh facts → write (mid-tier model with citations). Per-step model routing on Nebius cuts cost 10× without dropping the punchline.",
-    "outcome": "An agent that briefs you on this week's news with inline citations, streams progress as it goes, and shows the cost in the response."
+    "problem": "Cookbook #2 can recommend from a Pinecone-backed Goodreads corpus, but that corpus stops around 2017 and cannot carry constantly changing pricing, availability, editions, or newly released books.",
+    "solution": "Keep Pinecone for curated domain memory, then add Tavily — a Nebius partner — for live web awareness. A three-step agent plans searches on a cheaper model, fetches fresh facts, then writes cited recommendations on Llama 70B.",
+    "outcome": "An agent that can combine static book knowledge with fresh web context, stream every phase to the client, cite sources inline, and keep cost visible."
   },
   "prerequisites": [
     "Python 3.12+",
