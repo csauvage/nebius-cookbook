@@ -1,0 +1,10 @@
+[project]
+name = "domain-knowledge-pinecone-nexus"
+version = "0.1.0"
+description = "Vectorization tooling for the Pinecone Nexus cookbook scaffold."
+requires-python = ">=3.12"
+dependencies = [
+    "openai>=1.50",
+    "pinecone>=5.0.0",
+]
+
