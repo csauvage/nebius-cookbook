@@ -400,6 +400,8 @@ function Turn({ turn }: { turn: ChatTurn }) {
       : turn.status === "cancelled"
         ? "warn"
         : "accent";
+  const rendered = splitMetricsFooter(turn.text);
+  const reasoningMessages = agentMessages(turn.events);
 
   return (
     <div className="space-y-1.5">
@@ -420,8 +422,18 @@ function Turn({ turn }: { turn: ChatTurn }) {
           aria-hidden
         />
         <div className="pl-5 text-[15px] leading-relaxed text-ink">
+          {reasoningMessages.length > 0 ? (
+            <ReasoningTrace messages={reasoningMessages} active={turn.status === "streaming"} />
+          ) : null}
           {turn.text ? (
-            <MarkdownText source={turn.text} />
+            <>
+              <MarkdownText source={rendered.body} />
+              {rendered.metrics ? (
+                <div className="mt-4 border-t border-edge/70 pt-2 font-mono text-[11px] leading-relaxed text-ink-dim">
+                  {rendered.metrics}
+                </div>
+              ) : null}
+            </>
           ) : (
             <span className="font-mono text-sm text-ink-dim">
               {turn.status === "streaming" ? "▌" : "(no response)"}
@@ -431,6 +443,50 @@ function Turn({ turn }: { turn: ChatTurn }) {
       </div>
     </div>
   );
+}
+
+function ReasoningTrace({ messages, active }: { messages: string[]; active: boolean }) {
+  return (
+    <div className="mb-4 border border-edge bg-surface/30 px-3 py-2.5">
+      <div className="mb-1.5 flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-ink-dim">
+        <span
+          className={cn("size-1.5 rounded-full", active ? "bg-accent phosphor-dot" : "bg-ink-dim")}
+          aria-hidden
+        />
+        reasoning
+      </div>
+      <div className="space-y-1 font-mono text-[11px] leading-relaxed text-ink-soft">
+        {messages.map((message, index) => (
+          <div
+            key={`${index}-${message}`}
+            className={cn(
+              "flex gap-2",
+              active && index === messages.length - 1 ? "text-accent token-fade" : null,
+            )}
+          >
+            <span className="text-ink-dim">{index + 1}</span>
+            <span>{message}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function splitMetricsFooter(text: string): { body: string; metrics: string | null } {
+  const match = text.match(/\n\n---\n(Time: .*)$/s);
+  if (!match) return { body: text, metrics: null };
+  return {
+    body: text.slice(0, match.index).trimEnd(),
+    metrics: match[1] ?? null,
+  };
+}
+
+function agentMessages(events: SseEvent[]): string[] {
+  return events
+    .filter((event) => event.name === "agent_message")
+    .map((event) => (typeof event.data.text === "string" ? event.data.text : ""))
+    .filter(Boolean);
 }
 
 /* ── composer ────────────────────────────────────────────────────────────── */
