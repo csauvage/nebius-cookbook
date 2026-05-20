@@ -6,7 +6,6 @@ from __future__ import annotations
 import argparse
 import os
 from pathlib import Path
-from typing import Iterable
 
 from openai import OpenAI
 from pinecone import Pinecone
@@ -16,6 +15,11 @@ DEFAULT_EMBEDDING_MODEL = "Qwen/Qwen3-Embedding-8B"
 DEFAULT_RETRIEVAL_INSTRUCTION = (
     "Given a user's book preference, retrieve matching books."
 )
+ANSI_RESET = "\033[0m"
+ANSI_BOLD = "\033[1m"
+ANSI_GREEN = "\033[32m"
+ANSI_CYAN = "\033[36m"
+ANSI_YELLOW = "\033[33m"
 
 
 def load_dotenv_if_present() -> None:
@@ -42,6 +46,16 @@ def load_dotenv_if_present() -> None:
                     value = value[1:-1]
 
                 os.environ.setdefault(key, value)
+
+
+def supports_color() -> bool:
+    return os.getenv("NO_COLOR") is None and hasattr(os.sys.stdout, "isatty") and os.sys.stdout.isatty()
+
+
+def colorize(text: str, *styles: str) -> str:
+    if not supports_color():
+        return text
+    return f"{''.join(styles)}{text}{ANSI_RESET}"
 
 
 def parse_args() -> argparse.Namespace:
@@ -75,11 +89,6 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Nebius embedding model. Defaults to NEBIUS_EMBEDDING_MODEL or Qwen/Qwen3-Embedding-8B.",
     )
-    parser.add_argument(
-        "--show-metadata",
-        action="store_true",
-        help="Print raw metadata for each match.",
-    )
     return parser.parse_args()
 
 
@@ -102,12 +111,6 @@ def format_authors(metadata: dict[str, object]) -> str:
         return author.strip()
 
     return "(unknown author)"
-
-
-def iter_metadata_lines(metadata: dict[str, object]) -> Iterable[str]:
-    for key in sorted(metadata.keys()):
-        yield f"    {key}: {metadata[key]}"
-
 
 def main() -> None:
     load_dotenv_if_present()
@@ -164,10 +167,12 @@ def main() -> None:
         metadata = dict(match.metadata or {})
         title = str(metadata.get("title") or match.id or "(untitled)")
         authors = format_authors(metadata)
-        print(f"{match.score:.3f}  {title}  by {authors}")
-        if args.show_metadata:
-            for line in iter_metadata_lines(metadata):
-                print(line)
+        score_pct = f"{max(0.0, float(match.score or 0.0)) * 100:.1f}%"
+        print(
+            f"{colorize(score_pct, ANSI_YELLOW)}  "
+            f"{colorize(title, ANSI_BOLD, ANSI_GREEN)}  "
+            f"by {colorize(authors, ANSI_CYAN)}"
+        )
 
 
 if __name__ == "__main__":
