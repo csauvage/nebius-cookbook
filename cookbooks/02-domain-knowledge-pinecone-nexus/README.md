@@ -21,6 +21,20 @@ as the agent's knowledge layer. Nexus moves reasoning *upstream — from retriev
 to knowledge compilation* — so the agent queries curated, task-ready knowledge
 instead of sifting raw chunks.
 
+At the time this cookbook is being written, **Pinecone Nexus is not yet
+generally available**.
+That matters for the implementation.
+The recipe is framed around the Nexus mental model and architecture, but the
+runnable fallback is **standard Pinecone-backed RAG retrieval**: embed your
+records on Nebius, store them in Pinecone, retrieve the most relevant context at
+request time, and pass that context to the answer model.
+
+So this cookbook should be read in two layers:
+
+1. **Target architecture:** Nexus as the long-term knowledge engine.
+2. **Practical implementation today:** classic Pinecone retrieval as the
+   production-available substitute.
+
 The three Nexus pieces this recipe leans on:
 
 1. **Context Compiler** — turns a raw data estate into task-specific *knowledge
@@ -56,10 +70,103 @@ question ──► KnowQL query ──► Composable Retriever ──► typed, 
 - **Knowledge engine:** Pinecone Nexus — compilation, retrieval, and governance
   (PII tagging, versioning, RBAC) happen here, not in app code.
 
+Until Nexus reaches GA, the actual recipe implementation should be understood as
+the compatible fallback shape:
+
+```mermaid
+flowchart LR
+    A[Documents] --> B[Normalize and vectorize]
+    B --> C[Pinecone index]
+    D[Question] --> E[Vector retrieval and filters]
+    C --> E
+    E --> F[Cited context]
+    F --> G[Nebius answer model]
+    G --> H[SSE answer]
+```
+
 The ingest path and the query path are **deliberately separate**. Compilation is
 expensive and write-time; querying is cheap and read-time. Splitting them lets
 you recompile on a schedule (or a data-change webhook) without coupling it to
 request latency.
+
+## Data sources and vectorization
+
+The knowledge layer starts with a **structured data estate**, not an ad hoc pile
+of Markdown files.
+The current vectorization notes use Goodreads exports as the concrete example,
+because they give you enough relational structure to demonstrate how raw records
+turn into compiled knowledge.
+
+The expected source files are:
+
+- `goodreads_books.json` or `goodreads_books.json.gz`
+- `goodreads_book_authors.json` or `goodreads_book_authors.json.gz`
+- `goodreads_book_genres_initial.json` or `goodreads_book_genres_initial.json.gz`
+
+Those files are not treated as three independent corpora.
+The pipeline first inspects what is available, then joins books with author
+and genre data so each vectorizable unit carries richer domain context
+than a single raw row.
+Books are prioritized, then enriched with author names and genre labels when
+those sources are present.
+
+The vectorization flow is intentionally simple and production-shaped:
+
+1. Analyze the available JSON or gzipped JSON dumps in a data directory.
+2. Build the text payload for each record from books, authors, and genres.
+3. Generate embeddings with Nebius using `Qwen/Qwen3-Embedding-8B`.
+4. Upsert vectors into Pinecone in fixed-size batches.
+
+That split matters.
+Embedding is the expensive semantic step, while Pinecone upsert is the indexing
+step, so the script exposes separate knobs for each.
+The notes currently use small embedding batches and Pinecone write batches of
+`150` or `200`, which is a practical default when you want predictable progress
+without overloading either side of the pipeline.
+
+There is also an **analysis-only** mode before you write anything.
+That gives you a way to inspect the dataset footprint and confirm the estate is
+usable before paying for embeddings or mutating an index.
+For partial runs, the pipeline can skip individual source families
+(`books`, `authors`, `genres`), keep empty-text records if needed, and
+emit periodic progress updates while vectors are being written.
+
+To run the current vectorization script with the cookbook's `uv` environment,
+sync dependencies first, then load the required API keys:
+
+```bash
+cd cookbooks/02-domain-knowledge-pinecone-nexus
+uv sync
+cp .env.vectorize.example .env.local
+```
+
+`uv` creates the local environment for you.
+There is no separate `.venv_vectorize` workflow to maintain or commit.
+The script loads `.env.local` or `.env` automatically if present.
+
+For example, the current notes use this command to embed one record at a time
+and print progress every 500 upserts:
+
+```bash
+uv run python scripts/vectorize_goodreads_to_pinecone.py \
+  --data-dir ../../data \
+  --embed-batch-size 1 \
+  --progress-interval 500
+```
+
+The point is not Goodreads specifically.
+This cookbook pattern is meant to transfer to **your own domain data** too:
+product catalogs, support tickets, internal documentation, CRM exports, policy
+libraries, or any other structured source you can normalize into records,
+compose into text payloads, embed on Nebius, and upsert into Pinecone.
+Goodreads is just the example estate used to make the ingestion and
+vectorization flow concrete.
+
+This is the main retrieval lesson of the cookbook: **vectorization is not just
+"chunk and embed."**
+The quality of the final knowledge engine depends on source selection, record
+joining, text construction, and batching strategy long before the serving path
+ever sees a KnowQL query.
 
 ## Design decisions
 
