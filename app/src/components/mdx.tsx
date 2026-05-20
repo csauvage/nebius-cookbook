@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { Children, isValidElement } from "react";
 import type { MDXComponents } from "mdx/types";
 import { cn } from "./cn";
+import { MermaidDiagram } from "./MermaidDiagram";
 
 /**
  * MDX → React element overrides for cookbook README rendering.
@@ -96,14 +98,24 @@ export const mdxComponents: MDXComponents = {
       </code>
     );
   },
-  pre: ({ children, ...rest }) => (
-    <pre
-      className="thin-scroll my-6 overflow-x-auto border border-edge-strong bg-surface/60 p-4 font-mono text-[13px] leading-relaxed text-ink shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]"
-      {...rest}
-    >
-      {children}
-    </pre>
-  ),
+  pre: ({ children, ...rest }) => {
+    const child = Children.toArray(children)[0];
+    if (isValidElement<{ className?: string; children?: React.ReactNode }>(child)) {
+      const className = child.props.className ?? "";
+      if (className.split(/\s+/).includes("language-mermaid")) {
+        return <MermaidDiagram source={extractText(child.props.children)} />;
+      }
+    }
+
+    return (
+      <pre
+        className="thin-scroll my-6 overflow-x-auto border border-edge-strong bg-surface/60 p-4 font-mono text-[13px] leading-relaxed text-ink shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]"
+        {...rest}
+      >
+        {children}
+      </pre>
+    );
+  },
   table: ({ children }) => (
     <div className="thin-scroll my-8 overflow-x-auto border border-edge">
       <table className="w-full border-collapse text-sm">{children}</table>
@@ -130,3 +142,10 @@ export const mdxComponents: MDXComponents = {
   strong: ({ children }) => <strong className="font-medium text-ink">{children}</strong>,
   em: ({ children }) => <em className="italic text-ink">{children}</em>,
 };
+
+function extractText(value: React.ReactNode): string {
+  return Children.toArray(value)
+    .map((child) => (typeof child === "string" || typeof child === "number" ? String(child) : ""))
+    .join("")
+    .trim();
+}

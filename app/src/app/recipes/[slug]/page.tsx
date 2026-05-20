@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { MDXRemote } from "next-mdx-remote/rsc";
 import remarkGfm from "remark-gfm";
-import rehypeMermaid from "rehype-mermaid";
 import { ArrowLeft, Play } from "lucide-react";
 import { getRecipe, getRecipes } from "@/lib/recipes";
 import { loadRecipeMdx } from "@/lib/mdx";
@@ -96,7 +95,6 @@ export default async function RecipePage({ params }: { params: Promise<{ slug: s
               options={{
                 mdxOptions: {
                   remarkPlugins: [remarkGfm],
-                  rehypePlugins: [[rehypeMermaid, { strategy: "inline-svg" }]],
                 },
               }}
             />
