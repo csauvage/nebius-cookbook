@@ -2,7 +2,7 @@
 
 > A production-grade FastAPI agent with streaming, observability, and zero magic.
 
-Recipe **01 of 6** in the Nebius Cookbook arc:
+Recipe **01 of 7** in the Nebius Cookbook arc:
 
 > **Foundation** → Retrieval → Awareness → Memory → Reliability → Confidence
 

@@ -1,8 +1,8 @@
 # Retrieval — Domain Knowledge with Pinecone Nexus
 
-Recipe **02 of 6** in the Nebius Cookbook arc:
+Recipe **02 of 7** in the Nebius Cookbook arc:
 
-> Foundation → **Retrieval** → Awareness → Memory → Reliability → Confidence
+> Foundation → **Retrieval** → Awareness → Orchestration → Memory → Reliability → Confidence
 
 Cookbook #1 gave you a fluent agent. But fluency isn't knowledge — ask it about
 your own product or internal docs and it will guess. Classic RAG patches this

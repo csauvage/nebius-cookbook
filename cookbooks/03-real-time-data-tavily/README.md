@@ -1,8 +1,8 @@
 # Awareness — Real-Time Data with Tavily
 
-Recipe **03 of 6** in the Nebius Cookbook arc:
+Recipe **03 of 7** in the Nebius Cookbook arc:
 
-> Foundation → Retrieval → **Awareness** → Memory → Reliability → Confidence
+> Foundation → Retrieval → **Awareness** → Orchestration → Memory → Reliability → Confidence
 
 Cookbook #2 gave us a Pinecone-backed book recommender over a Goodreads-style
 corpus.
@@ -222,8 +222,8 @@ network by default.
   live searches per request.
 - Cache Tavily responses for a few minutes to avoid repeat searches during demos.
 - Add a critic pass that rejects uncited fresh claims before streaming `done`.
-- Cookbook #4 adds persistent memory so the recommender can remember a reader's
-  long-term taste.
+- Cookbook #4 rewrites the hand-wired flow as a LangGraph so planning,
+  retrieval, writing, and memory have explicit state boundaries.
 
 ## License
 

@@ -4,7 +4,7 @@
   "order": 2,
   "eyebrow": "Retrieval",
   "title": "Domain Knowledge with Pinecone Nexus",
-  "upcoming": true,
+  "upcoming": false,
   "tagline": "Compile your data into task-ready knowledge artifacts with Pinecone Nexus — and ground answers with typed, per-field citations.",
   "difficulty": "intermediate",
   "estimatedReadingTime": "13 min",

@@ -8,7 +8,7 @@ This file is the **single source of truth** for any coding agent working on this
 
 The Nebius Cookbook is a public, GitHub-hosted collection of **production-grade recipes** for building AI agents on [Nebius AgentKit](https://nebius.com/services/token-factory). It launches at the Nebius customer conference on **June 9, 2026** (press and analysts in the room) together with a live keynote demo.
 
-**Ship deadline: five cookbooks must be ready by June 4, 2026** (five working days before the keynote, to leave room for rehearsal, review, and last-minute fixes). Cookbooks #1 and #2 below are the first two; cookbooks #3, #4, and #5 are TBD (see section 16).
+**Ship deadline: seven cookbooks must be ready by June 4, 2026** (five working days before the keynote, to leave room for rehearsal, review, and last-minute fixes). The arc now runs from a first production-shaped agent, through retrieval and real-time context, then LangChain/LangGraph orchestration, LangGraph memory, guardrails, and simulation.
 
 It is modeled on the best of:
 - `developers.openai.com/cookbook` for pedagogical recipes
@@ -591,9 +591,9 @@ On push to `main` only. Builds the app, deploys to Clever Cloud via their CLI or
 
 ---
 
-## 12. The five cookbooks for June 4
+## 12. The cookbooks for June 4
 
-Five cookbooks must be ready by **June 4, 2026** for the June 9 keynote. Cookbooks #1 and #2 are scoped below. Cookbooks #3–#5 are TBD — see section 16.
+Seven cookbooks must be ready by **June 4, 2026** for the June 9 keynote. Cookbooks #1–#3 establish the base agent, private/domain knowledge, and real-time data. Cookbook #4 strengthens the agent with LangChain/LangGraph orchestration before memory is introduced. Cookbooks #5–#7 then add LangGraph memory, Guardrails, and Snowglobe in that order.
 
 ### 12.1 Cookbook #1 — "Your First Agent on Nebius"
 
@@ -631,44 +631,112 @@ Five cookbooks must be ready by **June 4, 2026** for the June 9 keynote. Cookboo
 6. The deployment: Dockerfile + Nebius Compute one-liner
 7. Going further: links to cookbook #2 and beyond
 
-### 12.2 Cookbook #2 — "Real-World Data: Nebius + Tavily"
+### 12.2 Cookbook #2 — "Domain Knowledge with Pinecone Nexus"
 
-**Story.** The agent from cookbook #1 is locked in 2024 (its training cutoff). To brief a sales rep on tomorrow's call, you need to ground its answers in this week's news. Tavily + per-task model routing on Nebius makes this 10× cheaper than running everything through a frontier model.
+**Story.** The agent from cookbook #1 is fluent but ignorant about private or domain-specific data. This cookbook introduces Pinecone Nexus as the knowledge layer, with standard Pinecone retrieval as the runnable fallback while Nexus availability is evolving.
 
 **What's in scope:**
 - Everything from cookbook #1 (duplicated, not imported)
-- Tavily client integrated into the agent
-- Three-step agent flow:
-  1. Plan the search queries (cheap small model — Qwen3 30B class)
-  2. Fetch fresh facts via Tavily
-  3. Synthesize the brief with citations (mid-tier model — Llama 3.3 70B)
-- Status events in the SSE stream for each step (`planning`, `searching`, `writing`)
-- Inline citations in the output, each linked to a Tavily source URL
-- Cost computation displayed in the response (input/output tokens × Nebius pricing per model)
-- Tests with `respx` mocking both Nebius and Tavily
+- Pinecone-backed retrieval over a curated Goodreads corpus
+- Nebius embeddings for ingestion/query embedding
+- Grounded answers with citations and confidence metadata
+- A Nexus-oriented architecture explained alongside the runnable Pinecone fallback
+- Tests with `respx`/mocked clients; no network calls by default
 
 **What's NOT in scope:**
-- Private data retrieval (Pinecone Nexus is introduced in a later cookbook)
+- Real-time web data (Tavily is introduced in cookbook #3)
 - Multi-actor graph (LangGraph is introduced in a later cookbook)
 - Critic node, evaluation, simulation (introduced in later cookbooks)
 - HITL interrupts
 
 **Recommended models:**
-- Planner: `Qwen/Qwen3-30B-A3B-Instruct` (verify the exact model ID via Nebius docs)
-- Writer: `meta-llama/Llama-3.3-70B-Instruct` (verify the exact model ID via Nebius docs)
+- Answer model: `meta-llama/Llama-3.3-70B-Instruct` (verify the exact model ID via Nebius docs)
+- Embedding model: `Qwen/Qwen3-Embedding-8B` (verify the exact model ID via Nebius docs)
 
 **Story arc in the README:**
-1. The problem: "Cookbook #1 gives me an agent. But it doesn't know anything about this week. And it costs the same as OpenAI when I run it on a 70B model."
-2. The fix: Tavily for fresh facts, model routing for cost
-3. The flow: diagram of plan → fetch → write
-4. The streaming: show status events arriving as the agent progresses
-5. The citations: how every claim ends up linked
-6. The cost: numbers comparing this approach vs. naive single-model
-7. Going further: links to the next cookbook
+1. The problem: a fluent model is not a domain expert.
+2. The target architecture: Nexus as a knowledge engine rather than a plain vector store.
+3. The runnable path: Pinecone retrieval over a cookbook-local corpus.
+4. The Nebius integration: embeddings plus answer model.
+5. The citations: how every answer stays tied to retrieved evidence.
+6. Going further: link to Tavily for fresh context.
 
-### 12.3 Cookbooks #3, #4, #5 — TBD
+### 12.3 Cookbook #3 — "Real-Time Data with Tavily"
 
-Three more cookbooks must ship for June 4. Topics and scope are not yet decided (see section 16, open question 6). Once chosen, each gets its own subsection here with the same shape as 12.1 / 12.2: story, in-scope, out-of-scope, recommended models, README story arc.
+**Story.** The retrieval-backed agent has strong domain knowledge, but it still needs fresh web context for questions about current companies, people, products, and events.
+
+**What's in scope:**
+- Tavily search and extraction for fresh web context
+- Model routing between query planning and final synthesis
+- Citation-preserving answers over retrieved sources
+- Cost and latency visibility for the search/synthesis path
+
+**What's NOT in scope:**
+- LangChain/LangGraph orchestration
+- Persistent user memory
+- Guardrails or adversarial simulation
+
+### 12.4 Cookbook #4 — "Stronger Agents with LangChain and LangGraph"
+
+**Story.** The earlier cookbooks prove the integration path, but the agent logic is still mostly hand-wired. This cookbook introduces LangChain/LangGraph as the point where the agent graduates from a linear request handler to an explicit graph with state and streaming.
+
+**What's in scope:**
+- LangChain model integration pointed at Nebius-compatible chat models
+- A LangGraph state graph with named nodes for planning, retrieval/tool use, and response writing
+- Streaming graph events mapped back to the cookbook SSE event contract
+- Explicit state transitions that make later memory, guardrails, and simulation steps easier to attach
+
+**What's NOT in scope:**
+- Persistent context or memory primitives; those belong to cookbook #5
+- Guardrails validation and re-ask loops
+- Snowglobe simulation or evaluation
+- HITL interrupts unless they are only mentioned as a future extension
+
+**Implementation note.** Keep cookbook #4 focused on orchestration: graph state, named nodes, and event streaming. Do not introduce persistent context or memory primitives in this cookbook.
+
+### 12.5 Cookbook #5 — "Memory with LangGraph"
+
+**Story.** After readers understand LangGraph orchestration, this cookbook introduces LangGraph's native memory primitives: checkpointers for short-term thread memory and stores for long-term user or application memory.
+
+**What's in scope:**
+- Short-term, thread-level memory via LangGraph checkpointers
+- Long-term user/application memory via LangGraph stores
+- Passing `thread_id` and user context through graph invocation
+- Production guidance for database-backed checkpointers and stores
+- Memory trimming, deletion, and privacy guidance
+
+**What's NOT in scope:**
+- Replacing the LangGraph orchestration story from cookbook #4
+- External memory products
+- Guardrails validation
+- Snowglobe simulation
+
+### 12.6 Cookbook #6 — "Hardening Agents with Guardrails"
+
+**Story.** Once the agent has tools, state, and memory, the next production problem is controlling what it accepts and emits.
+
+**What's in scope:**
+- Input validation for prompt injection, PII, and topic boundaries
+- Output validation for schema, safety, and groundedness
+- Re-ask or fail-closed behavior with observable validator metrics
+
+**What's NOT in scope:**
+- Adding new memory behavior
+- Simulation at scale
+
+### 12.7 Cookbook #7 — "Stress-Testing Agents with Snowglobe"
+
+**Story.** The final cookbook shows how to test the hardened agent before real users do by generating synthetic scenarios, running conversations, and scoring failures.
+
+**What's in scope:**
+- Snowglobe scenario/persona generation
+- Batch simulation against the agent
+- Scoring transcripts for regressions and edge-case failures
+- A repeatable test harness suitable for CI or pre-release review
+
+**What's NOT in scope:**
+- Adding new runtime capabilities to the agent
+- Using simulation scores as a replacement for human review
 
 ---
 
@@ -799,7 +867,7 @@ These are decisions still to be made. An agent encountering one of these should 
 3. **Clever Cloud build configuration.** Bun-native build vs. fallback to npm install. To be confirmed during kickoff.
 4. **Nebius Compute deployment target.** VM vs. serverless 3.5. To be confirmed.
 5. **Authors field policy.** Should every recipe credit Clément alone, or also Nebius team members who reviewed? To be confirmed.
-6. **Topics for cookbooks #3, #4, #5.** Five cookbooks must ship by June 4, 2026. Cookbooks #1 and #2 are scoped (see section 12). The remaining three need topic selection, story arc, and model choices — likely candidates include private-data retrieval (Pinecone Nexus), multi-step orchestration (LangGraph), evaluation/critic, and HITL interrupts, but the final pick is unconfirmed.
+6. **Exact Nebius model IDs for newer cookbook steps.** The cookbook arc is now fixed as: first agent, domain/private knowledge, real-time data, LangChain/LangGraph, LangGraph memory, Guardrails, Snowglobe. The remaining uncertainty is the exact current Nebius model catalog names to pin before launch.
 
 ---
 

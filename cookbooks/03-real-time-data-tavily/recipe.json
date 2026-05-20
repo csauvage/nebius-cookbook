@@ -62,7 +62,7 @@
     "target": "nebius-compute",
     "instructions": "docs/deployment.md"
   },
-  "nextRecipe": "persistent-context-mem0",
+  "nextRecipe": "stronger-agents-langchain-langgraph",
   "authors": [
     { "name": "Clément Sauvage", "url": "https://clementsauvage.me" }
   ],

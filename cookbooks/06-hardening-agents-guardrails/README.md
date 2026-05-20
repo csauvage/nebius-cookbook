@@ -4,9 +4,9 @@
 > folder currently holds metadata (`recipe.json`) and this documentation. The
 > `app/`, tests, and Docker setup will land in a later pass.
 
-Recipe **05 of 6** in the Nebius Cookbook arc:
+Recipe **06 of 7** in the Nebius Cookbook arc:
 
-> Foundation → Retrieval → Awareness → Memory → **Reliability** → Confidence
+> Foundation → Retrieval → Awareness → Orchestration → Memory → **Reliability** → Confidence
 
 By now the agent is capable — and capability is a liability. It can leak PII,
 emit unsafe content, drift off-topic, or return malformed output that breaks
@@ -104,7 +104,7 @@ one policy — but that is a deployment topology decision, not a code one.
 
 ## Going further
 
-Next in the arc: **[Confidence — Stress-Testing Agents with Snowglobe](../06-stress-testing-agents-snowglobe/)** —
+Next in the arc: **[Confidence — Stress-Testing Agents with Snowglobe](../07-stress-testing-agents-snowglobe/)** —
 a hardened agent still needs proof it holds up at scale.
 
 ## License

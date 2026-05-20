@@ -4,9 +4,9 @@
 > folder currently holds metadata (`recipe.json`) and this documentation. The
 > `app/`, tests, and Docker setup will land in a later pass.
 
-Recipe **06 of 6** in the Nebius Cookbook arc:
+Recipe **07 of 7** in the Nebius Cookbook arc:
 
-> Foundation → Retrieval → Awareness → Memory → Reliability → **Confidence**
+> Foundation → Retrieval → Awareness → Orchestration → Memory → Reliability → **Confidence**
 
 You've built, grounded, hardened the agent. You still don't know how it behaves
 across the thousands of conversations you'll never hand-test. This recipe closes

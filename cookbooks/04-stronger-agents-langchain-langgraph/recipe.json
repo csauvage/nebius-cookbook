@@ -1,0 +1,57 @@
+{
+  "$schema": "../../schemas/recipe.schema.json",
+  "slug": "stronger-agents-langchain-langgraph",
+  "order": 4,
+  "eyebrow": "Orchestration",
+  "title": "Stronger Agents with LangChain and LangGraph",
+  "upcoming": true,
+  "tagline": "Turn the hand-wired agent into a typed LangGraph with streaming and explicit state.",
+  "difficulty": "intermediate",
+  "estimatedReadingTime": "13 min",
+  "estimatedRunTime": "6 min",
+  "stack": {
+    "primary": ["nebius-agentkit", "langchain", "langgraph"],
+    "secondary": ["fastapi", "openai-sdk", "structlog", "prometheus", "docker"]
+  },
+  "tags": ["agent", "langchain", "langgraph", "orchestration", "streaming", "state"],
+  "story": {
+    "problem": "The first three cookbooks prove the Nebius integration path, but the agent logic is still mostly a linear request handler with hand-wired state transitions.",
+    "solution": "Rebuild the agent loop as a LangGraph state graph: named nodes plan, retrieve or use tools, and write the final answer while graph events stream back to the route.",
+    "outcome": "A stronger agent skeleton that can grow into durable execution, persistent context, interrupts, evaluators, and guardrails without turning the FastAPI route into orchestration glue."
+  },
+  "prerequisites": [
+    "Python 3.12+",
+    "uv installed (https://docs.astral.sh/uv/)",
+    "A Nebius API key",
+    "Docker (optional)"
+  ],
+  "models": [
+    { "id": "meta-llama/Llama-3.3-70B-Instruct", "role": "primary" }
+  ],
+  "assets": {
+    "hero": "assets/hero.png"
+  },
+  "quickstart": {
+    "clone": "git clone https://github.com/csauvage/nebius-cookbook && cd nebius-cookbook/cookbooks/04-stronger-agents-langchain-langgraph",
+    "configure": "cp .env.example .env  # then fill NEBIUS_API_KEY",
+    "run": "uv sync && make dev"
+  },
+  "endpoints": [
+    {
+      "method": "POST",
+      "path": "/agent/run",
+      "streaming": true,
+      "description": "Run the agent against a user prompt and stream SSE events back."
+    }
+  ],
+  "deployment": {
+    "target": "nebius-compute",
+    "instructions": "docs/deployment.md"
+  },
+  "nextRecipe": "memory-with-langgraph",
+  "authors": [
+    { "name": "Clément Sauvage", "url": "https://clementsauvage.me" }
+  ],
+  "publishedAt": "2026-06-04",
+  "updatedAt": "2026-06-04"
+}
