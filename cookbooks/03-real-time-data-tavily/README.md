@@ -103,7 +103,7 @@ Send a request:
 curl -N -X POST http://localhost:8000/agent/run \
   -H 'content-type: application/json' \
   -d '{
-    "prompt": "Recommend recent books for someone who loved Dune and wants political intrigue",
+    "prompt": "Find cozy fantasy books launched after 2021 with recent review context",
     "top_k": 10,
     "related_top_k": 4,
     "include_related": true

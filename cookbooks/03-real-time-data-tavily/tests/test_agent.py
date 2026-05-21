@@ -13,29 +13,27 @@ from app.main import app
 def test_completion_prompt_allows_tavily_backed_recent_books() -> None:
     rag = BookRagForPromptTest()
     request = rag.build_completion_request(
-        "Find books about Emmanuel Macron launched after 2021",
+        "Find cozy fantasy books launched after 2021 with recent review context",
         [
             RetrievedBook(
                 citation_id=1,
-                vector_id="book::macron-revolution",
+                vector_id="book::legends-lattes",
                 score=0.87,
                 retrieval_reason="direct semantic match",
-                title="Rivoluzione",
-                authors="Emmanuel Macron",
-                genres=["politics"],
+                title="Legends & Lattes",
+                authors="Travis Baldree",
+                genres=["fantasy"],
                 average_rating="",
                 ratings_count="",
-                publication_year="2016",
+                publication_year="2022",
             )
         ],
         [
             TavilyResult(
                 citation_id=1,
-                title="New books about Emmanuel Macron after 2021",
-                url="https://example.com/macron-books",
-                content=(
-                    "A publisher page lists a 2024 book about Emmanuel Macron's second term."
-                ),
+                title="New cozy fantasy books after 2021",
+                url="https://example.com/cozy-fantasy-books",
+                content="A recent review roundup lists a 2024 cozy fantasy release.",
                 score=0.91,
             )
         ],

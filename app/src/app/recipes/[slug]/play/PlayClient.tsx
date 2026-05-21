@@ -50,15 +50,15 @@ const SAMPLE_PROMPTS = [
 ];
 
 const BOOK_RECOMMENDER_PROMPTS = [
-  "Recommend books about political intrigue and empire-building for someone who liked Dune.",
+  "Recommend books about found family and high-stakes adventure for someone who liked Dune.",
   "I just read The Left Hand of Darkness. What should I read next?",
   "Find thoughtful books about climate, power, and social collapse.",
 ];
 
 const TAVILY_BOOK_PROMPTS = [
-  "Recommend recent books for someone who loved Dune and wants political intrigue.",
-  "Which newer editions or formats should I consider for Ursula K. Le Guin books?",
-  "Find climate fiction recommendations and include current reviews or award context.",
+  "Find cozy fantasy books launched after 2021 with recent review context.",
+  "Recommend recent climate fiction and cite current reviews or awards context.",
+  "Find recent editions or formats for books about space exploration.",
 ];
 
 export function PlayClient({ slug, title, tagline }: Props) {
