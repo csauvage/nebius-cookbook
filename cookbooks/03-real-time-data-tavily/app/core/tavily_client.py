@@ -1,16 +1,17 @@
-"""Thin Tavily search client for fresh book context."""
+"""Thin Tavily SDK client for fresh book context."""
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any
 
-import httpx
+import requests
+from tavily import TavilyClient as TavilySdkClient
+from tavily.errors import TimeoutError as TavilyTimeoutError
+from tavily.errors import UsageLimitExceededError
 from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 
 from app.config import Settings
-
-TAVILY_ENDPOINT = "https://api.tavily.com/search"
 
 
 @dataclass
@@ -40,24 +41,25 @@ class TavilyResult:
 class TavilyClient:
     def __init__(self, settings: Settings) -> None:
         self.settings = settings
+        self.client = TavilySdkClient(api_key=settings.tavily_api_key)
 
     @retry(
-        retry=retry_if_exception_type((httpx.HTTPError, httpx.TimeoutException)),
+        retry=retry_if_exception_type(
+            (requests.HTTPError, requests.Timeout, TavilyTimeoutError, UsageLimitExceededError)
+        ),
         wait=wait_exponential(multiplier=0.5, min=0.5, max=6.0),
         stop=stop_after_attempt(3),
         reraise=True,
     )
     def search(self, query: str) -> list[TavilyResult]:
-        payload = {
-            "api_key": self.settings.tavily_api_key,
-            "query": query,
-            "search_depth": self.settings.tavily_search_depth,
-            "max_results": self.settings.tavily_max_results,
-            "include_answer": False,
-        }
-        response = httpx.post(TAVILY_ENDPOINT, json=payload, timeout=20.0)
-        response.raise_for_status()
-        body = response.json()
+        body = self.client.search(
+            query=query,
+            search_depth=self.settings.tavily_search_depth,
+            max_results=self.settings.tavily_max_results,
+            include_answer=False,
+            include_raw_content=False,
+            timeout=20.0,
+        )
         return self._parse_results(body)
 
     def _parse_results(self, body: dict[str, Any]) -> list[TavilyResult]:
