@@ -9,8 +9,9 @@ from fastapi import APIRouter, Depends, Request
 from starlette.responses import StreamingResponse
 
 from app.config import Settings, get_settings
-from app.core.agent import Agent
+from app.core.agent import Agent, AgentRunOptions
 from app.core.nebius_client import NebiusClient, build_nebius_client
+from app.core.nebius_pricing import NebiusPricing
 from app.schemas.agent import AgentRunRequest
 
 logger = structlog.get_logger()
@@ -31,7 +32,14 @@ async def run_agent(
     client: NebiusClient = Depends(build_nebius_client),
 ) -> StreamingResponse:
     """Run the agent and stream SSE events back to the client."""
-    agent = Agent(client=client, model=settings.nebius_model)
+    agent = Agent(
+        client=client,
+        model=settings.nebius_model,
+        direct_max_tokens=settings.direct_response_max_tokens,
+        deliberate_max_tokens=settings.deliberate_response_max_tokens,
+        first_token_target_ms=settings.first_token_target_ms,
+        pricing=NebiusPricing(settings),
+    )
 
     async def event_stream() -> AsyncIterator[bytes]:
         cancel_event = asyncio.Event()
@@ -49,13 +57,25 @@ async def run_agent(
         last_event_at = loop.time()
 
         try:
-            async for event in agent.run(payload.prompt, cancel_event=cancel_event):
+            done_sent = False
+            async for event in agent.run(
+                payload.prompt,
+                options=AgentRunOptions(
+                    temperature=payload.temperature,
+                    max_tokens=payload.max_tokens,
+                    history=[item.model_dump() for item in payload.history],
+                ),
+                cancel_event=cancel_event,
+            ):
                 now = loop.time()
                 if now - last_event_at > HEARTBEAT_INTERVAL_SECONDS:
                     yield _sse("heartbeat", {})
                 last_event_at = now
+                if event.name == "done":
+                    done_sent = True
                 yield _sse(event.name, event.data)
-            yield _sse("done", {})
+            if not done_sent:
+                yield _sse("done", {})
         except Exception as exc:
             logger.exception("agent_failed", error=str(exc))
             yield _sse("error", {"detail": "internal error"})

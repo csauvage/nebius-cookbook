@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections.abc import AsyncIterator
+from dataclasses import dataclass
 
 import httpx
 import structlog
@@ -19,6 +20,13 @@ from app.config import Settings, get_settings
 from app.observability.metrics import nebius_request_duration, nebius_tokens_total
 
 logger = structlog.get_logger()
+
+
+@dataclass(frozen=True)
+class ChatStreamChunk:
+    text: str = ""
+    input_tokens: int | None = None
+    output_tokens: int | None = None
 
 
 class NebiusClient:
@@ -46,8 +54,8 @@ class NebiusClient:
         messages: list[ChatCompletionMessageParam],
         temperature: float = 0.4,
         max_tokens: int = 1024,
-    ) -> AsyncIterator[str]:
-        """Stream raw token deltas from a chat completion."""
+    ) -> AsyncIterator[ChatStreamChunk]:
+        """Stream token deltas and final usage from a chat completion."""
         with nebius_request_duration.labels(model=model).time():
             stream = await self._client.chat.completions.create(
                 model=model,
@@ -55,14 +63,21 @@ class NebiusClient:
                 temperature=temperature,
                 max_tokens=max_tokens,
                 stream=True,
+                stream_options={"include_usage": True},
             )
             async for chunk in stream:
+                usage = getattr(chunk, "usage", None)
+                if usage is not None:
+                    yield ChatStreamChunk(
+                        input_tokens=int(getattr(usage, "prompt_tokens", 0) or 0),
+                        output_tokens=int(getattr(usage, "completion_tokens", 0) or 0),
+                    )
                 if not chunk.choices:
                     continue
                 delta = chunk.choices[0].delta
                 if delta and delta.content:
                     nebius_tokens_total.labels(model=model, type="output").inc()
-                    yield delta.content
+                    yield ChatStreamChunk(text=delta.content)
 
     async def aclose(self) -> None:
         await self._client.close()

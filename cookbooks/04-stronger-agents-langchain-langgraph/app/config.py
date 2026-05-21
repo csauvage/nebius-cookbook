@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     nebius_api_key: str = Field(..., min_length=1, description="Nebius AgentKit API key")
     nebius_base_url: HttpUrl = Field(default=HttpUrl("https://api.studio.nebius.ai/v1/"))
     nebius_model: str = Field(default="meta-llama/Llama-3.3-70B-Instruct")
+    nebius_input_price_per_million_tokens: float = Field(default=0.0, ge=0.0)
+    nebius_output_price_per_million_tokens: float = Field(default=0.0, ge=0.0)
+    nebius_enable_pricing_lookup: bool = Field(default=True)
 
     # Server
     host: str = Field(default="0.0.0.0")
@@ -33,6 +36,7 @@ class Settings(BaseSettings):
     cors_origins: Annotated[list[str], NoDecode] = Field(
         default_factory=lambda: ["http://localhost:3000"]
     )
+    allow_localhost_cors: bool = Field(default=True)
     max_request_bytes: int = Field(default=65_536, ge=1024)
 
     # Observability
@@ -41,6 +45,9 @@ class Settings(BaseSettings):
     # Limits
     rate_limit_per_minute: int = Field(default=10, ge=1)
     request_timeout_seconds: int = Field(default=60, ge=1)
+    direct_response_max_tokens: int = Field(default=384, ge=64, le=8192)
+    deliberate_response_max_tokens: int = Field(default=700, ge=128, le=8192)
+    first_token_target_ms: int = Field(default=1200, ge=100)
 
     @field_validator("cors_origins", mode="before")
     @classmethod

@@ -4,8 +4,8 @@
   "order": 4,
   "eyebrow": "Orchestration",
   "title": "Stronger Agents with LangChain and LangGraph",
-  "upcoming": true,
-  "tagline": "Turn the hand-wired agent into a typed LangGraph with streaming and explicit state.",
+  "upcoming": false,
+  "tagline": "Use a typed LangGraph to route requests, cap work, and reduce time to first useful response.",
   "difficulty": "intermediate",
   "estimatedReadingTime": "13 min",
   "estimatedRunTime": "6 min",
@@ -15,9 +15,9 @@
   },
   "tags": ["agent", "langchain", "langgraph", "orchestration", "streaming", "state"],
   "story": {
-    "problem": "The first three cookbooks prove the Nebius integration path, but the agent logic is still mostly a linear request handler with hand-wired state transitions.",
-    "solution": "Rebuild the agent loop as a LangGraph state graph: named nodes plan, retrieve or use tools, and write the final answer while graph events stream back to the route.",
-    "outcome": "A stronger agent skeleton that can grow into durable execution, persistent context, interrupts, evaluators, and guardrails without turning the FastAPI route into orchestration glue."
+    "problem": "The first three cookbooks work, but a path that spends 40 seconds, 1421 input tokens, and 535 output tokens on a single answer still feels too slow for production.",
+    "solution": "Rebuild the agent loop as a LangGraph state graph: a deterministic route node chooses a direct or deliberate path, LangChain prompt templates prepare messages, and graph events stream back to the route before the model finishes.",
+    "outcome": "A faster orchestration skeleton that can skip unnecessary work today and later grow into durable execution, persistent context, interrupts, evaluators, and guardrails without turning the FastAPI route into orchestration glue."
   },
   "prerequisites": [
     "Python 3.12+",

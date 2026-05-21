@@ -31,6 +31,16 @@ interface ChatTurn {
   startedAt: number;
 }
 
+interface RunStats {
+  route?: string;
+  contextNeed?: string;
+  elapsedSeconds?: number;
+  inputTokens: number;
+  outputTokens: number;
+  costUsd?: number;
+  estimated: boolean;
+}
+
 const DEFAULT_AGENT_URL = "http://localhost:8000";
 const STORAGE_KEY = (slug: string) => `nebius-cookbook:agent-url:${slug}`;
 
@@ -59,6 +69,12 @@ const TAVILY_BOOK_PROMPTS = [
   "Find cozy fantasy books launched after 2021 with recent review context.",
   "Recommend recent climate fiction and cite current reviews or awards context.",
   "Find recent editions or formats for books about space exploration.",
+];
+
+const ORCHESTRATION_PROMPTS = [
+  "I loved Station Eleven and Sea of Tranquility. What should I read next if I want recent literary sci-fi with a hopeful tone?",
+  "What is the latest book written by Michel Houellebecq?",
+  "Recommend recent climate fiction with enough context to explain why each book is worth reading now.",
 ];
 
 export function PlayClient({ slug, title, tagline }: Props) {
@@ -97,6 +113,8 @@ export function PlayClient({ slug, title, tagline }: Props) {
     if (turns.length > 0 && headerExpanded) setHeaderExpanded(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [turns.length === 0]);
+
+  const runStats = useMemo(() => latestRunStats(turns), [turns]);
 
   const cancel = useCallback(() => {
     abortRef.current?.abort();
@@ -231,7 +249,7 @@ export function PlayClient({ slug, title, tagline }: Props) {
             />
             <div className="mt-2 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.14em] text-ink-dim">
               <span>↵ send · shift+↵ newline</span>
-              <span>{isStreaming ? "▸ stream open" : "○ idle"}</span>
+              <BottomRunStats stats={runStats} isStreaming={isStreaming} />
             </div>
           </div>
         </div>
@@ -247,6 +265,28 @@ export function PlayClient({ slug, title, tagline }: Props) {
         />
       ) : null}
     </div>
+  );
+}
+
+function BottomRunStats({
+  stats,
+  isStreaming,
+}: {
+  stats: RunStats | null;
+  isStreaming: boolean;
+}) {
+  if (!stats) return <span>{isStreaming ? "▸ stream open" : "○ idle"}</span>;
+
+  const route = stats.contextNeed ?? stats.route ?? "route pending";
+  const time = typeof stats.elapsedSeconds === "number" ? `${stats.elapsedSeconds.toFixed(2)}s` : "…";
+  const cost =
+    typeof stats.costUsd === "number" ? `$${stats.costUsd.toFixed(6)}` : stats.estimated ? "est. n/a" : "n/a";
+  const prefix = isStreaming || stats.estimated ? "est." : "run";
+
+  return (
+    <span className="min-w-0 truncate text-right">
+      {prefix} {route} · {time} · {stats.inputTokens} in / {stats.outputTokens} out · {cost}
+    </span>
   );
 }
 
@@ -563,19 +603,26 @@ function Composer({
 function EmptyState({ slug, onPick }: { slug: string; onPick: (prompt: string) => void }) {
   const isStaticBookRecommender = slug === "domain-knowledge-pinecone-nexus";
   const isFreshBookRecommender = slug === "real-time-data-tavily";
+  const isOrchestrationAgent = slug === "stronger-agents-langchain-langgraph";
   const isBookRecommender = isStaticBookRecommender || isFreshBookRecommender;
   const prompts = isFreshBookRecommender
     ? TAVILY_BOOK_PROMPTS
     : isStaticBookRecommender
       ? BOOK_RECOMMENDER_PROMPTS
-      : SAMPLE_PROMPTS;
+      : isOrchestrationAgent
+        ? ORCHESTRATION_PROMPTS
+        : SAMPLE_PROMPTS;
 
   return (
     <div className="flex min-h-[44dvh] flex-col items-center justify-center text-center">
       <div className="max-w-md space-y-4">
         <Badge bracket>session ready</Badge>
         <h2 className="font-display text-5xl leading-none tracking-[0.01em] text-ink">
-          {isBookRecommender ? "📚 A book recommender for your agent." : "A console for your agent."}
+          {isBookRecommender
+            ? "📚 A book recommender for your agent."
+            : isOrchestrationAgent
+              ? "A book-agent routing console."
+              : "A console for your agent."}
         </h2>
         <p className="font-mono text-[12px] leading-relaxed text-ink-soft">
           {isBookRecommender ? (
@@ -585,6 +632,12 @@ function EmptyState({ slug, onPick }: { slug: string; onPick: (prompt: string) =
               {isFreshBookRecommender
                 ? "Pinecone retrieves candidates; Tavily adds fresh web context."
                 : "Pinecone retrieves candidates; Nebius synthesizes the shortlist."}
+            </>
+          ) : isOrchestrationAgent ? (
+            <>
+              Watch LangGraph choose a route before Nebius streams tokens.
+              <br />
+              Try recommendations, latest-book questions, or prompts that need both taste and freshness.
             </>
           ) : (
             <>
@@ -925,6 +978,91 @@ function formatVal(v: unknown): string {
   if (Array.isArray(v)) return `[${v.length}]`;
   if (v && typeof v === "object") return `{${Object.keys(v).length}}`;
   return "null";
+}
+
+function latestRunStats(turns: ChatTurn[]): RunStats | null {
+  for (let i = turns.length - 1; i >= 0; i--) {
+    const assistant = turns[i];
+    if (!assistant || assistant.role !== "assistant") continue;
+
+    const user = turns
+      .slice(0, i)
+      .reverse()
+      .find((turn) => turn.role === "user");
+    const done = [...assistant.events].reverse().find((event) => event.name === "done");
+    const doneUsage = done ? usageFromEvent(done) : null;
+    const status = [...assistant.events]
+      .reverse()
+      .find((event) => event.name === "status" && (event.data.route || event.data.contextNeed));
+    const statusUsage = status ? usageFromNestedStatus(status) : null;
+    const usage = doneUsage ?? statusUsage;
+    const rendered = splitMetricsFooter(assistant.text);
+
+    const inputTokens =
+      usage?.inputTokens && usage.inputTokens > 0
+        ? usage.inputTokens
+        : estimateTokens(user?.text ?? "");
+    const outputTokens =
+      usage?.outputTokens && usage.outputTokens > 0
+        ? usage.outputTokens
+        : estimateTokens(rendered.body);
+
+    return {
+      route: stringValue(status?.data.route),
+      contextNeed: stringValue(status?.data.contextNeed),
+      elapsedSeconds:
+        usage?.elapsedSeconds ??
+        numberValue(status?.data.elapsedSeconds) ??
+        msToSeconds(numberValue(status?.data.elapsedMs)),
+      inputTokens,
+      outputTokens,
+      costUsd: usage?.costUsd,
+      estimated: !usage || usage.inputTokens === 0 || usage.outputTokens === 0,
+    };
+  }
+
+  return null;
+}
+
+function usageFromEvent(event: SseEvent): Pick<RunStats, "inputTokens" | "outputTokens" | "costUsd" | "elapsedSeconds"> {
+  return {
+    inputTokens: numberValue(event.data.inputTokens) ?? 0,
+    outputTokens: numberValue(event.data.outputTokens) ?? 0,
+    costUsd: numberValue(event.data.costUsd),
+    elapsedSeconds: numberValue(event.data.elapsedSeconds),
+  };
+}
+
+function usageFromNestedStatus(
+  event: SseEvent,
+): Pick<RunStats, "inputTokens" | "outputTokens" | "costUsd" | "elapsedSeconds"> | null {
+  const usage = event.data.usage;
+  if (!usage || typeof usage !== "object" || Array.isArray(usage)) return null;
+  const data = usage as Record<string, unknown>;
+  return {
+    inputTokens: numberValue(data.inputTokens) ?? 0,
+    outputTokens: numberValue(data.outputTokens) ?? 0,
+    costUsd: numberValue(data.costUsd),
+    elapsedSeconds: numberValue(data.elapsedSeconds),
+  };
+}
+
+function estimateTokens(text: string): number {
+  const trimmed = text.trim();
+  if (!trimmed) return 0;
+  return Math.max(1, Math.ceil(trimmed.length / 4));
+}
+
+function numberValue(value: unknown): number | undefined {
+  return typeof value === "number" && Number.isFinite(value) ? value : undefined;
+}
+
+function stringValue(value: unknown): string | undefined {
+  return typeof value === "string" && value.trim() ? value : undefined;
+}
+
+function msToSeconds(ms: number | undefined): number | undefined {
+  return typeof ms === "number" ? ms / 1000 : undefined;
 }
 
 function latestStatusPhase(events: SseEvent[]): string | undefined {

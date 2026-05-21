@@ -35,6 +35,19 @@ nebius_request_duration = Histogram(
     buckets=(0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0, 30.0, 60.0, 120.0),
 )
 
+agent_route_total = Counter(
+    "agent_route_total",
+    "Total agent requests by selected LangGraph route.",
+    labelnames=("route",),
+)
+
+agent_first_token_seconds = Histogram(
+    "agent_first_token_seconds",
+    "Time from agent start to first streamed token.",
+    labelnames=("route",),
+    buckets=(0.1, 0.25, 0.5, 1.0, 1.2, 1.5, 2.5, 5.0, 10.0, 30.0, 60.0),
+)
+
 
 async def metrics_middleware(
     request: Request,

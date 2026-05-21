@@ -51,7 +51,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
 limiter = Limiter(key_func=get_remote_address)
 
 app = FastAPI(
-    title="Nebius Cookbook — Template Recipe",
+    title="Nebius Cookbook — Stronger Agents with LangChain and LangGraph",
     version=__version__,
     lifespan=lifespan,
     docs_url="/docs",
@@ -60,10 +60,16 @@ app = FastAPI(
 
 settings = get_settings()
 app.state.limiter = limiter
+localhost_cors_regex = (
+    r"^https?://(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$"
+    if settings.env == "development" and settings.allow_localhost_cors
+    else None
+)
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
+    allow_origin_regex=localhost_cors_regex,
     allow_methods=["GET", "POST"],
     allow_headers=["*"],
     allow_credentials=False,
