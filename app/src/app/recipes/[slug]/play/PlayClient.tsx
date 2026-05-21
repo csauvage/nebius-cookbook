@@ -742,7 +742,7 @@ function Sidebar({
             <SidebarSection title="sources" badge={`${sources.length}`}>
               <ol className="space-y-2 pt-2">
                 {sources.map((s) => (
-                  <li key={s.index} className="flex gap-2 font-mono text-[11px]">
+                  <li key={`${s.index}-${s.url || s.title}`} className="flex gap-2 font-mono text-[11px]">
                     <span className="text-accent">[{s.index}]</span>
                     <a
                       href={s.url}
@@ -947,10 +947,10 @@ function extractSources(events: SseEvent[]): Source[] {
     if (ev?.name !== "sources") continue;
     const items = ev.data.items;
     if (!Array.isArray(items)) continue;
-    return items.map((it) => {
+    return items.map((it, idx) => {
       const o = it as Record<string, unknown>;
       return {
-        index: typeof o.index === "number" ? o.index : 0,
+        index: typeof o.citation === "number" ? o.citation : idx + 1,
         title: typeof o.title === "string" ? o.title : "",
         url: typeof o.url === "string" ? o.url : "",
       };
