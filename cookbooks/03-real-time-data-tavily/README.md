@@ -1,8 +1,8 @@
-# Awareness — Real-Time Data with Tavily
+# Grounding — Real-Time Data with Tavily
 
 Recipe **03 of 7** in the Nebius Cookbook arc:
 
-> Foundation → Retrieval → **Awareness** → Orchestration → Memory → Reliability → Confidence
+> Foundation → Retrieval → **Grounding** → Orchestration → Memory → Reliability → Confidence
 
 Cookbook #2 gave us a Pinecone-backed book recommender over a Goodreads-style
 corpus.
@@ -18,7 +18,7 @@ Trying to bake those into the vector index would make ingestion heavier while
 still going stale quickly.
 
 So cookbook #3 keeps the book memory from cookbook #2 and adds the missing
-layer: **live awareness with Tavily**, a Nebius partner.
+layer: **live grounding with Tavily**, a Nebius partner.
 Pinecone answers "what in my curated corpus is semantically relevant?".
 Tavily answers "what changed on the web since this corpus was built?".
 Nebius then synthesizes both into one streamed recommendation.

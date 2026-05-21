@@ -27,4 +27,4 @@ It is for engineers who have called an LLM API from a script and want to know wh
 
 Each recipe is **autonomous** — cloning a single cookbook directory is enough to run it, with no shared base packages and no implicit dependencies on the rest of the repo.
 
-The recipes are also a **sequence**. They form a narrative arc — Foundation → Retrieval → Awareness → Orchestration → Memory → Reliability → Confidence — and each one assumes the concepts of the one before it: #2 builds on #1, #3 on #2, and so on. You *can* run any cookbook on its own, but the documentation is written for a reader following them in order.
+The recipes are also a **sequence**. They form a narrative arc — Foundation → Retrieval → Grounding → Orchestration → Memory → Reliability → Confidence — and each one assumes the concepts of the one before it: #2 builds on #1, #3 on #2, and so on. You *can* run any cookbook on its own, but the documentation is written for a reader following them in order.

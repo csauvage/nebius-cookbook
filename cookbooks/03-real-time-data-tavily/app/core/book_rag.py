@@ -177,9 +177,12 @@ class BookRag:
                     "role": "system",
                     "content": (
                         "You are a precise book recommendation assistant. "
-                        "Ground every recommendation in the supplied Goodreads retrieval context. "
-                        "Use Tavily web context only for freshness signals such as recent books, "
+                        "Use Goodreads retrieval context as the curated book-memory layer. "
+                        "Use Tavily web context as the live-grounding layer for recent books, "
                         "current editions, availability, pricing, and market context. "
+                        "When the user's request depends on a date, launch timing, availability, "
+                        "or other fresh facts that the Goodreads snapshot does not satisfy, "
+                        "Tavily web sources may provide recommendation candidates directly. "
                         "Do not invent books, authors, ratings, sources, or citations."
                     ),
                 },
@@ -446,16 +449,23 @@ Fresh Tavily web context:
 {web_context or "(no fresh web sources returned)"}
 
 Write a helpful book recommendation answer.
-Use only the retrieved candidates.
-Recommend at most 5 books.
-Recommend the strongest matches first.
+Use the Goodreads candidates when they satisfy the request.
+Use Tavily web sources as recommendation evidence when the request asks for recent,
+post-date, current, newly launched, available, or edition-specific books that are
+missing from the Goodreads candidates.
+Recommend at most 5 books across both source sets.
+Recommend the strongest matches first, even when the strongest match comes from Tavily.
 For each recommendation, explain briefly why it fits the request.
-Use fresh Tavily context to mention current availability, recent editions,
-pricing, or newer adjacent books when that context is present.
+Do not say that no books match until you have checked both Goodreads and Tavily context.
+If a Tavily result names a relevant book, edition, launch, list, article, or publisher page,
+surface that result in the answer instead of treating it as background only.
 When useful, mention whether a book was retrieved because it shares an author,
 theme, or publication year with another strong candidate.
 Include Goodreads citation markers like [1], [2], or [3] next to recommended titles.
-Include web citation markers like [W1] or [W2] only for fresh web claims.
+Include web citation markers like [W1] or [W2] for Tavily-backed recommendations and
+fresh web claims.
+Clearly label Tavily-only recommendations as web-sourced when they do not appear in
+the Goodreads candidates.
 If the retrieved books are weak matches, say that clearly and suggest how to refine the query."""
 
     def _build_tavily_query(self, prompt: str, books: list[RetrievedBook]) -> str:

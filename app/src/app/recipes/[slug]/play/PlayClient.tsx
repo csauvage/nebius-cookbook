@@ -55,6 +55,12 @@ const BOOK_RECOMMENDER_PROMPTS = [
   "Find thoughtful books about climate, power, and social collapse.",
 ];
 
+const TAVILY_BOOK_PROMPTS = [
+  "Recommend recent books for someone who loved Dune and wants political intrigue.",
+  "Which newer editions or formats should I consider for Ursula K. Le Guin books?",
+  "Find climate fiction recommendations and include current reviews or award context.",
+];
+
 export function PlayClient({ slug, title, tagline }: Props) {
   const [agentUrl, setAgentUrl] = useState(DEFAULT_AGENT_URL);
   const [draft, setDraft] = useState("");
@@ -555,8 +561,14 @@ function Composer({
 /* ── empty state ─────────────────────────────────────────────────────────── */
 
 function EmptyState({ slug, onPick }: { slug: string; onPick: (prompt: string) => void }) {
-  const isBookRecommender = slug === "domain-knowledge-pinecone-nexus";
-  const prompts = isBookRecommender ? BOOK_RECOMMENDER_PROMPTS : SAMPLE_PROMPTS;
+  const isStaticBookRecommender = slug === "domain-knowledge-pinecone-nexus";
+  const isFreshBookRecommender = slug === "real-time-data-tavily";
+  const isBookRecommender = isStaticBookRecommender || isFreshBookRecommender;
+  const prompts = isFreshBookRecommender
+    ? TAVILY_BOOK_PROMPTS
+    : isStaticBookRecommender
+      ? BOOK_RECOMMENDER_PROMPTS
+      : SAMPLE_PROMPTS;
 
   return (
     <div className="flex min-h-[44dvh] flex-col items-center justify-center text-center">
@@ -570,7 +582,9 @@ function EmptyState({ slug, onPick }: { slug: string; onPick: (prompt: string) =
             <>
               Ask for books by topic, author, year, or after a recent read.
               <br />
-              Pinecone retrieves candidates; Nebius synthesizes the shortlist.
+              {isFreshBookRecommender
+                ? "Pinecone retrieves candidates; Tavily adds fresh web context."
+                : "Pinecone retrieves candidates; Nebius synthesizes the shortlist."}
             </>
           ) : (
             <>

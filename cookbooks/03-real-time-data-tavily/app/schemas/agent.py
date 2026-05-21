@@ -11,8 +11,8 @@ class AgentRunRequest(BaseModel):
         min_length=1,
         max_length=4_000,
         examples=[
-            "Recommend books about political intrigue for someone who liked Dune.",
-            "I just read The Left Hand of Darkness. What should I read next?",
+            "Find books about Emmanuel Macron launched after 2021.",
+            "Recommend recent books for someone who loved Dune and wants political intrigue.",
         ],
     )
     top_k: int = Field(default=10, ge=1, le=50)

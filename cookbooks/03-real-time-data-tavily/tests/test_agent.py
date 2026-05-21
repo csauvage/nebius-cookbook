@@ -4,10 +4,65 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
-from app.core.book_rag import FreshSearchPlan, RetrievedBook, SynthesisResult, UsageSummary
+from app.core.book_rag import BookRag, FreshSearchPlan, RetrievedBook, SynthesisResult, UsageSummary
 from app.core.nebius_pricing import TokenPrices
 from app.core.tavily_client import TavilyResult
 from app.main import app
+
+
+def test_completion_prompt_allows_tavily_backed_recent_books() -> None:
+    rag = BookRagForPromptTest()
+    request = rag.build_completion_request(
+        "Find books about Emmanuel Macron launched after 2021",
+        [
+            RetrievedBook(
+                citation_id=1,
+                vector_id="book::macron-revolution",
+                score=0.87,
+                retrieval_reason="direct semantic match",
+                title="Rivoluzione",
+                authors="Emmanuel Macron",
+                genres=["politics"],
+                average_rating="",
+                ratings_count="",
+                publication_year="2016",
+            )
+        ],
+        [
+            TavilyResult(
+                citation_id=1,
+                title="New books about Emmanuel Macron after 2021",
+                url="https://example.com/macron-books",
+                content=(
+                    "A publisher page lists a 2024 book about Emmanuel Macron's second term."
+                ),
+                score=0.91,
+            )
+        ],
+    )
+
+    system_prompt = request.messages[0]["content"]
+    user_prompt = request.messages[1]["content"]
+
+    assert "Tavily web sources may provide recommendation candidates directly" in system_prompt
+    assert "Use only the retrieved candidates" not in user_prompt
+    assert "Use Tavily web sources as recommendation evidence" in user_prompt
+    assert "Tavily-only recommendations" in user_prompt
+    assert "[W1]" in user_prompt
+
+
+class BookRagForPromptTest:
+    settings = type(
+        "Settings",
+        (),
+        {
+            "answer_temperature": 0.2,
+            "answer_max_tokens": 900,
+        },
+    )()
+
+    build_completion_request = BookRag.build_completion_request
+    _build_answer_prompt = BookRag._build_answer_prompt
 
 
 def test_agent_run_streams_book_rag_events(monkeypatch) -> None:
