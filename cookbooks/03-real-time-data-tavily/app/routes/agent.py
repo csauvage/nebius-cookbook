@@ -96,12 +96,21 @@ async def run_agent(
 
             yield _sse(
                 "status",
+                {"phase": "planning_web_search", "message": "Planning Tavily search"},
+            )
+            fresh_search_plan = await asyncio.to_thread(
+                rag.plan_fresh_search,
+                payload.prompt,
+                books,
+            )
+            yield _sse("web_search_plan", fresh_search_plan.to_public_dict())
+            yield _sse(
+                "status",
                 {"phase": "searching", "message": "Requesting Tavily Results"},
             )
             fresh_sources = await asyncio.to_thread(
                 rag.search_fresh_context,
-                payload.prompt,
-                books,
+                fresh_search_plan,
             )
             yield _sse(
                 "sources",

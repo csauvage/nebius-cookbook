@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from fastapi.testclient import TestClient
 
-from app.core.book_rag import RetrievedBook, SynthesisResult, UsageSummary
+from app.core.book_rag import FreshSearchPlan, RetrievedBook, SynthesisResult, UsageSummary
 from app.core.nebius_pricing import TokenPrices
 from app.core.tavily_client import TavilyResult
 from app.main import app
@@ -49,7 +49,7 @@ def test_agent_run_streams_book_rag_events(monkeypatch) -> None:
         return [
             "I am mapping your reading taste into the book index.",
             "The vector is ready; Pinecone is returning nearby titles.",
-            "I have the candidates and am checking fresh web context.",
+            "I have the candidates and am planning fresh web context.",
             "Fresh context is ready; I am shaping the recommendation.",
         ]
 
@@ -79,11 +79,16 @@ def test_agent_run_streams_book_rag_events(monkeypatch) -> None:
             )
         ]
 
-    def fake_search_fresh_context(
-        self, prompt: str, books: list[RetrievedBook]
-    ) -> list[TavilyResult]:
+    def fake_plan_fresh_search(self, prompt: str, books: list[RetrievedBook]) -> FreshSearchPlan:
         assert "Dune" in prompt
         assert books[0].title == "Dune"
+        return FreshSearchPlan(
+            query="Dune recent editions availability",
+            rationale="Check current edition and availability signals.",
+        )
+
+    def fake_search_fresh_context(self, plan: FreshSearchPlan) -> list[TavilyResult]:
+        assert plan.query == "Dune recent editions availability"
         return [
             TavilyResult(
                 citation_id=1,
@@ -130,6 +135,7 @@ def test_agent_run_streams_book_rag_events(monkeypatch) -> None:
         "app.routes.agent.BookRag.retrieve_books_from_vector",
         fake_retrieve_books_from_vector,
     )
+    monkeypatch.setattr("app.routes.agent.BookRag.plan_fresh_search", fake_plan_fresh_search)
     monkeypatch.setattr("app.routes.agent.BookRag.search_fresh_context", fake_search_fresh_context)
     monkeypatch.setattr("app.routes.agent.BookRag.synthesize", fake_synthesize)
     monkeypatch.setattr("app.routes.agent.BookRag.stream_synthesis", fake_stream_synthesis)
@@ -155,6 +161,9 @@ def test_agent_run_streams_book_rag_events(monkeypatch) -> None:
     assert "I have the candidates" in body
     assert "Fresh context is ready" in body
     assert "Requesting Pinecone Results" in body
+    assert "Planning Tavily search" in body
+    assert "event: web_search_plan" in body
+    assert "Dune recent editions availability" in body
     assert "Requesting Tavily Results" in body
     assert "Synthesizing" in body
     assert "event: context" in body

@@ -17,7 +17,7 @@ MAX_RAG_BOOKS = 10
 DEFAULT_PROGRESS_MESSAGES = [
     "I am turning your request into a search vector for the book index.",
     "The query embedding is ready. I am checking Pinecone for matching books.",
-    "I have book candidates. I am checking Tavily for fresh context.",
+    "I have book candidates. I am planning the Tavily freshness search.",
     "The fresh context is ready. I am asking Nebius to write the recommendations.",
 ]
 
@@ -102,6 +102,18 @@ class CompletionRequest:
     messages: list[dict[str, str]]
     temperature: float
     max_tokens: int
+
+
+@dataclass
+class FreshSearchPlan:
+    query: str
+    rationale: str
+
+    def to_public_dict(self) -> dict[str, str]:
+        return {
+            "query": self.query,
+            "rationale": self.rationale,
+        }
 
 
 class BookRag:
@@ -239,7 +251,7 @@ class BookRag:
                         "content": (
                             "Create exactly four progress messages for these phases: "
                             "1) prepare a Nebius embedding, 2) search Pinecone, "
-                            "3) search Tavily for fresh book context, "
+                            "3) plan and search Tavily for fresh book context, "
                             "4) synthesize book recommendations. "
                             "Make them specific to this request without pretending results "
                             "are known yet.\n"
@@ -262,10 +274,60 @@ class BookRag:
         except Exception:
             return DEFAULT_PROGRESS_MESSAGES
 
-    def search_fresh_context(self, prompt: str, books: list[RetrievedBook]) -> list[TavilyResult]:
-        query = self._build_tavily_query(prompt, books)
+    def plan_fresh_search(self, prompt: str, books: list[RetrievedBook]) -> FreshSearchPlan:
+        fallback_query = self._build_tavily_query(prompt, books)
+        candidate_context = "\n".join(book.to_context_line() for book in books[:5])
         try:
-            return self.tavily.search(query)
+            response = self.nebius.chat.completions.create(
+                model=self.settings.nebius_model,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "Create a concise Tavily web search plan for a book recommendation "
+                            "agent. Return only JSON with keys query and rationale. "
+                            "The query must target freshness signals such as recent editions, "
+                            "availability, pricing, newly released adjacent books, or current "
+                            "market context. The rationale must be one short sentence and must "
+                            "not reveal hidden chain-of-thought."
+                        ),
+                    },
+                    {
+                        "role": "user",
+                        "content": (
+                            f"User request:\n{prompt}\n\n"
+                            f"Retrieved book candidates:\n{candidate_context}"
+                        ),
+                    },
+                ],
+                temperature=0.2,
+                max_tokens=180,
+            )
+            content = response.choices[0].message.content or ""
+            parsed = json.loads(content)
+            query = str(parsed.get("query") or "").strip()
+            rationale = str(parsed.get("rationale") or "").strip()
+            if not query:
+                return FreshSearchPlan(
+                    query=fallback_query,
+                    rationale="Use the retrieved candidates to look for current web context.",
+                )
+            return FreshSearchPlan(
+                query=query[:500],
+                rationale=(
+                    rationale[:240]
+                    or "Use current web context to qualify freshness-sensitive claims."
+                ),
+            )
+        except Exception:
+            return FreshSearchPlan(
+                query=fallback_query,
+                rationale="Use the retrieved candidates to look for current web context.",
+            )
+
+    def search_fresh_context(self, plan: FreshSearchPlan) -> list[TavilyResult]:
+        try:
+            return self.tavily.search(plan.query)
         except Exception:
             return []
 
