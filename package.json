@@ -18,6 +18,8 @@
     "build": "bun run build:recipes && cd app && bun run build",
     "build:readme": "bun run scripts/build-readme.ts",
     "build:recipes": "bun run scripts/build-recipes.ts",
+    "backend": "bun run scripts/start-backend.ts",
+    "start:backend": "bun run scripts/start-backend.ts",
     "validate": "bun run scripts/validate-recipes.ts",
     "new": "bun run scripts/new-cookbook.ts",
     "test:cookbooks": "bun run scripts/test-cookbooks.ts",
