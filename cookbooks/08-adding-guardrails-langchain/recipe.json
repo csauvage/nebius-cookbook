@@ -81,7 +81,7 @@
     "target": "nebius-compute",
     "instructions": "docs/deployment.md"
   },
-  "nextRecipe": "testing-before-production-snowglobe",
+  "nextRecipe": "actions-with-mcp-stripe",
   "authors": [
     { "name": "Clément Sauvage", "url": "https://clementsauvage.me" }
   ],

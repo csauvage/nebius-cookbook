@@ -4,7 +4,7 @@
 
 Recipe **08 of 10** in the Nebius Cookbook arc:
 
-> Foundation → Retrieval → Grounding → Orchestration → Thread Memory → User Memory → Observability → **Guardrails** → Simulation → Actions
+> Foundation → Retrieval → Grounding → Orchestration → Thread Memory → User Memory → Observability → **Guardrails** → Actions → Simulation
 
 Cookbook #7 made the stateful agent observable.
 This recipe keeps that full stack and adds the first hard production boundary: the service must reject or sanitize unsafe interactions before they become model calls or user-visible output.
@@ -181,7 +181,7 @@ If output validation fails, the route emits `error` and does not reveal the buff
 - Emit metrics per stage, rule, and outcome.
 - Store rejection reasons without logging raw sensitive prompts.
 - Decide whether blocked requests should create user-visible audit events.
-- Keep HITL approval patterns ready for Cookbook #10's MCP actions.
+- Keep HITL approval patterns ready for Cookbook #9's MCP actions.
 
 ## Failure Modes
 
@@ -209,8 +209,8 @@ They also assert that PII is redacted before model invocation and that unsafe ou
 - Add a model-based topic classifier after deterministic checks.
 - Add a policy file so guardrail markers are reviewed like product copy.
 - Attach LangSmith feedback to guardrail outcomes for policy tuning.
-- Add a human approval interrupt for actions before Cookbook #10.
-- Continue to Cookbook #9 to test guarded behavior with Snowglobe scenarios.
+- Continue to Cookbook #9 to add human-approved MCP actions.
+- Continue to Cookbook #10 to test the completed agent with Snowglobe scenarios.
 
 ## Reference
 

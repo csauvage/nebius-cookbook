@@ -4,7 +4,7 @@
 
 Recipe **01 of 10** in the Nebius Cookbook arc:
 
-> **Foundation** → Retrieval → Grounding → Orchestration → Thread Memory → User Memory → Observability → Guardrails → Simulation → Actions
+> **Foundation** → Retrieval → Grounding → Orchestration → Thread Memory → User Memory → Observability → Guardrails → Actions → Simulation
 
 You called OpenAI from a Python script and it worked. Now what?
 

@@ -2,7 +2,7 @@
 
 Recipe **02 of 10** in the Nebius Cookbook arc:
 
-> Foundation → **Retrieval** → Grounding → Orchestration → Thread Memory → User Memory → Observability → Guardrails → Simulation → Actions
+> Foundation → **Retrieval** → Grounding → Orchestration → Thread Memory → User Memory → Observability → Guardrails → Actions → Simulation
 
 Cookbook #1 gave you a fluent agent. But fluency isn't knowledge — ask it about
 your own product or internal docs and it will guess. Classic RAG patches this

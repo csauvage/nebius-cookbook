@@ -2,7 +2,7 @@
 
 Recipe **03 of 10** in the Nebius Cookbook arc:
 
-> Foundation → Retrieval → **Grounding** → Orchestration → Thread Memory → User Memory → Observability → Guardrails → Simulation → Actions
+> Foundation → Retrieval → **Grounding** → Orchestration → Thread Memory → User Memory → Observability → Guardrails → Actions → Simulation
 
 Cookbook #2 gave us a Pinecone-backed book recommender over a Goodreads-style
 corpus.

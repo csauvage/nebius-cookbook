@@ -1,7 +1,7 @@
 {
   "$schema": "../../schemas/recipe.schema.json",
   "slug": "testing-before-production-snowglobe",
-  "order": 9,
+  "order": 10,
   "eyebrow": "Simulation",
   "title": "Testing Before Production with Snowglobe",
   "upcoming": true,
@@ -11,19 +11,20 @@
   "estimatedRunTime": "10 min",
   "stack": {
     "primary": ["nebius-agentkit", "snowglobe"],
-    "secondary": ["langsmith", "fastapi", "structlog", "prometheus", "docker"]
+    "secondary": ["langsmith", "mcp", "stripe", "fastapi", "structlog", "prometheus", "docker"]
   },
-  "tags": ["agent", "testing", "simulation", "evaluation", "snowglobe", "ci"],
+  "tags": ["agent", "testing", "simulation", "evaluation", "snowglobe", "ci", "actions"],
   "story": {
-    "problem": "A guarded agent can still fail on conversations you did not think to hand-test.",
-    "solution": "Use Snowglobe to generate synthetic personas and scenarios, run them against the agent at scale, and score transcripts for regressions.",
-    "outcome": "A repeatable simulation harness that gives pre-release evidence instead of relying on hope."
+    "problem": "An action-capable agent can still fail on conversations and approval paths you did not think to hand-test.",
+    "solution": "Use Snowglobe to generate synthetic personas and scenarios, run them against the complete agent at scale, and score transcripts for regressions and action-safety failures.",
+    "outcome": "A repeatable simulation harness that gives pre-release evidence before the complete agent reaches users."
   },
   "prerequisites": [
     "Python 3.12+",
     "uv installed (https://docs.astral.sh/uv/)",
     "A Nebius API key",
     "A LangSmith API key (https://docs.langchain.com/langsmith/home)",
+    "A Stripe test-mode API key for live action scenarios",
     "Docker (optional)"
   ],
   "models": [
@@ -31,8 +32,8 @@
     { "id": "Qwen/Qwen3-30B-A3B-Instruct", "role": "critic" }
   ],
   "quickstart": {
-    "clone": "git clone https://github.com/csauvage/nebius-cookbook && cd nebius-cookbook/cookbooks/09-testing-before-production-snowglobe",
-    "configure": "cp .env.example .env  # then fill NEBIUS_API_KEY and LANGSMITH_API_KEY",
+    "clone": "git clone https://github.com/csauvage/nebius-cookbook && cd nebius-cookbook/cookbooks/10-testing-before-production-snowglobe",
+    "configure": "cp .env.example .env  # then fill NEBIUS_API_KEY, LANGSMITH_API_KEY, and STRIPE_SECRET_KEY for live action scenarios",
     "run": "uv sync && make dev"
   },
   "endpoints": [
@@ -67,7 +68,6 @@
     "target": "nebius-compute",
     "instructions": "docs/deployment.md"
   },
-  "nextRecipe": "actions-with-mcp-stripe",
   "authors": [
     { "name": "Clément Sauvage", "url": "https://clementsauvage.me" }
   ],

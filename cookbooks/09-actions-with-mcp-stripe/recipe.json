@@ -1,7 +1,7 @@
 {
   "$schema": "../../schemas/recipe.schema.json",
   "slug": "actions-with-mcp-stripe",
-  "order": 10,
+  "order": 9,
   "eyebrow": "Actions",
   "title": "Making Actions with MCP and Stripe",
   "upcoming": true,
@@ -15,7 +15,7 @@
   },
   "tags": ["agent", "mcp", "stripe", "actions", "approval", "commerce"],
   "story": {
-    "problem": "The agent can answer, remember, and pass tests, but production agents also need to take external actions safely.",
+    "problem": "The agent can answer, remember, stay observable, and enforce guardrails, but production agents also need to take external actions safely.",
     "solution": "Connect a Stripe MCP server in test mode, require explicit approval, and create a payment link for a fictional book purchase.",
     "outcome": "An action-capable agent that demonstrates MCP tool use without giving the model uncontrolled side effects."
   },
@@ -33,7 +33,7 @@
     "hero": "assets/hero.png"
   },
   "quickstart": {
-    "clone": "git clone https://github.com/csauvage/nebius-cookbook && cd nebius-cookbook/cookbooks/10-actions-with-mcp-stripe",
+    "clone": "git clone https://github.com/csauvage/nebius-cookbook && cd nebius-cookbook/cookbooks/09-actions-with-mcp-stripe",
     "configure": "cp .env.example .env  # then fill NEBIUS_API_KEY and STRIPE_SECRET_KEY",
     "run": "uv sync && make dev"
   },
@@ -69,6 +69,7 @@
     "target": "nebius-compute",
     "instructions": "docs/deployment.md"
   },
+  "nextRecipe": "testing-before-production-snowglobe",
   "authors": [
     { "name": "Clément Sauvage", "url": "https://clementsauvage.me" }
   ],

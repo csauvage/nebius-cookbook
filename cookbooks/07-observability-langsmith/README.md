@@ -4,7 +4,7 @@
 
 Recipe **07 of 10** in the Nebius Cookbook arc:
 
-> Foundation → Retrieval → Grounding → Orchestration → Thread Memory → User Memory → **Observability** → Guardrails → Simulation → Actions
+> Foundation → Retrieval → Grounding → Orchestration → Thread Memory → User Memory → **Observability** → Guardrails → Actions → Simulation
 
 By this point the agent can answer, orchestrate, remember a thread, and persist user memory in Postgres.
 The next production problem is visibility.

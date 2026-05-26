@@ -2,11 +2,11 @@
 
 > 🚧 **Scaffold only.** This recipe is planned but not yet implemented. This folder currently holds metadata and documentation for the MCP actions cookbook.
 
-Recipe **10 of 10** in the Nebius Cookbook arc:
+Recipe **09 of 10** in the Nebius Cookbook arc:
 
-> Foundation → Retrieval → Grounding → Orchestration → Thread Memory → User Memory → Observability → Guardrails → Simulation → **Actions**
+> Foundation → Retrieval → Grounding → Orchestration → Thread Memory → User Memory → Observability → Guardrails → **Actions** → Simulation
 
-The final step is letting the agent do something outside chat.
+After guardrails, the next step is letting the agent do something outside chat.
 In this cookbook, the book agent creates a Stripe test-mode checkout link for a fictional book purchase through MCP.
 
 ## What you'll build

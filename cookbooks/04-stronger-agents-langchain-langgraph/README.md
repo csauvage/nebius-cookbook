@@ -4,7 +4,7 @@
 
 Recipe **04 of 10** in the Nebius Cookbook arc:
 
-> Foundation → Retrieval → Grounding → **Orchestration** → Thread Memory → User Memory → Observability → Guardrails → Simulation → Actions
+> Foundation → Retrieval → Grounding → **Orchestration** → Thread Memory → User Memory → Observability → Guardrails → Actions → Simulation
 
 The first three cookbooks prove the Nebius integration path: call the model, ground it in private data, then add fresh web context.
 The next production problem is latency.

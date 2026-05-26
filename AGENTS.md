@@ -8,7 +8,7 @@ This file is the **single source of truth** for any coding agent working on this
 
 The Nebius Cookbook is a public, GitHub-hosted collection of **production-grade recipes** for building AI agents on [Nebius AgentKit](https://nebius.com/services/token-factory). It launches at the Nebius customer conference on **June 9, 2026** (press and analysts in the room) together with a live keynote demo.
 
-**Ship deadline: ten cookbooks must be ready by June 4, 2026** (five working days before the keynote, to leave room for rehearsal, review, and last-minute fixes). The arc now runs from a first production-shaped agent, through retrieval and real-time context, then LangChain/LangGraph orchestration, short-term memory, long-term memory, LangSmith observability, guardrails, simulation, and MCP-powered actions.
+**Ship deadline: ten cookbooks must be ready by June 4, 2026** (five working days before the keynote, to leave room for rehearsal, review, and last-minute fixes). The arc now runs from a first production-shaped agent, through retrieval and real-time context, then LangChain/LangGraph orchestration, short-term memory, long-term memory, LangSmith observability, guardrails, MCP-powered actions, and simulation.
 
 It is modeled on the best of:
 - `developers.openai.com/cookbook` for pedagogical recipes
@@ -593,7 +593,7 @@ On push to `main` only. Builds the app, deploys to Clever Cloud via their CLI or
 
 ## 12. The cookbooks for June 4
 
-Ten cookbooks must be ready by **June 4, 2026** for the June 9 keynote. Cookbooks #1–#3 establish the base agent, private/domain knowledge, and real-time data. Cookbook #4 strengthens the agent with LangChain/LangGraph orchestration. Cookbooks #5 and #6 split memory into short-term thread memory and long-term Postgres-backed user memory. Cookbooks #7–#10 then cover LangSmith observability, LangChain guardrails, Snowglobe simulation, and MCP-powered Stripe actions.
+Ten cookbooks must be ready by **June 4, 2026** for the June 9 keynote. Cookbooks #1–#3 establish the base agent, private/domain knowledge, and real-time data. Cookbook #4 strengthens the agent with LangChain/LangGraph orchestration. Cookbooks #5 and #6 split memory into short-term thread memory and long-term Postgres-backed user memory. Cookbooks #7–#10 then cover LangSmith observability, LangChain guardrails, MCP-powered Stripe actions, and Snowglobe simulation.
 
 ### 12.1 Cookbook #1 — "Your First Agent on Nebius"
 
@@ -758,23 +758,9 @@ Ten cookbooks must be ready by **June 4, 2026** for the June 9 keynote. Cookbook
 - Simulation at scale
 - External commerce actions
 
-### 12.9 Cookbook #9 — "Testing Before Production with Snowglobe"
+### 12.9 Cookbook #9 — "Making Actions with MCP and Stripe"
 
-**Story.** The guarded agent still needs evidence before real users do by generating synthetic scenarios, running conversations, and scoring failures.
-
-**What's in scope:**
-- Snowglobe scenario/persona generation
-- Batch simulation against the agent
-- Scoring transcripts for regressions and edge-case failures
-- A repeatable test harness suitable for CI or pre-release review
-
-**What's NOT in scope:**
-- Adding new runtime capabilities to the agent
-- Using simulation scores as a replacement for human review
-
-### 12.10 Cookbook #10 — "Making Actions with MCP and Stripe"
-
-**Story.** The final cookbook shows how a book agent can safely take an external action by creating a Stripe test-mode checkout link through MCP.
+**Story.** The final runtime capability shows how a book agent can safely take an external action by creating a Stripe test-mode checkout link through MCP.
 
 **What's in scope:**
 - Stripe MCP server integration in test mode
@@ -787,6 +773,20 @@ Ten cookbooks must be ready by **June 4, 2026** for the June 9 keynote. Cookbook
 - Real money movement
 - Unapproved side effects
 - A full ecommerce backend
+
+### 12.10 Cookbook #10 — "Testing Before Production with Snowglobe"
+
+**Story.** The completed agent has memory, observability, guardrails, and external actions. The final cookbook tests that full surface before real users do by generating synthetic scenarios, running conversations, and scoring failures.
+
+**What's in scope:**
+- Snowglobe scenario/persona generation
+- Batch simulation against the action-capable agent
+- Scoring transcripts for regressions, edge-case failures, and action safety
+- A repeatable test harness suitable for CI or pre-release review
+
+**What's NOT in scope:**
+- Adding new runtime capabilities to the agent
+- Using simulation scores as a replacement for human review
 
 ---
 
@@ -917,7 +917,7 @@ These are decisions still to be made. An agent encountering one of these should 
 3. **Clever Cloud build configuration.** Bun-native build vs. fallback to npm install. To be confirmed during kickoff.
 4. **Nebius Compute deployment target.** VM vs. serverless 3.5. To be confirmed.
 5. **Authors field policy.** Should every recipe credit Clément alone, or also Nebius team members who reviewed? To be confirmed.
-6. **Exact Nebius model IDs for newer cookbook steps.** The cookbook arc is now fixed as: first agent, domain/private knowledge, real-time data, LangChain/LangGraph, short-term memory, long-term memory, LangSmith observability, LangChain guardrails, Snowglobe, and MCP actions. The remaining uncertainty is the exact current Nebius model catalog names to pin before launch.
+6. **Exact Nebius model IDs for newer cookbook steps.** The cookbook arc is now fixed as: first agent, domain/private knowledge, real-time data, LangChain/LangGraph, short-term memory, long-term memory, LangSmith observability, LangChain guardrails, MCP actions, and Snowglobe. The remaining uncertainty is the exact current Nebius model catalog names to pin before launch.
 
 ---
 
