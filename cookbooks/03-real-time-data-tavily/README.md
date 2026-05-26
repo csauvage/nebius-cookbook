@@ -1,8 +1,8 @@
 # Grounding — Real-Time Data with Tavily
 
-Recipe **03 of 7** in the Nebius Cookbook arc:
+Recipe **03 of 10** in the Nebius Cookbook arc:
 
-> Foundation → Retrieval → **Grounding** → Orchestration → Memory → Reliability → Confidence
+> Foundation → Retrieval → **Grounding** → Orchestration → Thread Memory → User Memory → Observability → Guardrails → Simulation → Actions
 
 Cookbook #2 gave us a Pinecone-backed book recommender over a Goodreads-style
 corpus.

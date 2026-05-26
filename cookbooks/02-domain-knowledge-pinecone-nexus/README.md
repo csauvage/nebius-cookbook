@@ -1,8 +1,8 @@
 # Retrieval — Domain Knowledge with Pinecone Nexus
 
-Recipe **02 of 7** in the Nebius Cookbook arc:
+Recipe **02 of 10** in the Nebius Cookbook arc:
 
-> Foundation → **Retrieval** → Awareness → Orchestration → Memory → Reliability → Confidence
+> Foundation → **Retrieval** → Grounding → Orchestration → Thread Memory → User Memory → Observability → Guardrails → Simulation → Actions
 
 Cookbook #1 gave you a fluent agent. But fluency isn't knowledge — ask it about
 your own product or internal docs and it will guess. Classic RAG patches this
@@ -331,7 +331,7 @@ If lookup fails, the app falls back to optional pricing env vars in `.env`:
 
 ## Going further
 
-Next in the arc: **[Awareness — Real-Time Data with Tavily](../03-real-time-data-tavily/)** —
+Next in the arc: **[Grounding — Real-Time Data with Tavily](../03-real-time-data-tavily/)** —
 once your agent knows your compiled domain knowledge, teach it to reach for
 fresh facts on the open web.
 

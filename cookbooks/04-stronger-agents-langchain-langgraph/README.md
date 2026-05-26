@@ -2,9 +2,9 @@
 
 > Turn the hand-wired Nebius agent into a typed graph that can choose the shortest useful path to an answer.
 
-Recipe **04 of 7** in the Nebius Cookbook arc:
+Recipe **04 of 10** in the Nebius Cookbook arc:
 
-> Foundation → Retrieval → Awareness → **Orchestration** → Memory → Reliability → Confidence
+> Foundation → Retrieval → Grounding → **Orchestration** → Thread Memory → User Memory → Observability → Guardrails → Simulation → Actions
 
 The first three cookbooks prove the Nebius integration path: call the model, ground it in private data, then add fresh web context.
 The next production problem is latency.
@@ -158,7 +158,7 @@ These metrics answer the production questions this cookbook raises:
 
 This cookbook does not introduce persistent context or memory primitives.
 The state graph only carries the data needed for the current request.
-Cookbook #5 introduces LangGraph memory: checkpointers for thread state and stores for durable user/application context.
+Cookbook #5 introduces short-term thread memory, and Cookbook #6 adds durable user/application memory.
 
 ## Test it
 

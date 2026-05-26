@@ -48,7 +48,7 @@
     "target": "nebius-compute",
     "instructions": "docs/deployment.md"
   },
-  "nextRecipe": "memory-with-langgraph",
+  "nextRecipe": "short-term-memory-langchain",
   "authors": [
     { "name": "Clément Sauvage", "url": "https://clementsauvage.me" }
   ],

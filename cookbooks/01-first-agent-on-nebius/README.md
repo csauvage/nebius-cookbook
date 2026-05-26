@@ -2,9 +2,9 @@
 
 > A production-grade FastAPI agent with streaming, observability, and zero magic.
 
-Recipe **01 of 7** in the Nebius Cookbook arc:
+Recipe **01 of 10** in the Nebius Cookbook arc:
 
-> **Foundation** → Retrieval → Awareness → Memory → Reliability → Confidence
+> **Foundation** → Retrieval → Grounding → Orchestration → Thread Memory → User Memory → Observability → Guardrails → Simulation → Actions
 
 You called OpenAI from a Python script and it worked. Now what?
 
@@ -199,7 +199,7 @@ Two production details that are easy to miss:
 
 ## Design decisions
 
-**Why a stateless server?** No session store means any instance can serve any request — horizontal scaling is just "add a replica," and a crash loses nothing. The cost is bandwidth: the client resends history each turn. For a chat workload that is a few KB; when it stops being cheap (long transcripts, RAG context), the answer is a server-side store keyed by session ID, not in-process state. Recipe #4 (Memory) takes that step deliberately.
+**Why a stateless server?** No session store means any instance can serve any request — horizontal scaling is just "add a replica," and a crash loses nothing. The cost is bandwidth: the client resends history each turn. For a chat workload that is a few KB; when it stops being cheap (long transcripts, RAG context), the answer is a server-side store keyed by session ID, not in-process state. Recipe #5 (Short-Term Memory) takes that step deliberately.
 
 **Why no agent framework?** A framework would hide exactly the boundaries this recipe exists to show. `core/agent.py` is ~50 lines and is explicitly designed to be subclassed — the later recipes add planning, retrieval, and tools on top of this same shape.
 
