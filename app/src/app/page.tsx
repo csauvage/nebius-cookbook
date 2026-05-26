@@ -69,7 +69,18 @@ export default function HomePage() {
 
         {/* Footer */}
         <footer className="mt-24 flex flex-wrap items-center justify-between gap-4 border-t border-edge pt-6 font-mono text-[11px] uppercase tracking-[0.16em] text-ink-dim">
-          <span>{`// June 4, 2026 · ${recipes.length} recipes for launch`}</span>
+          <span>
+            Build with &lt;3 by{" "}
+            <a
+              href="https://clementsauvage.me/?utm_source=nebius_cookbook&utm_medium=referral&utm_campaign=nebius_cookbook"
+              className="transition hover:text-accent"
+              target="_blank"
+              rel="noreferrer"
+            >
+              Clément S.
+            </a>{" "}
+            and the Nebius team
+          </span>
           <a
             href={GITHUB_REPO_URL}
             className="transition hover:text-accent"
