@@ -43,6 +43,8 @@ interface RunStats {
 
 const DEFAULT_AGENT_URL = "http://localhost:8000";
 const STORAGE_KEY = (slug: string) => `nebius-cookbook:agent-url:${slug}`;
+const THREAD_STORAGE_KEY = (slug: string) => `nebius-cookbook:thread-id:${slug}`;
+const USER_STORAGE_KEY = (slug: string) => `nebius-cookbook:user-id:${slug}`;
 
 function newId(): string {
   return crypto.randomUUID();
@@ -79,6 +81,8 @@ const ORCHESTRATION_PROMPTS = [
 
 export function PlayClient({ slug, title, tagline }: Props) {
   const [agentUrl, setAgentUrl] = useState(DEFAULT_AGENT_URL);
+  const [threadId, setThreadId] = useState("demo-thread");
+  const [userId, setUserId] = useState("demo-user");
   const [draft, setDraft] = useState("");
   const [turns, setTurns] = useState<ChatTurn[]>([]);
   const [isStreaming, setIsStreaming] = useState(false);
@@ -92,12 +96,32 @@ export function PlayClient({ slug, title, tagline }: Props) {
   useEffect(() => {
     const stored = window.localStorage.getItem(STORAGE_KEY(slug));
     if (stored) setAgentUrl(stored);
+    const storedThreadId = window.localStorage.getItem(THREAD_STORAGE_KEY(slug));
+    if (storedThreadId) setThreadId(storedThreadId);
+    const storedUserId = window.localStorage.getItem(USER_STORAGE_KEY(slug));
+    if (storedUserId) setUserId(storedUserId);
   }, [slug]);
 
   const persistAgentUrl = useCallback(
     (next: string) => {
       setAgentUrl(next);
       window.localStorage.setItem(STORAGE_KEY(slug), next);
+    },
+    [slug],
+  );
+
+  const persistThreadId = useCallback(
+    (next: string) => {
+      setThreadId(next);
+      window.localStorage.setItem(THREAD_STORAGE_KEY(slug), next);
+    },
+    [slug],
+  );
+
+  const persistUserId = useCallback(
+    (next: string) => {
+      setUserId(next);
+      window.localStorage.setItem(USER_STORAGE_KEY(slug), next);
     },
     [slug],
   );
@@ -157,7 +181,7 @@ export function PlayClient({ slug, title, tagline }: Props) {
       try {
         for await (const event of streamAgent({
           url: target,
-          body: { prompt, history },
+          body: { prompt, history, thread_id: threadId, user_id: userId },
           signal: controller.signal,
         })) {
           setTurns((t) => {
@@ -204,7 +228,7 @@ export function PlayClient({ slug, title, tagline }: Props) {
         textareaRef.current?.focus();
       }
     },
-    [agentUrl, draft, isStreaming, turns],
+    [agentUrl, draft, isStreaming, threadId, turns, userId],
   );
 
   return (
@@ -262,6 +286,11 @@ export function PlayClient({ slug, title, tagline }: Props) {
           onToggleSettings={() => setSettingsOpen((v) => !v)}
           agentUrl={agentUrl}
           onAgentUrlChange={persistAgentUrl}
+          slug={slug}
+          threadId={threadId}
+          onThreadIdChange={persistThreadId}
+          userId={userId}
+          onUserIdChange={persistUserId}
         />
       ) : null}
     </div>
@@ -676,17 +705,27 @@ function EmptyState({ slug, onPick }: { slug: string; onPick: (prompt: string) =
 /* ── sidebar ─────────────────────────────────────────────────────────────── */
 
 function Sidebar({
+  slug,
   turns,
   settingsOpen,
   onToggleSettings,
   agentUrl,
   onAgentUrlChange,
+  threadId,
+  onThreadIdChange,
+  userId,
+  onUserIdChange,
 }: {
+  slug: string;
   turns: ChatTurn[];
   settingsOpen: boolean;
   onToggleSettings: () => void;
   agentUrl: string;
   onAgentUrlChange: (v: string) => void;
+  threadId: string;
+  onThreadIdChange: (v: string) => void;
+  userId: string;
+  onUserIdChange: (v: string) => void;
 }) {
   // Build a chronological log of every event across every assistant turn,
   // with turn separators inserted between them. Tokens stay out (they're
@@ -761,13 +800,37 @@ function Sidebar({
                     autoComplete="off"
                   />
                 </Field>
+                <Field label="thread id" hint="Sent as thread_id for memory recipes.">
+                  <Input
+                    value={threadId}
+                    onChange={(e) => onThreadIdChange(e.target.value)}
+                    spellCheck={false}
+                    autoComplete="off"
+                  />
+                </Field>
+                <Field label="user id" hint="Sent as user_id for long-term memory recipes.">
+                  <Input
+                    value={userId}
+                    onChange={(e) => onUserIdChange(e.target.value)}
+                    spellCheck={false}
+                    autoComplete="off"
+                  />
+                </Field>
               </div>
             ) : (
-              <p className="font-mono text-[11px] text-ink-dim">{agentUrl}</p>
+              <p className="font-mono text-[11px] text-ink-dim">
+                {agentUrl}
+                <br />
+                thread {threadId} · user {userId}
+              </p>
             )}
           </SidebarSection>
 
           <Diagnostics agentUrl={agentUrl} />
+
+          {slug === "long-term-memory-langchain-postgres" ? (
+            <MemorySummary agentUrl={agentUrl} userId={userId} />
+          ) : null}
 
           <SidebarSection
             title="event log"
@@ -889,6 +952,64 @@ function Diagnostics({ agentUrl }: { agentUrl: string }) {
       <div className="mt-2 flex items-center justify-between border-t border-edge pt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-ink-dim">
         <span>{version ? `v${version}` : "—"}</span>
         <span>{checkedAt ? `polled ${fmtTime(checkedAt)}` : "polling…"}</span>
+      </div>
+    </SidebarSection>
+  );
+}
+
+function MemorySummary({ agentUrl, userId }: { agentUrl: string; userId: string }) {
+  const base = useMemo(() => agentUrl.replace(/\/$/, ""), [agentUrl]);
+  const encodedUserId = encodeURIComponent(userId || "demo-user");
+  const href = `${base}/memory/${encodedUserId}/summary`;
+  const [summary, setSummary] = useState<string | null>(null);
+  const [state, setState] = useState<"idle" | "loading" | "error">("idle");
+
+  const loadSummary = useCallback(async () => {
+    setState("loading");
+    try {
+      const res = await fetch(href, { cache: "no-store" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const body = (await res.json()) as { summary?: unknown };
+      setSummary(typeof body.summary === "string" ? body.summary : "(empty summary)");
+      setState("idle");
+    } catch {
+      setSummary(null);
+      setState("error");
+    }
+  }, [href]);
+
+  return (
+    <SidebarSection
+      title="user memory"
+      badge={state === "loading" ? "loading" : summary ? "loaded" : undefined}
+      action={
+        <button
+          type="button"
+          onClick={loadSummary}
+          className="font-mono text-[10px] uppercase tracking-[0.14em] text-ink-soft transition hover:text-accent"
+        >
+          refresh
+        </button>
+      }
+    >
+      <div className="space-y-2 pt-2 font-mono text-[11px] leading-relaxed">
+        <a
+          href={href}
+          target="_blank"
+          rel="noreferrer"
+          className="block truncate text-ink-soft underline decoration-edge-strong underline-offset-2 hover:text-accent hover:decoration-accent"
+        >
+          /memory/{userId || "demo-user"}/summary
+        </a>
+        {state === "error" ? (
+          <p className="text-red-300">summary unavailable</p>
+        ) : summary ? (
+          <pre className="thin-scroll max-h-40 overflow-y-auto whitespace-pre-wrap border border-edge bg-surface/30 p-2 text-ink-soft">
+            {summary}
+          </pre>
+        ) : (
+          <p className="text-ink-dim">summarize what the agent knows about this user</p>
+        )}
       </div>
     </SidebarSection>
   );
