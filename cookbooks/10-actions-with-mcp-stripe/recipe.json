@@ -1,0 +1,77 @@
+{
+  "$schema": "../../schemas/recipe.schema.json",
+  "slug": "actions-with-mcp-stripe",
+  "order": 10,
+  "eyebrow": "Actions",
+  "title": "Making Actions with MCP and Stripe",
+  "upcoming": true,
+  "tagline": "Let a book agent take a real test-mode action by creating a Stripe checkout link through MCP.",
+  "difficulty": "advanced",
+  "estimatedReadingTime": "15 min",
+  "estimatedRunTime": "10 min",
+  "stack": {
+    "primary": ["nebius-agentkit", "mcp", "stripe"],
+    "secondary": ["langchain", "fastapi", "structlog", "prometheus", "docker"]
+  },
+  "tags": ["agent", "mcp", "stripe", "actions", "approval", "commerce"],
+  "story": {
+    "problem": "The agent can answer, remember, and pass tests, but production agents also need to take external actions safely.",
+    "solution": "Connect a Stripe MCP server in test mode, require explicit approval, and create a payment link for a fictional book purchase.",
+    "outcome": "An action-capable agent that demonstrates MCP tool use without giving the model uncontrolled side effects."
+  },
+  "prerequisites": [
+    "Python 3.12+",
+    "uv installed (https://docs.astral.sh/uv/)",
+    "A Nebius API key",
+    "A Stripe test-mode API key",
+    "Docker (optional)"
+  ],
+  "models": [
+    { "id": "meta-llama/Llama-3.3-70B-Instruct", "role": "primary" }
+  ],
+  "assets": {
+    "hero": "assets/hero.png"
+  },
+  "quickstart": {
+    "clone": "git clone https://github.com/csauvage/nebius-cookbook && cd nebius-cookbook/cookbooks/10-actions-with-mcp-stripe",
+    "configure": "cp .env.example .env  # then fill NEBIUS_API_KEY and STRIPE_SECRET_KEY",
+    "run": "uv sync && make dev"
+  },
+  "endpoints": [
+    {
+      "method": "POST",
+      "path": "/agent/run",
+      "streaming": true,
+      "description": "Run the action-capable agent and stream approval/action events."
+    },
+    {
+      "method": "POST",
+      "path": "/approvals/{approval_id}",
+      "description": "Approve or reject a pending Stripe MCP action."
+    },
+    {
+      "method": "GET",
+      "path": "/healthz",
+      "description": "Liveness probe."
+    },
+    {
+      "method": "GET",
+      "path": "/readyz",
+      "description": "Readiness probe."
+    },
+    {
+      "method": "GET",
+      "path": "/metrics",
+      "description": "Prometheus metrics scrape endpoint."
+    }
+  ],
+  "deployment": {
+    "target": "nebius-compute",
+    "instructions": "docs/deployment.md"
+  },
+  "authors": [
+    { "name": "Clément Sauvage", "url": "https://clementsauvage.me" }
+  ],
+  "publishedAt": "2026-06-04",
+  "updatedAt": "2026-05-26"
+}
