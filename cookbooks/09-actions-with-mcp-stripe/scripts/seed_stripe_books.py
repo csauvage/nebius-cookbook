@@ -52,16 +52,17 @@ async def seed_books(
     if await asyncio.to_thread(output.exists) and not force and not dry_run:
         existing = await asyncio.to_thread(output.read_text, encoding="utf-8")
         payload = json.loads(existing)
-        if image_base_url:
-            secret_key = stripe_secret_key or os.environ.get("STRIPE_SECRET_KEY")
-            if not secret_key:
-                raise SeedError("STRIPE_SECRET_KEY is required to sync Stripe product images.")
-            await _sync_existing_product_images(
-                payload,
-                stripe_secret_key=secret_key,
-                image_base_url=image_base_url,
-            )
-        return payload
+        if _catalog_uses_deterministic_product_ids(payload):
+            if image_base_url:
+                secret_key = stripe_secret_key or os.environ.get("STRIPE_SECRET_KEY")
+                if not secret_key:
+                    raise SeedError("STRIPE_SECRET_KEY is required to sync Stripe product images.")
+                await _sync_existing_product_images(
+                    payload,
+                    stripe_secret_key=secret_key,
+                    image_base_url=image_base_url,
+                )
+            return payload
     books = _load_books(source)
     _normalize_cover_paths(books, source.parent)
     missing_covers = [
@@ -86,7 +87,7 @@ async def seed_books(
         timeout=httpx.Timeout(connect=5, read=30, write=10, pool=5),
     ) as client:
         for book in books:
-            product = await _create_product(client, book, image_base_url=image_base_url)
+            product = await _create_or_update_product(client, book, image_base_url=image_base_url)
             price = await _create_price(client, book, product["id"])
             seeded.append(
                 {
@@ -124,27 +125,66 @@ def _normalize_cover_paths(books: list[dict[str, Any]], source_dir: Path) -> Non
         book["cover_image_exists"] = local_path.exists()
 
 
-async def _create_product(
+def _catalog_uses_deterministic_product_ids(payload: dict[str, Any]) -> bool:
+    books = payload.get("books", [])
+    if not isinstance(books, list) or not books:
+        return False
+    for book in books:
+        if not isinstance(book, dict):
+            return False
+        if book.get("stripe_product_id") != _stripe_product_id(book):
+            return False
+    return True
+
+
+def _stripe_product_id(book: dict[str, Any]) -> str:
+    isbn = str(book["isbn"]).replace("-", "")
+    return f"nebius_partners_book_{isbn}"
+
+
+def _product_payload(
+    book: dict[str, Any],
+    *,
+    image_base_url: str | None,
+    include_id: bool,
+) -> dict[str, str]:
+    data = {
+        "name": str(book["title"]),
+        "description": str(book["description"]),
+        "metadata[nebius_cookbook_slug]": str(book["slug"]),
+        "metadata[nebius_cookbook]": "09-actions-with-mcp-stripe",
+        "metadata[isbn]": str(book["isbn"]),
+        "metadata[cover_image_path]": str(book.get("cover_image_path", "")),
+    }
+    if include_id:
+        data["id"] = _stripe_product_id(book)
+    image_url = _cover_image_url(image_base_url, book)
+    if image_url:
+        data["images[0]"] = image_url
+    return data
+
+
+async def _create_or_update_product(
     client: httpx.AsyncClient,
     book: dict[str, Any],
     *,
     image_base_url: str | None,
 ) -> dict[str, Any]:
-    data = {
-        "name": book["title"],
-        "description": book["description"],
-        "metadata[nebius_cookbook_slug]": book["slug"],
-        "metadata[nebius_cookbook]": "09-actions-with-mcp-stripe",
-        "metadata[isbn]": book["isbn"],
-        "metadata[cover_image_path]": book.get("cover_image_path", ""),
-    }
-    image_url = _cover_image_url(image_base_url, book)
-    if image_url:
-        data["images[0]"] = image_url
+    product_id = _stripe_product_id(book)
+    existing = await client.get(f"/products/{product_id}")
+    if existing.status_code == 200:
+        response = await client.post(
+            f"/products/{product_id}",
+            data=_product_payload(book, image_base_url=image_base_url, include_id=False),
+        )
+        response.raise_for_status()
+        return response.json()
+    if existing.status_code != 404:
+        existing.raise_for_status()
 
     response = await client.post(
         "/products",
-        data=data,
+        data=_product_payload(book, image_base_url=image_base_url, include_id=True),
     )
     response.raise_for_status()
     return response.json()

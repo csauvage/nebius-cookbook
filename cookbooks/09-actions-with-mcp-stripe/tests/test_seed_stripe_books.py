@@ -36,8 +36,12 @@ async def test_seed_books_creates_products_prices_and_writes_catalog(tmp_path) -
         encoding="utf-8",
     )
     (tmp_path / "test-book.png").write_bytes(b"fake image")
+    product_id = "nebius_partners_book_9781600000997"
+    product_get_route = respx.get(f"https://api.stripe.com/v1/products/{product_id}").mock(
+        return_value=httpx.Response(404, json={"error": {"type": "invalid_request_error"}})
+    )
     product_route = respx.post("https://api.stripe.com/v1/products").mock(
-        return_value=httpx.Response(200, json={"id": "prod_test_123"})
+        return_value=httpx.Response(200, json={"id": product_id})
     )
     price_route = respx.post("https://api.stripe.com/v1/prices").mock(
         return_value=httpx.Response(200, json={"id": "price_test_123"})
@@ -50,12 +54,14 @@ async def test_seed_books_creates_products_prices_and_writes_catalog(tmp_path) -
         image_base_url="https://cdn.example.test/books",
     )
 
-    assert payload["books"][0]["stripe_product_id"] == "prod_test_123"
+    assert payload["books"][0]["stripe_product_id"] == product_id
     assert payload["books"][0]["stripe_price_id"] == "price_test_123"
     assert json.loads(output.read_text(encoding="utf-8")) == payload
+    assert product_get_route.calls.call_count == 1
     assert product_route.calls.call_count == 1
     assert price_route.calls.call_count == 1
     product_body = product_route.calls.last.request.content.decode("utf-8")
+    assert "id=nebius_partners_book_9781600000997" in product_body
     assert "metadata%5Bisbn%5D=9781600000997" in product_body
     assert "metadata%5Bcover_image_path%5D=test-book.png" in product_body
     assert "images%5B0%5D=https%3A%2F%2Fcdn.example.test%2Fbooks%2Ftest-book.png" in product_body
@@ -75,7 +81,17 @@ async def test_seed_books_reuses_existing_output_without_force(tmp_path) -> None
     output = tmp_path / "generated" / "stripe_books.json"
     source.write_text('{"books":[]}', encoding="utf-8")
     output.parent.mkdir(parents=True)
-    output.write_text('{"books":[{"slug":"existing"}]}', encoding="utf-8")
+    existing_payload = {
+        "books": [
+            {
+                "slug": "existing",
+                "isbn": "9781600000997",
+                "stripe_product_id": "nebius_partners_book_9781600000997",
+                "stripe_price_id": "price_existing_123",
+            }
+        ]
+    }
+    output.write_text(json.dumps(existing_payload), encoding="utf-8")
 
     payload = await seed_books(
         source=source,
@@ -83,7 +99,7 @@ async def test_seed_books_reuses_existing_output_without_force(tmp_path) -> None
         stripe_secret_key=os.environ["STRIPE_SECRET_KEY"],
     )
 
-    assert payload == {"books": [{"slug": "existing"}]}
+    assert payload == existing_payload
 
 
 @pytest.mark.asyncio
@@ -100,7 +116,8 @@ async def test_seed_books_syncs_images_for_existing_output(tmp_path) -> None:
                     {
                         "slug": "existing",
                         "cover_image_path": "existing.png",
-                        "stripe_product_id": "prod_existing_123",
+                        "isbn": "9781600000997",
+                        "stripe_product_id": "nebius_partners_book_9781600000997",
                         "stripe_price_id": "price_existing_123",
                     }
                 ]
@@ -108,9 +125,9 @@ async def test_seed_books_syncs_images_for_existing_output(tmp_path) -> None:
         ),
         encoding="utf-8",
     )
-    product_route = respx.post("https://api.stripe.com/v1/products/prod_existing_123").mock(
-        return_value=httpx.Response(200, json={"id": "prod_existing_123"})
-    )
+    product_route = respx.post(
+        "https://api.stripe.com/v1/products/nebius_partners_book_9781600000997"
+    ).mock(return_value=httpx.Response(200, json={"id": "nebius_partners_book_9781600000997"}))
 
     payload = await seed_books(
         source=source,
@@ -119,7 +136,7 @@ async def test_seed_books_syncs_images_for_existing_output(tmp_path) -> None:
         image_base_url="https://cdn.example.test/books",
     )
 
-    assert payload["books"][0]["stripe_product_id"] == "prod_existing_123"
+    assert payload["books"][0]["stripe_product_id"] == "nebius_partners_book_9781600000997"
     assert product_route.calls.call_count == 1
     product_body = product_route.calls.last.request.content.decode("utf-8")
     assert "images%5B0%5D=https%3A%2F%2Fcdn.example.test%2Fbooks%2Fexisting.png" in product_body
