@@ -108,9 +108,9 @@ async def test_seed_books_syncs_images_for_existing_output(tmp_path) -> None:
         ),
         encoding="utf-8",
     )
-    product_route = respx.post(
-        "https://api.stripe.com/v1/products/prod_existing_123"
-    ).mock(return_value=httpx.Response(200, json={"id": "prod_existing_123"}))
+    product_route = respx.post("https://api.stripe.com/v1/products/prod_existing_123").mock(
+        return_value=httpx.Response(200, json={"id": "prod_existing_123"})
+    )
 
     payload = await seed_books(
         source=source,
