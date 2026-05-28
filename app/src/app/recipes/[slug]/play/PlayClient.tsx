@@ -275,7 +275,7 @@ export function PlayClient({ slug, title, tagline }: Props) {
         textareaRef.current?.focus();
       }
     },
-    [agentUrl, decideApproval, draft, isStreaming, threadId, turns, userId],
+    [agentUrl, draft, isStreaming, threadId, turns, userId],
   );
 
   return (
