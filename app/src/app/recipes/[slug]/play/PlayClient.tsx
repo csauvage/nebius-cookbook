@@ -79,6 +79,12 @@ const ORCHESTRATION_PROMPTS = [
   "Recommend recent climate fiction with enough context to explain why each book is worth reading now.",
 ];
 
+const ACTION_PROMPTS = [
+  "Recommend one short science-fiction book, then create a checkout link for it.",
+  "I want to buy The Nebius Cloud Atlas.",
+  "Create a payment link for Pinecones in the Vector Garden.",
+];
+
 export function PlayClient({ slug, title, tagline }: Props) {
   const [agentUrl, setAgentUrl] = useState(DEFAULT_AGENT_URL);
   const [threadId, setThreadId] = useState("demo-thread");
@@ -143,6 +149,47 @@ export function PlayClient({ slug, title, tagline }: Props) {
   const cancel = useCallback(() => {
     abortRef.current?.abort();
   }, []);
+
+  const decideApproval = useCallback(
+    async (turnId: string, approvalId: string, decision: "approve" | "reject") => {
+      const target = `${agentUrl.replace(/\/$/, "")}/approvals/${encodeURIComponent(approvalId)}`;
+      try {
+        const res = await fetch(target, {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ decision }),
+        });
+        const body = (await res.json().catch(() => ({}))) as Record<string, unknown>;
+        const event: SseEvent = {
+          name: "approval_result",
+          data: {
+            approvalId,
+            decision,
+            ok: res.ok,
+            ...body,
+          },
+        };
+        setTurns((items) =>
+          items.map((turn) =>
+            turn.id === turnId ? { ...turn, events: [...turn.events, event] } : turn,
+          ),
+        );
+      } catch (err) {
+        const message =
+          err instanceof Error ? err.message : typeof err === "string" ? err : "approval failed";
+        const event: SseEvent = {
+          name: "approval_result",
+          data: { approvalId, decision, ok: false, message },
+        };
+        setTurns((items) =>
+          items.map((turn) =>
+            turn.id === turnId ? { ...turn, events: [...turn.events, event] } : turn,
+          ),
+        );
+      }
+    },
+    [agentUrl],
+  );
 
   const send = useCallback(
     async (overridePrompt?: string) => {
@@ -228,7 +275,7 @@ export function PlayClient({ slug, title, tagline }: Props) {
         textareaRef.current?.focus();
       }
     },
-    [agentUrl, draft, isStreaming, threadId, turns, userId],
+    [agentUrl, decideApproval, draft, isStreaming, threadId, turns, userId],
   );
 
   return (
@@ -256,7 +303,14 @@ export function PlayClient({ slug, title, tagline }: Props) {
             {turns.length === 0 ? (
               <EmptyState slug={slug} onPick={(prompt) => send(prompt)} />
             ) : (
-              turns.map((t) => <Turn key={t.id} turn={t} />)
+              turns.map((t) => (
+                <Turn
+                  key={t.id}
+                  turn={t}
+                  slug={slug}
+                  onApprovalDecision={decideApproval}
+                />
+              ))
             )}
           </div>
         </div>
@@ -452,7 +506,15 @@ function FloatingHeader({
 
 /* ── transcript ──────────────────────────────────────────────────────────── */
 
-function Turn({ turn }: { turn: ChatTurn }) {
+function Turn({
+  turn,
+  slug,
+  onApprovalDecision,
+}: {
+  turn: ChatTurn;
+  slug: string;
+  onApprovalDecision: (turnId: string, approvalId: string, decision: "approve" | "reject") => void;
+}) {
   if (turn.role === "user") {
     return (
       <div className="flex flex-col items-end gap-1.5">
@@ -477,6 +539,8 @@ function Turn({ turn }: { turn: ChatTurn }) {
         : "accent";
   const rendered = splitMetricsFooter(turn.text);
   const reasoningMessages = agentMessages(turn.events);
+  const approval = slug === "actions-with-mcp-stripe" ? latestApproval(turn.events) : null;
+  const approvalResult = approval ? latestApprovalResult(turn.events, approval.approvalId) : null;
 
   return (
     <div className="space-y-1.5">
@@ -503,6 +567,14 @@ function Turn({ turn }: { turn: ChatTurn }) {
           {turn.text ? (
             <>
               <MarkdownText source={rendered.body} />
+              {approval ? (
+                <ApprovalCard
+                  turnId={turn.id}
+                  approval={approval}
+                  result={approvalResult}
+                  onDecision={onApprovalDecision}
+                />
+              ) : null}
               {rendered.metrics ? (
                 <div className="mt-4 border-t border-edge/70 pt-2 font-mono text-[11px] leading-relaxed text-ink-dim">
                   {rendered.metrics}
@@ -633,6 +705,7 @@ function EmptyState({ slug, onPick }: { slug: string; onPick: (prompt: string) =
   const isStaticBookRecommender = slug === "domain-knowledge-pinecone-nexus";
   const isFreshBookRecommender = slug === "real-time-data-tavily";
   const isOrchestrationAgent = slug === "stronger-agents-langchain-langgraph";
+  const isActionAgent = slug === "actions-with-mcp-stripe";
   const isBookRecommender = isStaticBookRecommender || isFreshBookRecommender;
   const prompts = isFreshBookRecommender
     ? TAVILY_BOOK_PROMPTS
@@ -640,7 +713,9 @@ function EmptyState({ slug, onPick }: { slug: string; onPick: (prompt: string) =
       ? BOOK_RECOMMENDER_PROMPTS
       : isOrchestrationAgent
         ? ORCHESTRATION_PROMPTS
-        : SAMPLE_PROMPTS;
+        : isActionAgent
+          ? ACTION_PROMPTS
+          : SAMPLE_PROMPTS;
 
   return (
     <div className="flex min-h-[44dvh] flex-col items-center justify-center text-center">
@@ -651,6 +726,8 @@ function EmptyState({ slug, onPick }: { slug: string; onPick: (prompt: string) =
             ? "📚 A book recommender for your agent."
             : isOrchestrationAgent
               ? "A book-agent routing console."
+              : isActionAgent
+                ? "A book-action approval console."
               : "A console for your agent."}
         </h2>
         <p className="font-mono text-[12px] leading-relaxed text-ink-soft">
@@ -667,6 +744,12 @@ function EmptyState({ slug, onPick }: { slug: string; onPick: (prompt: string) =
               Watch LangGraph choose a route before Nebius streams tokens.
               <br />
               Try recommendations, latest-book questions, or prompts that need both taste and freshness.
+            </>
+          ) : isActionAgent ? (
+            <>
+              Ask for a fictional book checkout link.
+              <br />
+              The agent must wait for approval before Stripe MCP is called.
             </>
           ) : (
             <>
@@ -1091,6 +1174,112 @@ function EventRow({ event }: { event: SseEvent }) {
   );
 }
 
+interface ApprovalEvent {
+  approvalId: string;
+  action: string;
+  expiresAt?: string;
+  book: {
+    title: string;
+    author: string;
+    amount: number;
+    currency: string;
+    prices?: Record<string, number>;
+  };
+}
+
+function ApprovalCard({
+  turnId,
+  approval,
+  result,
+  onDecision,
+}: {
+  turnId: string;
+  approval: ApprovalEvent;
+  result: SseEvent | null;
+  onDecision: (turnId: string, approvalId: string, decision: "approve" | "reject") => void;
+}) {
+  const [now, setNow] = useState(() => Date.now());
+  const expiresAtMs = approval.expiresAt ? Date.parse(approval.expiresAt) : null;
+  const secondsRemaining =
+    typeof expiresAtMs === "number" && Number.isFinite(expiresAtMs)
+      ? Math.max(0, Math.ceil((expiresAtMs - now) / 1000))
+      : null;
+  const expired = secondsRemaining === 0;
+  const resultStatus = typeof result?.data.status === "string" ? result.data.status : null;
+  const checkoutUrl = typeof result?.data.checkoutUrl === "string" ? result.data.checkoutUrl : null;
+  const message = typeof result?.data.message === "string" ? result.data.message : null;
+  const disabled = Boolean(result) || expired;
+
+  useEffect(() => {
+    if (!expiresAtMs || result || expired) return;
+    const interval = window.setInterval(() => setNow(Date.now()), 1_000);
+    return () => window.clearInterval(interval);
+  }, [expired, expiresAtMs, result]);
+
+  return (
+    <div className="mt-4 border border-edge bg-surface/40 p-3">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="font-mono text-[10px] uppercase tracking-[0.16em] text-accent">
+            approval required
+          </div>
+          <div className="mt-1 text-sm font-medium text-ink">{approval.book.title}</div>
+          <div className="font-mono text-[11px] text-ink-dim">
+            {approval.book.author} · {formatMoney(approval.book.amount, approval.book.currency)}
+          </div>
+          {approval.book.prices ? (
+            <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.12em] text-ink-dim">
+              {formatPriceList(approval.book.prices)}
+            </div>
+          ) : null}
+        </div>
+        <Badge
+          tone={resultStatus === "rejected" || expired ? "warn" : checkoutUrl ? "accent" : "warn"}
+          bracket
+        >
+          {resultStatus ?? (expired ? "expired" : "pending")}
+        </Badge>
+      </div>
+      {secondsRemaining !== null ? (
+        <div className="mt-2 font-mono text-[10px] uppercase tracking-[0.14em] text-ink-dim">
+          {expired ? "approval expired" : `expires in ${formatCountdown(secondsRemaining)}`}
+        </div>
+      ) : null}
+      {checkoutUrl ? (
+        <a
+          href={checkoutUrl}
+          target="_blank"
+          rel="noreferrer"
+          className="mt-3 block truncate font-mono text-[11px] text-accent underline decoration-accent/40 underline-offset-2"
+        >
+          {checkoutUrl}
+        </a>
+      ) : message ? (
+        <p className="mt-3 font-mono text-[11px] text-ink-soft">{message}</p>
+      ) : null}
+      <div className="mt-3 flex gap-2">
+        <Button
+          type="button"
+          size="sm"
+          disabled={disabled}
+          onClick={() => onDecision(turnId, approval.approvalId, "approve")}
+        >
+          approve
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          variant="secondary"
+          disabled={disabled}
+          onClick={() => onDecision(turnId, approval.approvalId, "reject")}
+        >
+          reject
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 /* ── helpers ─────────────────────────────────────────────────────────────── */
 
 function formatVal(v: unknown): string {
@@ -1099,6 +1288,69 @@ function formatVal(v: unknown): string {
   if (Array.isArray(v)) return `[${v.length}]`;
   if (v && typeof v === "object") return `{${Object.keys(v).length}}`;
   return "null";
+}
+
+function formatMoney(amount: number, currency: string): string {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: currency.toUpperCase(),
+  }).format(amount / 100);
+}
+
+function formatPriceList(prices: Record<string, number>): string {
+  return Object.entries(prices)
+    .map(([currency, amount]) => formatMoney(amount, currency))
+    .join(" · ");
+}
+
+function formatCountdown(totalSeconds: number): string {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${String(seconds).padStart(2, "0")}`;
+}
+
+function latestApproval(events: SseEvent[]): ApprovalEvent | null {
+  for (let i = events.length - 1; i >= 0; i--) {
+    const ev = events[i];
+    if (ev?.name !== "approval_required") continue;
+    const approvalId = stringValue(ev.data.approvalId);
+    const action = stringValue(ev.data.action);
+    const book = ev.data.book;
+    if (!approvalId || !action || !book || typeof book !== "object" || Array.isArray(book)) {
+      continue;
+    }
+    const data = book as Record<string, unknown>;
+    const title = stringValue(data.title);
+    const author = stringValue(data.author);
+    const amount = numberValue(data.amount);
+    const currency = stringValue(data.currency);
+    const prices = pricesValue(data.prices);
+    if (!title || !author || typeof amount !== "number" || !currency) continue;
+    return {
+      approvalId,
+      action,
+      expiresAt: stringValue(ev.data.expiresAt),
+      book: { title, author, amount, currency, prices },
+    };
+  }
+  return null;
+}
+
+function pricesValue(value: unknown): Record<string, number> | undefined {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return undefined;
+  const out: Record<string, number> = {};
+  for (const [currency, amount] of Object.entries(value)) {
+    if (typeof amount === "number" && Number.isFinite(amount)) out[currency] = amount;
+  }
+  return Object.keys(out).length > 0 ? out : undefined;
+}
+
+function latestApprovalResult(events: SseEvent[], approvalId: string): SseEvent | null {
+  for (let i = events.length - 1; i >= 0; i--) {
+    const ev = events[i];
+    if (ev?.name === "approval_result" && ev.data.approvalId === approvalId) return ev;
+  }
+  return null;
 }
 
 function latestRunStats(turns: ChatTurn[]): RunStats | null {
