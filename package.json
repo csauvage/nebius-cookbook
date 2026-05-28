@@ -16,6 +16,7 @@
   "scripts": {
     "dev": "cd app && bun run dev",
     "build": "bun run build:recipes && cd app && bun run build",
+    "build:deploy": "bun run build && bun run scripts/prepare-standalone.ts",
     "build:readme": "bun run scripts/build-readme.ts",
     "build:recipes": "bun run scripts/build-recipes.ts",
     "backend": "bun run scripts/start-backend.ts",
@@ -24,7 +25,8 @@
     "new": "bun run scripts/new-cookbook.ts",
     "test:cookbooks": "bun run scripts/test-cookbooks.ts",
     "check:links": "bun run scripts/check-links.ts",
-    "check": "bun run validate && bun run build:readme --check"
+    "check": "bun run validate && bun run build:readme --check",
+    "start:deploy": "node app/.next/standalone/app/server.js"
   },
   "devDependencies": {
     "@nebius-cookbook/mdx-pipeline": "workspace:*",

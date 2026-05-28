@@ -53,3 +53,6 @@ jobs:
       - name: Typecheck Next.js app
         working-directory: app
         run: bun run typecheck
+
+      - name: Build deploy artifact
+        run: bun run build:deploy
