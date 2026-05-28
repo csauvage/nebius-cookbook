@@ -36,3 +36,7 @@ jobs:
       - name: Typecheck Next.js app
         working-directory: app
         run: bun run typecheck
+
+      - name: Build Next.js app
+        working-directory: app
+        run: bun run build
