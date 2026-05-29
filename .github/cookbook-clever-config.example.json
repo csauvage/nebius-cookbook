@@ -1,0 +1,15 @@
+{
+  "01-first-agent-on-nebius": {
+    "app_id": "CLEVER_APP_ID_01",
+    "vars": [
+      "ENV",
+      "LOG_LEVEL",
+      "CORS_ORIGINS",
+      "NEBIUS_BASE_URL",
+      "NEBIUS_MODEL"
+    ],
+    "secrets": [
+      "NEBIUS_API_KEY"
+    ]
+  }
+}

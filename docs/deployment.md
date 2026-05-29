@@ -69,6 +69,8 @@ Each cookbook entry contains:
 - `vars` — GitHub repository variable names to sync into Clever;
 - `secrets` — GitHub repository secret names to sync into Clever.
 
+A committed example for Cookbook #1 lives at `.github/cookbook-clever-config.example.json`.
+
 ```json
 {
   "09-actions-with-mcp-stripe": {
@@ -102,7 +104,7 @@ Only introduce a cookbook-specific prefix, such as `COOKBOOK_09_NEBIUS_API_KEY`,
 
 `.github/workflows/test-cookbooks.yml` detects changed runtime paths per cookbook.
 It tests only changed cookbooks, then publishes the changed cookbook list as a short-lived artifact.
-`.github/workflows/deploy-cookbooks.yml` consumes that artifact and deploys only changed cookbooks that are present in `COOKBOOK_CLEVER_APPS`.
+`.github/workflows/deploy-cookbooks.yml` consumes that artifact and deploys only changed cookbooks that are present in `COOKBOOK_CLEVER_CONFIG`.
 
 Runtime-impacting paths include:
 
