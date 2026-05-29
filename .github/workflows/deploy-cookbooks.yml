@@ -1,0 +1,117 @@
+name: deploy-cookbooks
+
+on:
+  workflow_run:
+    workflows: ["test-cookbooks"]
+    types: [completed]
+    branches: [main]
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: deploy-cookbooks-${{ github.event.workflow_run.head_sha }}
+  cancel-in-progress: false
+
+jobs:
+  discover:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    outputs:
+      deployables: ${{ steps.deployables.outputs.deployables }}
+      has_deploys: ${{ steps.deployables.outputs.has_deploys }}
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: changed-cookbooks
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+          path: .tmp/changed-cookbooks
+
+      - id: deployables
+        env:
+          COOKBOOK_CLEVER_APPS: ${{ vars.COOKBOOK_CLEVER_APPS }}
+        run: |
+          set -euo pipefail
+
+          mapping="${COOKBOOK_CLEVER_APPS:-{}}"
+          if ! jq -e 'type == "object"' <<< "$mapping" >/dev/null; then
+            echo "COOKBOOK_CLEVER_APPS must be a JSON object mapping cookbook folder names to Clever app IDs." >&2
+            exit 1
+          fi
+
+          changed_file=".tmp/changed-cookbooks/changed-cookbooks.json"
+          if [ ! -f "$changed_file" ]; then
+            echo "Missing changed cookbook artifact from test-cookbooks." >&2
+            exit 1
+          fi
+
+          deployables=$(jq -c --argjson mapping "$mapping" '
+            [
+              .[]
+              | select($mapping[.] != null)
+              | {cookbook: ., app_id: $mapping[.]}
+            ]
+          ' "$changed_file")
+          skipped=$(jq -r --argjson mapping "$mapping" '
+            [
+              .[]
+              | select($mapping[.] == null)
+            ]
+            | join(", ")
+          ' "$changed_file")
+
+          if [ -n "$skipped" ]; then
+            echo "Changed cookbooks without Clever app mapping: $skipped"
+          fi
+
+          echo "deployables=$deployables" >> "$GITHUB_OUTPUT"
+          if [ "$deployables" = "[]" ]; then
+            echo "has_deploys=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_deploys=true" >> "$GITHUB_OUTPUT"
+          fi
+
+  noop:
+    needs: discover
+    if: needs.discover.outputs.has_deploys == 'false'
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "No changed cookbook backends are mapped to Clever Cloud apps."
+
+  deploy:
+    needs: discover
+    if: needs.discover.outputs.has_deploys == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJson(needs.discover.outputs.deployables) }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+
+      - name: Install Clever Cloud CLI
+        run: npm install -g clever-tools
+
+      - name: Deploy cookbook backend to Clever Cloud
+        env:
+          CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
+          CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
+          CLEVER_APP_ID: ${{ matrix.app_id }}
+          COOKBOOK: ${{ matrix.cookbook }}
+        run: |
+          set -euo pipefail
+
+          alias="cookbook-${COOKBOOK}"
+          clever login --token "$CLEVER_TOKEN" --secret "$CLEVER_SECRET"
+          clever link "$CLEVER_APP_ID" --alias "$alias"
+          clever env set APP_FOLDER "cookbooks/$COOKBOOK" --alias "$alias"
+          clever env set CC_PYTHON_BACKEND uvicorn --alias "$alias"
+          clever env set CC_PYTHON_UV_RUN_COMMAND "uv run uvicorn app.main:app --host 0.0.0.0 --port 8080" --alias "$alias"
+          clever env set PORT 8080 --alias "$alias"
+          clever deploy --alias "$alias" --force --same-commit-policy rebuild

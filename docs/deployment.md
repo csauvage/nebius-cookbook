@@ -3,7 +3,7 @@
 This doc covers two deployment targets that ship together:
 
 1. **The catalog site** — Next.js app, hosted on [Clever Cloud](https://www.clever-cloud.com), auto-deployed on push to `main`.
-2. **Each cookbook** — a FastAPI service, deployed to [Nebius Compute](https://nebius.com) on demand.
+2. **Each cookbook** — a FastAPI service, deployable independently to Clever Cloud or Nebius Compute.
 
 The two are intentionally decoupled. The catalog never makes a runtime call to a cookbook.
 
@@ -33,11 +33,11 @@ Required env vars:
 
 ### Deploy
 
-A push to `main` triggers `.github/workflows/deploy-app.yml`, which:
+A push to `main` runs `test-cookbooks`, then `lint-app`, then `.github/workflows/deploy-app.yml`, which:
 
-1. Builds the app in CI
-2. Pushes to the Clever Cloud git remote (`clever`)
-3. Clever Cloud builds and rolls out the new release
+1. validates and tests the changed cookbooks;
+2. validates, lints, typechecks, and builds the web deploy artifact;
+3. asks Clever Cloud to rebuild and roll out the catalog app.
 
 Manual deploy from a developer machine is supported but unusual:
 
@@ -52,6 +52,55 @@ clever deploy
 ```bash
 clever activity   # find the previous successful commit
 clever deploy --commit <sha>
+```
+
+## Cookbook backends on Clever Cloud
+
+Cookbook FastAPI backends can also be deployed as independent Clever Cloud Python/uv apps.
+The workflow only rebuilds a backend when runtime code in that cookbook changed.
+
+### Configuration
+
+Create one Clever Cloud app per cookbook backend you want to deploy, then add a repository variable named `COOKBOOK_CLEVER_APPS`.
+It is a JSON object that maps cookbook folder names to Clever app IDs:
+
+```json
+{
+  "09-actions-with-mcp-stripe": "app_xxx"
+}
+```
+
+The workflow uses the shared `CLEVER_TOKEN` and `CLEVER_SECRET` repository secrets.
+Runtime secrets such as `NEBIUS_API_KEY`, `STRIPE_MCP_API_KEY`, `MEMORY_DATABASE_URL`, and partner API keys stay configured on the Clever Cloud app itself.
+
+### What triggers a backend rebuild
+
+`.github/workflows/test-cookbooks.yml` detects changed runtime paths per cookbook.
+It tests only changed cookbooks, then publishes the changed cookbook list as a short-lived artifact.
+`.github/workflows/deploy-cookbooks.yml` consumes that artifact and deploys only changed cookbooks that are present in `COOKBOOK_CLEVER_APPS`.
+
+Runtime-impacting paths include:
+
+- `app/**`
+- `scripts/**`
+- `pyproject.toml`
+- `uv.lock`
+- `.python-version`
+- `Dockerfile`
+- `Makefile`
+- `.env.example`
+
+Docs and metadata changes such as `README.md`, `docs/**`, `recipe.json`, and `assets/**` do not trigger backend tests or deploys.
+
+### Clever runtime
+
+The backend deploy workflow configures each mapped Clever app with:
+
+```text
+APP_FOLDER=cookbooks/<slug>
+CC_PYTHON_BACKEND=uvicorn
+CC_PYTHON_UV_RUN_COMMAND=uv run uvicorn app.main:app --host 0.0.0.0 --port 8080
+PORT=8080
 ```
 
 ## A cookbook on Nebius Compute
@@ -104,11 +153,12 @@ The cookbook emits Prometheus metrics on `/metrics`. Point your Prometheus scrap
 | Workflow | Trigger | What it does |
 |---|---|---|
 | `validate-recipes.yml` | push, PR | `bun run validate`, `bun run build:readme --check` |
-| `test-cookbooks.yml` | push, PR | For each cookbook: `uv sync --frozen`, `ruff check`, `ruff format --check`, `pytest` |
-| `build-app.yml` | push, PR | `bun install`, `bun run build:recipes`, `cd app && bun run build` |
-| `deploy-app.yml` | push to `main` | Build the app and push to Clever Cloud |
+| `test-cookbooks.yml` | push, PR | For changed cookbook runtime code: `uv sync --frozen`, `ruff check`, `ruff format --check`, `pytest` |
+| `lint-app.yml` | after `test-cookbooks`, PR | `bun install`, recipe validation, README check, recipe manifest, app lint/typecheck, deploy artifact build |
+| `deploy-app.yml` | after `lint-app` on `main` | Ask Clever Cloud to rebuild and roll out the catalog app |
+| `deploy-cookbooks.yml` | after `test-cookbooks` on `main` | Deploy changed mapped cookbook backends to Clever Cloud |
 
-All four are defined in `.github/workflows/`.
+All workflows are defined in `.github/workflows/`.
 
 ## Disaster recovery
 
