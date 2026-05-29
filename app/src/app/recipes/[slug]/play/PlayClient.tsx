@@ -44,6 +44,8 @@ interface RunStats {
 const DEFAULT_AGENT_URL = "http://localhost:8000";
 const DEFAULT_AGENT_URL_BY_SLUG: Partial<Record<string, string>> = {
   "first-agent-on-nebius": "https://nebius-partners-cookbook-one.cleverapps.io",
+  "domain-knowledge-pinecone-nexus": "https://nebius-partners-cookbook-two.cleverapps.io",
+  "real-time-data-tavily": "https://nebius-partners-cookbook-three.cleverapps.io",
 };
 const STORAGE_KEY = (slug: string) => `nebius-cookbook:agent-url:${slug}`;
 const THREAD_STORAGE_KEY = (slug: string) => `nebius-cookbook:thread-id:${slug}`;
