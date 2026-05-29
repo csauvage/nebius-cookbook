@@ -26,6 +26,7 @@ Required env vars:
 
 | Var | Value | Purpose |
 |---|---|---|
+| `CLEVER_APP_ID_FRONTEND` | `app_xxx` | GitHub repository variable used by `deploy-app.yml` |
 | `NEXT_PUBLIC_SITE_URL` | `https://cookbook.nebius.com` | Canonical URL, OG tags |
 | `NEXT_PUBLIC_GITHUB_REPO` | `https://github.com/csauvage/nebius-cookbook` | "Edit on GitHub" links |
 | `NODE_ENV` | `production` | Standard |
@@ -97,6 +98,8 @@ The workflow uses the shared `CLEVER_TOKEN` and `CLEVER_SECRET` repository secre
 GitHub Actions is also the source of truth for backend runtime configuration.
 Before each deploy, it resolves the configured GitHub variable and secret names, then pushes those values into the target Clever app using the same environment variable names.
 For the example above, create a repository variable named `CLEVER_APP_ID_09`, repository variables such as `ENV` and `BOOK_CATALOG_PATH`, and repository secrets such as `NEBIUS_API_KEY` and `STRIPE_MCP_API_KEY`.
+Keep backend app ID variables cookbook-specific, such as `CLEVER_APP_ID_01` or `CLEVER_APP_ID_09`.
+The frontend app uses `CLEVER_APP_ID_FRONTEND`.
 Use plain shared names by default.
 Only introduce a cookbook-specific prefix, such as `COOKBOOK_09_NEBIUS_API_KEY`, when that cookbook must use a different value from the shared `NEBIUS_API_KEY`.
 
