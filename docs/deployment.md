@@ -71,7 +71,42 @@ It is a JSON object that maps cookbook folder names to Clever app IDs:
 ```
 
 The workflow uses the shared `CLEVER_TOKEN` and `CLEVER_SECRET` repository secrets.
-Runtime secrets such as `NEBIUS_API_KEY`, `STRIPE_MCP_API_KEY`, `MEMORY_DATABASE_URL`, and partner API keys stay configured on the Clever Cloud app itself.
+GitHub Actions is also the source of truth for backend runtime configuration.
+Before each deploy, it syncs environment variables into the target Clever app from:
+
+- repository variable `COOKBOOK_CLEVER_ENV` for non-secret values;
+- repository secret `COOKBOOK_CLEVER_SECRETS` for secrets.
+
+Both values are JSON objects with optional `global` defaults and per-cookbook overrides:
+
+```json
+{
+  "global": {
+    "ENV": "production",
+    "LOG_LEVEL": "info",
+    "CORS_ORIGINS": "https://nebius-partners-cookbooks.cleverapps.io"
+  },
+  "09-actions-with-mcp-stripe": {
+    "LANGSMITH_PROJECT": "nebius-cookbook-actions",
+    "BOOK_CATALOG_PATH": "data/stripe_books.json",
+    "APPROVAL_TTL_SECONDS": "900"
+  }
+}
+```
+
+Secret values use the same shape:
+
+```json
+{
+  "09-actions-with-mcp-stripe": {
+    "NEBIUS_API_KEY": "...",
+    "STRIPE_MCP_API_KEY": "...",
+    "MEMORY_DATABASE_URL": "..."
+  }
+}
+```
+
+Use `COOKBOOK_CLEVER_SECRETS` for partner keys such as `NEBIUS_API_KEY`, `STRIPE_MCP_API_KEY`, `LANGSMITH_API_KEY`, database URLs, and any API key that should not be committed or displayed in logs.
 
 ### What triggers a backend rebuild
 

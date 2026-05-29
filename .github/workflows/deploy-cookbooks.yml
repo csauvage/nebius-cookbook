@@ -104,6 +104,8 @@ jobs:
           CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
           CLEVER_APP_ID: ${{ matrix.app_id }}
           COOKBOOK: ${{ matrix.cookbook }}
+          COOKBOOK_CLEVER_ENV: ${{ vars.COOKBOOK_CLEVER_ENV }}
+          COOKBOOK_CLEVER_SECRETS: ${{ secrets.COOKBOOK_CLEVER_SECRETS }}
         run: |
           set -euo pipefail
 
@@ -114,4 +116,29 @@ jobs:
           clever env set CC_PYTHON_BACKEND uvicorn --alias "$alias"
           clever env set CC_PYTHON_UV_RUN_COMMAND "uv run uvicorn app.main:app --host 0.0.0.0 --port 8080" --alias "$alias"
           clever env set PORT 8080 --alias "$alias"
+
+          sync_env_json() {
+            local source_json="$1"
+            local source_name="$2"
+            if [ -z "$source_json" ]; then
+              return
+            fi
+            if ! jq -e 'type == "object"' <<< "$source_json" >/dev/null; then
+              echo "$source_name must be a JSON object." >&2
+              exit 1
+            fi
+            jq -r --arg cookbook "$COOKBOOK" '
+              ((.global // {}) + (.[$cookbook] // {}))
+              | to_entries[]
+              | @base64
+            ' <<< "$source_json" | while IFS= read -r encoded; do
+              key="$(printf '%s' "$encoded" | base64 -d | jq -r '.key')"
+              value="$(printf '%s' "$encoded" | base64 -d | jq -r '.value | tostring')"
+              clever env set "$key" "$value" --alias "$alias"
+            done
+          }
+
+          sync_env_json "${COOKBOOK_CLEVER_ENV:-}" "COOKBOOK_CLEVER_ENV"
+          sync_env_json "${COOKBOOK_CLEVER_SECRETS:-}" "COOKBOOK_CLEVER_SECRETS"
+
           clever deploy --alias "$alias" --force --same-commit-policy rebuild
