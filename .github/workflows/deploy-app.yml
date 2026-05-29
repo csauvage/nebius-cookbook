@@ -79,7 +79,7 @@ jobs:
           clever env set CC_NODE_BUILD_TOOL bun
           clever env set CC_CUSTOM_BUILD_TOOL "bun"
           clever env set CC_NODE_DEV_DEPENDENCIES "install"
-          clever env set CC_POST_BUILD_HOOK "bun run build:deploy"
+          clever env set CC_POST_BUILD_HOOK "NEXT_TELEMETRY_DISABLED=1 bun run build:deploy"
           clever env set CC_RUN_COMMAND "bun run start:deploy"
           clever env set PORT 8080
           clever env set NEXT_PUBLIC_SITE_URL "$NEXT_PUBLIC_SITE_URL"
