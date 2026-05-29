@@ -23,9 +23,19 @@ class Settings(BaseSettings):
     nebius_api_key: str = Field(..., min_length=1, description="Nebius AgentKit API key")
     nebius_base_url: HttpUrl = Field(default=HttpUrl("https://api.studio.nebius.ai/v1/"))
     nebius_model: str = Field(default="meta-llama/Llama-3.3-70B-Instruct")
+    nebius_embedding_model: str = Field(default="Qwen/Qwen3-Embedding-8B")
     nebius_input_price_per_million_tokens: float = Field(default=0.0, ge=0.0)
     nebius_output_price_per_million_tokens: float = Field(default=0.0, ge=0.0)
+    nebius_embedding_price_per_million_tokens: float = Field(default=0.0, ge=0.0)
     nebius_enable_pricing_lookup: bool = Field(default=True)
+
+    # Inherited context layers from cookbook 02 and 03.
+    pinecone_api_key: str | None = Field(default=None)
+    pinecone_index_name: str | None = Field(default=None)
+    pinecone_namespace: str | None = Field(default=None)
+    tavily_api_key: str | None = Field(default=None)
+    tavily_search_depth: Literal["basic", "advanced"] = Field(default="basic")
+    tavily_max_results: int = Field(default=5, ge=1, le=10)
 
     # Server
     host: str = Field(default="0.0.0.0")
