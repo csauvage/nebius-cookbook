@@ -49,7 +49,13 @@ const STORAGE_KEY = (slug: string) => `nebius-cookbook:agent-url:${slug}`;
 const THREAD_STORAGE_KEY = (slug: string) => `nebius-cookbook:thread-id:${slug}`;
 const USER_STORAGE_KEY = (slug: string) => `nebius-cookbook:user-id:${slug}`;
 
+function isLocalFrontend(): boolean {
+  if (typeof window === "undefined") return false;
+  return ["localhost", "127.0.0.1", "::1"].includes(window.location.hostname);
+}
+
 function defaultAgentUrl(slug: string): string {
+  if (isLocalFrontend()) return DEFAULT_AGENT_URL;
   return DEFAULT_AGENT_URL_BY_SLUG[slug] ?? DEFAULT_AGENT_URL;
 }
 
