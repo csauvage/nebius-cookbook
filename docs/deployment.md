@@ -26,7 +26,7 @@ Required env vars:
 
 | Var | Value | Purpose |
 |---|---|---|
-| `CLEVER_APP_ID_FRONTEND` | `app_xxx` | GitHub repository variable used by `deploy-app.yml` |
+| `CLEVER_APP_ID_FRONTEND` | `app_xxx` | GitHub repository secret or variable used by `deploy-app.yml`; legacy `CLEVER_APP_ID` is also accepted as a fallback |
 | `NEXT_PUBLIC_SITE_URL` | `https://cookbook.nebius.com` | Canonical URL, OG tags |
 | `NEXT_PUBLIC_GITHUB_REPO` | `https://github.com/csauvage/nebius-cookbook` | "Edit on GitHub" links |
 | `NODE_ENV` | `production` | Standard |

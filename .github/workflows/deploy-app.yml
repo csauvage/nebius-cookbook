@@ -67,10 +67,15 @@ jobs:
         env:
           CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
           CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
-          CLEVER_APP_ID_FRONTEND: ${{ vars.CLEVER_APP_ID_FRONTEND }}
+          CLEVER_APP_ID_FRONTEND: ${{ secrets.CLEVER_APP_ID_FRONTEND || vars.CLEVER_APP_ID_FRONTEND || secrets.CLEVER_APP_ID || vars.CLEVER_APP_ID }}
           NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
           NEXT_PUBLIC_GITHUB_REPO: ${{ vars.NEXT_PUBLIC_GITHUB_REPO }}
         run: |
+          if [ -z "${CLEVER_APP_ID_FRONTEND:-}" ]; then
+            echo "Missing GitHub secret or variable CLEVER_APP_ID_FRONTEND for the frontend Clever app." >&2
+            echo "Legacy CLEVER_APP_ID is also accepted as a fallback." >&2
+            exit 1
+          fi
           clever login --token "$CLEVER_TOKEN" --secret "$CLEVER_SECRET"
           clever link "$CLEVER_APP_ID_FRONTEND"
           clever env set NODE_ENV production
