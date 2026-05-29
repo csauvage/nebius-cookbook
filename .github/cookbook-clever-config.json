@@ -1,6 +1,6 @@
 {
   "01-first-agent-on-nebius": {
-    "app_id": "CLEVER_APP_ID_01",
+    "app_id": "CLEVER_APP_ID_COOKBOOK_01",
     "vars": [
       "ENV",
       "LOG_LEVEL",
