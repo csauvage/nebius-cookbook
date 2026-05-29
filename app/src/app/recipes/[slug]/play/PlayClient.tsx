@@ -42,9 +42,16 @@ interface RunStats {
 }
 
 const DEFAULT_AGENT_URL = "http://localhost:8000";
+const DEFAULT_AGENT_URL_BY_SLUG: Partial<Record<string, string>> = {
+  "first-agent-on-nebius": "https://nebius-partners-cookbook-one.cleverapps.io",
+};
 const STORAGE_KEY = (slug: string) => `nebius-cookbook:agent-url:${slug}`;
 const THREAD_STORAGE_KEY = (slug: string) => `nebius-cookbook:thread-id:${slug}`;
 const USER_STORAGE_KEY = (slug: string) => `nebius-cookbook:user-id:${slug}`;
+
+function defaultAgentUrl(slug: string): string {
+  return DEFAULT_AGENT_URL_BY_SLUG[slug] ?? DEFAULT_AGENT_URL;
+}
 
 function newId(): string {
   return crypto.randomUUID();
@@ -86,7 +93,7 @@ const ACTION_PROMPTS = [
 ];
 
 export function PlayClient({ slug, title, tagline }: Props) {
-  const [agentUrl, setAgentUrl] = useState(DEFAULT_AGENT_URL);
+  const [agentUrl, setAgentUrl] = useState(() => defaultAgentUrl(slug));
   const [threadId, setThreadId] = useState("demo-thread");
   const [userId, setUserId] = useState("demo-user");
   const [draft, setDraft] = useState("");
@@ -101,7 +108,7 @@ export function PlayClient({ slug, title, tagline }: Props) {
 
   useEffect(() => {
     const stored = window.localStorage.getItem(STORAGE_KEY(slug));
-    if (stored) setAgentUrl(stored);
+    setAgentUrl(stored || defaultAgentUrl(slug));
     const storedThreadId = window.localStorage.getItem(THREAD_STORAGE_KEY(slug));
     if (storedThreadId) setThreadId(storedThreadId);
     const storedUserId = window.localStorage.getItem(USER_STORAGE_KEY(slug));
