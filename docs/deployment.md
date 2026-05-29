@@ -61,52 +61,42 @@ The workflow only rebuilds a backend when runtime code in that cookbook changed.
 
 ### Configuration
 
-Create one Clever Cloud app per cookbook backend you want to deploy, then add a repository variable named `COOKBOOK_CLEVER_APPS`.
-It is a JSON object that maps cookbook folder names to Clever app IDs:
+Create one Clever Cloud app per cookbook backend you want to deploy, then add a repository variable named `COOKBOOK_CLEVER_CONFIG`.
+It is a JSON object keyed by cookbook folder name.
+Each cookbook entry contains:
+
+- `app_id` — the GitHub repository variable name that stores the Clever app ID;
+- `vars` — GitHub repository variable names to sync into Clever;
+- `secrets` — GitHub repository secret names to sync into Clever.
 
 ```json
 {
-  "09-actions-with-mcp-stripe": "app_xxx"
+  "09-actions-with-mcp-stripe": {
+    "app_id": "CLEVER_APP_ID_09",
+    "vars": [
+      "ENV",
+      "LOG_LEVEL",
+      "CORS_ORIGINS",
+      "LANGSMITH_PROJECT",
+      "BOOK_CATALOG_PATH",
+      "APPROVAL_TTL_SECONDS"
+    ],
+    "secrets": [
+      "NEBIUS_API_KEY",
+      "STRIPE_MCP_API_KEY",
+      "MEMORY_DATABASE_URL",
+      "LANGSMITH_API_KEY"
+    ]
+  }
 }
 ```
 
 The workflow uses the shared `CLEVER_TOKEN` and `CLEVER_SECRET` repository secrets.
 GitHub Actions is also the source of truth for backend runtime configuration.
-Before each deploy, it syncs environment variables into the target Clever app from:
-
-- repository variable `COOKBOOK_CLEVER_ENV` for non-secret values;
-- repository secret `COOKBOOK_CLEVER_SECRETS` for secrets.
-
-Both values are JSON objects with optional `global` defaults and per-cookbook overrides:
-
-```json
-{
-  "global": {
-    "ENV": "production",
-    "LOG_LEVEL": "info",
-    "CORS_ORIGINS": "https://nebius-partners-cookbooks.cleverapps.io"
-  },
-  "09-actions-with-mcp-stripe": {
-    "LANGSMITH_PROJECT": "nebius-cookbook-actions",
-    "BOOK_CATALOG_PATH": "data/stripe_books.json",
-    "APPROVAL_TTL_SECONDS": "900"
-  }
-}
-```
-
-Secret values use the same shape:
-
-```json
-{
-  "09-actions-with-mcp-stripe": {
-    "NEBIUS_API_KEY": "...",
-    "STRIPE_MCP_API_KEY": "...",
-    "MEMORY_DATABASE_URL": "..."
-  }
-}
-```
-
-Use `COOKBOOK_CLEVER_SECRETS` for partner keys such as `NEBIUS_API_KEY`, `STRIPE_MCP_API_KEY`, `LANGSMITH_API_KEY`, database URLs, and any API key that should not be committed or displayed in logs.
+Before each deploy, it resolves the configured GitHub variable and secret names, then pushes those values into the target Clever app using the same environment variable names.
+For the example above, create a repository variable named `CLEVER_APP_ID_09`, repository variables such as `ENV` and `BOOK_CATALOG_PATH`, and repository secrets such as `NEBIUS_API_KEY` and `STRIPE_MCP_API_KEY`.
+Use plain shared names by default.
+Only introduce a cookbook-specific prefix, such as `COOKBOOK_09_NEBIUS_API_KEY`, when that cookbook must use a different value from the shared `NEBIUS_API_KEY`.
 
 ### What triggers a backend rebuild
 
