@@ -11,8 +11,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: deploy-cookbooks-${{ github.event.workflow_run.head_sha }}
-  cancel-in-progress: false
+  group: deploy-cookbooks-main
+  cancel-in-progress: true
 
 jobs:
   discover:
@@ -27,7 +27,19 @@ jobs:
           ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 1
 
+      - id: current
+        run: |
+          set -euo pipefail
+          latest_main="$(git ls-remote origin refs/heads/main | awk '{print $1}')"
+          if [ "${{ github.event.workflow_run.head_sha }}" = "$latest_main" ]; then
+            echo "is_current=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Skipping stale cookbook deploy for ${{ github.event.workflow_run.head_sha }}; latest main is $latest_main."
+            echo "is_current=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/download-artifact@v4
+        if: steps.current.outputs.is_current == 'true'
         with:
           name: changed-cookbooks
           run-id: ${{ github.event.workflow_run.id }}
@@ -39,6 +51,12 @@ jobs:
           ACTIONS_VARS: ${{ toJson(vars) }}
         run: |
           set -euo pipefail
+
+          if [ "${{ steps.current.outputs.is_current }}" != "true" ]; then
+            echo "deployables=[]" >> "$GITHUB_OUTPUT"
+            echo "has_deploys=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
 
           config_file=".github/cookbook-clever-config.json"
           if [ ! -f "$config_file" ]; then
