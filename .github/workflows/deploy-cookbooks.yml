@@ -81,7 +81,8 @@ jobs:
                   cookbook: .,
                   app_id_var: $config[.].app_id,
                   vars: ($config[.].vars // []),
-                  secrets: ($config[.].secrets // [])
+                  secrets: ($config[.].secrets // []),
+                  unset: ($config[.].unset // [])
                 }
               | select((.app_id_var | type) == "string" and .app_id_var != "")
             ]
@@ -141,6 +142,7 @@ jobs:
           COOKBOOK: ${{ matrix.cookbook }}
           COOKBOOK_VAR_NAMES: ${{ toJson(matrix.vars) }}
           COOKBOOK_SECRET_NAMES: ${{ toJson(matrix.secrets) }}
+          COOKBOOK_UNSET_NAMES: ${{ toJson(matrix.unset) }}
           CLEVER_APP_ID_COOKBOOK_01: ${{ secrets.CLEVER_APP_ID_COOKBOOK_01 }}
           CLEVER_APP_ID_COOKBOOK_02: ${{ secrets.CLEVER_APP_ID_COOKBOOK_02 }}
           CLEVER_APP_ID_COOKBOOK_03: ${{ secrets.CLEVER_APP_ID_COOKBOOK_03 }}
@@ -234,5 +236,21 @@ jobs:
 
           sync_names_json "${COOKBOOK_VAR_NAMES:-[]}" "variable"
           sync_names_json "${COOKBOOK_SECRET_NAMES:-[]}" "secret"
+
+          unset_names_json() {
+            local names_json="$1"
+            if [ -z "$names_json" ]; then
+              return
+            fi
+            if ! jq -e 'type == "array"' <<< "$names_json" >/dev/null; then
+              echo "unset entries must be a JSON array of Clever environment variable names." >&2
+              exit 1
+            fi
+            jq -r '.[]' <<< "$names_json" | while IFS= read -r key; do
+              clever env rm "$key" --alias "$alias" || true
+            done
+          }
+
+          unset_names_json "${COOKBOOK_UNSET_NAMES:-[]}"
 
           clever deploy --alias "$alias" --force --same-commit-policy rebuild

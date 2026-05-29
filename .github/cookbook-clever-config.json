@@ -24,12 +24,14 @@
       "NEBIUS_INPUT_PRICE_PER_MILLION_TOKENS",
       "NEBIUS_OUTPUT_PRICE_PER_MILLION_TOKENS",
       "NEBIUS_EMBEDDING_PRICE_PER_MILLION_TOKENS",
-      "PINECONE_INDEX_NAME",
-      "PINECONE_NAMESPACE"
+      "PINECONE_INDEX_NAME"
     ],
     "secrets": [
       "NEBIUS_API_KEY",
       "PINECONE_API_KEY"
+    ],
+    "unset": [
+      "PINECONE_NAMESPACE"
     ]
   },
   "03-real-time-data-tavily": {
@@ -70,7 +72,6 @@
       "NEBIUS_OUTPUT_PRICE_PER_MILLION_TOKENS",
       "NEBIUS_EMBEDDING_PRICE_PER_MILLION_TOKENS",
       "PINECONE_INDEX_NAME",
-      "PINECONE_NAMESPACE",
       "TAVILY_SEARCH_DEPTH",
       "TAVILY_MAX_RESULTS",
       "DIRECT_RESPONSE_MAX_TOKENS",
@@ -81,6 +82,9 @@
       "NEBIUS_API_KEY",
       "PINECONE_API_KEY",
       "TAVILY_API_KEY"
+    ],
+    "unset": [
+      "PINECONE_NAMESPACE"
     ]
   }
 }

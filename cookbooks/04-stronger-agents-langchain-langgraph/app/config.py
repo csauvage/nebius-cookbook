@@ -70,6 +70,16 @@ class Settings(BaseSettings):
             return [v.strip() for v in value.split(",") if v.strip()]
         return value
 
+    @field_validator("pinecone_namespace", mode="before")
+    @classmethod
+    def _normalize_pinecone_namespace(cls, value: object) -> object:
+        """Treat Pinecone's console label for the default namespace as no namespace."""
+        if isinstance(value, str):
+            value = value.strip()
+            if value.lower() in {"", "__default__", "default"}:
+                return None
+        return value
+
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:

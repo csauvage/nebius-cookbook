@@ -52,6 +52,15 @@ class Settings(BaseSettings):
             return [item.strip() for item in value.split(",") if item.strip()]
         return value
 
+    @field_validator("pinecone_namespace", mode="before")
+    @classmethod
+    def _normalize_pinecone_namespace(cls, value: object) -> object:
+        if isinstance(value, str):
+            value = value.strip()
+            if value.lower() in {"", "__default__", "default"}:
+                return None
+        return value
+
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:
