@@ -47,8 +47,6 @@ jobs:
           path: .tmp/changed-cookbooks
 
       - id: deployables
-        env:
-          ACTIONS_VARS: ${{ toJson(vars) }}
         run: |
           set -euo pipefail
 
@@ -68,11 +66,6 @@ jobs:
             echo "$config_file must be a JSON object mapping cookbook folder names to Clever config." >&2
             exit 1
           fi
-          actions_vars="${ACTIONS_VARS:-{}}"
-          if ! jq -e 'type == "object"' <<< "$actions_vars" >/dev/null; then
-            echo "GitHub vars context must be a JSON object." >&2
-            exit 1
-          fi
 
           changed_file=".tmp/changed-cookbooks/changed-cookbooks.json"
           if [ ! -f "$changed_file" ]; then
@@ -80,27 +73,25 @@ jobs:
             exit 1
           fi
 
-          deployables=$(jq -c --argjson config "$config" --argjson actions_vars "$actions_vars" '
+          deployables=$(jq -c --argjson config "$config" '
             [
               .[]
               | select($config[.] != null)
               | {
                   cookbook: .,
                   app_id_var: $config[.].app_id,
-                  app_id: $actions_vars[$config[.].app_id],
                   vars: ($config[.].vars // []),
                   secrets: ($config[.].secrets // [])
                 }
-              | select((.app_id_var | type) == "string" and (.app_id | type) == "string" and .app_id != "")
+              | select((.app_id_var | type) == "string" and .app_id_var != "")
             ]
           ' "$changed_file")
-          skipped=$(jq -r --argjson config "$config" --argjson actions_vars "$actions_vars" '
+          skipped=$(jq -r --argjson config "$config" '
             [
               .[]
               | select(
                   $config[.] == null
                   or (($config[.].app_id | type) != "string")
-                  or (($actions_vars[$config[.].app_id] // "") == "")
                 )
             ]
             | join(", ")
@@ -146,16 +137,74 @@ jobs:
         env:
           CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
           CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
-          CLEVER_APP_ID: ${{ matrix.app_id }}
+          CLEVER_APP_ID_VAR: ${{ matrix.app_id_var }}
           COOKBOOK: ${{ matrix.cookbook }}
           COOKBOOK_VAR_NAMES: ${{ toJson(matrix.vars) }}
           COOKBOOK_SECRET_NAMES: ${{ toJson(matrix.secrets) }}
-          ACTIONS_VARS: ${{ toJson(vars) }}
-          ACTIONS_SECRETS: ${{ toJson(secrets) }}
+          CLEVER_APP_ID_COOKBOOK_01: ${{ vars.CLEVER_APP_ID_COOKBOOK_01 }}
+          CLEVER_APP_ID_COOKBOOK_02: ${{ vars.CLEVER_APP_ID_COOKBOOK_02 }}
+          CLEVER_APP_ID_COOKBOOK_03: ${{ vars.CLEVER_APP_ID_COOKBOOK_03 }}
+          CLEVER_APP_ID_COOKBOOK_04: ${{ vars.CLEVER_APP_ID_COOKBOOK_04 }}
+          CLEVER_APP_ID_COOKBOOK_05: ${{ vars.CLEVER_APP_ID_COOKBOOK_05 }}
+          CLEVER_APP_ID_COOKBOOK_06: ${{ vars.CLEVER_APP_ID_COOKBOOK_06 }}
+          CLEVER_APP_ID_COOKBOOK_07: ${{ vars.CLEVER_APP_ID_COOKBOOK_07 }}
+          CLEVER_APP_ID_COOKBOOK_08: ${{ vars.CLEVER_APP_ID_COOKBOOK_08 }}
+          CLEVER_APP_ID_COOKBOOK_09: ${{ vars.CLEVER_APP_ID_COOKBOOK_09 }}
+          CLEVER_APP_ID_COOKBOOK_10: ${{ vars.CLEVER_APP_ID_COOKBOOK_10 }}
+          ENV: ${{ vars.ENV }}
+          LOG_LEVEL: ${{ vars.LOG_LEVEL }}
+          CORS_ORIGINS: ${{ vars.CORS_ORIGINS }}
+          ALLOW_LOCALHOST_CORS: ${{ vars.ALLOW_LOCALHOST_CORS }}
+          NEBIUS_BASE_URL: ${{ vars.NEBIUS_BASE_URL }}
+          NEBIUS_MODEL: ${{ vars.NEBIUS_MODEL }}
+          NEBIUS_EMBEDDING_MODEL: ${{ vars.NEBIUS_EMBEDDING_MODEL }}
+          NEBIUS_ENABLE_PRICING_LOOKUP: ${{ vars.NEBIUS_ENABLE_PRICING_LOOKUP }}
+          NEBIUS_INPUT_PRICE_PER_MILLION_TOKENS: ${{ vars.NEBIUS_INPUT_PRICE_PER_MILLION_TOKENS }}
+          NEBIUS_OUTPUT_PRICE_PER_MILLION_TOKENS: ${{ vars.NEBIUS_OUTPUT_PRICE_PER_MILLION_TOKENS }}
+          NEBIUS_EMBEDDING_PRICE_PER_MILLION_TOKENS: ${{ vars.NEBIUS_EMBEDDING_PRICE_PER_MILLION_TOKENS }}
+          DIRECT_RESPONSE_MAX_TOKENS: ${{ vars.DIRECT_RESPONSE_MAX_TOKENS }}
+          DELIBERATE_RESPONSE_MAX_TOKENS: ${{ vars.DELIBERATE_RESPONSE_MAX_TOKENS }}
+          FIRST_TOKEN_TARGET_MS: ${{ vars.FIRST_TOKEN_TARGET_MS }}
+          PINECONE_INDEX_NAME: ${{ vars.PINECONE_INDEX_NAME }}
+          PINECONE_CLOUD: ${{ vars.PINECONE_CLOUD }}
+          PINECONE_REGION: ${{ vars.PINECONE_REGION }}
+          PINECONE_NAMESPACE: ${{ vars.PINECONE_NAMESPACE }}
+          TAVILY_SEARCH_DEPTH: ${{ vars.TAVILY_SEARCH_DEPTH }}
+          TAVILY_MAX_RESULTS: ${{ vars.TAVILY_MAX_RESULTS }}
+          LANGSMITH_TRACING: ${{ vars.LANGSMITH_TRACING }}
+          LANGSMITH_PROJECT: ${{ vars.LANGSMITH_PROJECT }}
+          LANGSMITH_ENDPOINT: ${{ vars.LANGSMITH_ENDPOINT }}
+          LANGCHAIN_TRACING_V2: ${{ vars.LANGCHAIN_TRACING_V2 }}
+          MEMORY_BACKEND: ${{ vars.MEMORY_BACKEND }}
+          LONG_TERM_MEMORY_LIMIT: ${{ vars.LONG_TERM_MEMORY_LIMIT }}
+          GUARDRAILS_ENABLED: ${{ vars.GUARDRAILS_ENABLED }}
+          GUARDRAILS_TOPIC: ${{ vars.GUARDRAILS_TOPIC }}
+          GUARDRAILS_MAX_OUTPUT_CHARS: ${{ vars.GUARDRAILS_MAX_OUTPUT_CHARS }}
+          STRIPE_MCP_BASE_URL: ${{ vars.STRIPE_MCP_BASE_URL }}
+          STRIPE_IMAGE_BASE_URL: ${{ vars.STRIPE_IMAGE_BASE_URL }}
+          STRIPE_CURRENCY: ${{ vars.STRIPE_CURRENCY }}
+          BOOK_CATALOG_PATH: ${{ vars.BOOK_CATALOG_PATH }}
+          APPROVAL_TTL_SECONDS: ${{ vars.APPROVAL_TTL_SECONDS }}
+          NEBIUS_API_KEY: ${{ secrets.NEBIUS_API_KEY }}
+          TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+          PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
+          MEMORY_DATABASE_URL: ${{ secrets.MEMORY_DATABASE_URL }}
+          LANGSMITH_API_KEY: ${{ secrets.LANGSMITH_API_KEY }}
+          STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
+          STRIPE_MCP_API_KEY: ${{ secrets.STRIPE_MCP_API_KEY }}
         run: |
           set -euo pipefail
 
           alias="cookbook-${COOKBOOK}"
+          if [ -z "${CLEVER_APP_ID_VAR:-}" ]; then
+            echo "Missing app_id entry for $COOKBOOK in .github/cookbook-clever-config.json." >&2
+            exit 1
+          fi
+          CLEVER_APP_ID="$(printenv "$CLEVER_APP_ID_VAR" || true)"
+          if [ -z "$CLEVER_APP_ID" ]; then
+            echo "Missing GitHub variable $CLEVER_APP_ID_VAR for $COOKBOOK." >&2
+            exit 1
+          fi
           clever login --token "$CLEVER_TOKEN" --secret "$CLEVER_SECRET"
           clever link "$CLEVER_APP_ID" --alias "$alias"
           clever env set APP_FOLDER "cookbooks/$COOKBOOK" --alias "$alias"
@@ -165,7 +214,6 @@ jobs:
 
           sync_names_json() {
             local names_json="$1"
-            local values_json="$2"
             local source_name="$3"
             if [ -z "$names_json" ]; then
               return
@@ -174,12 +222,8 @@ jobs:
               echo "$source_name must be a JSON array of GitHub variable or secret names." >&2
               exit 1
             fi
-            if ! jq -e 'type == "object"' <<< "$values_json" >/dev/null; then
-              echo "$source_name values must be a JSON object." >&2
-              exit 1
-            fi
             jq -r '.[]' <<< "$names_json" | while IFS= read -r key; do
-              value="$(jq -r --arg name "$key" '.[$name] // empty' <<< "$values_json")"
+              value="$(printenv "$key" || true)"
               if [ -z "$value" ]; then
                 echo "Missing GitHub $source_name referenced by $COOKBOOK: $key" >&2
                 exit 1
@@ -188,7 +232,7 @@ jobs:
             done
           }
 
-          sync_names_json "${COOKBOOK_VAR_NAMES:-[]}" "${ACTIONS_VARS:-{}}" "variable"
-          sync_names_json "${COOKBOOK_SECRET_NAMES:-[]}" "${ACTIONS_SECRETS:-{}}" "secret"
+          sync_names_json "${COOKBOOK_VAR_NAMES:-[]}" "variable"
+          sync_names_json "${COOKBOOK_SECRET_NAMES:-[]}" "secret"
 
           clever deploy --alias "$alias" --force --same-commit-policy rebuild
