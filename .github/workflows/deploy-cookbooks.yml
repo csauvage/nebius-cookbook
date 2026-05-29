@@ -214,7 +214,7 @@ jobs:
 
           sync_names_json() {
             local names_json="$1"
-            local source_name="$3"
+            local source_name="$2"
             if [ -z "$names_json" ]; then
               return
             fi
