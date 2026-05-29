@@ -66,7 +66,7 @@ Create one Clever Cloud app per cookbook backend you want to deploy, then edit `
 It is keyed by cookbook folder name.
 Each cookbook entry contains:
 
-- `app_id` — the GitHub repository variable name that stores the Clever app ID;
+- `app_id` — the GitHub repository secret name that stores the Clever app ID;
 - `vars` — GitHub repository variable names to sync into Clever;
 - `secrets` — GitHub repository secret names to sync into Clever.
 
@@ -97,7 +97,7 @@ The committed config lives at `.github/cookbook-clever-config.json`.
 The workflow uses the shared `CLEVER_TOKEN` and `CLEVER_SECRET` repository secrets.
 GitHub Actions is also the source of truth for backend runtime configuration.
 Before each deploy, it resolves the configured GitHub variable and secret names, then pushes those values into the target Clever app using the same environment variable names.
-For the example above, create a repository variable named `CLEVER_APP_ID_COOKBOOK_09`, repository variables such as `ENV` and `BOOK_CATALOG_PATH`, and repository secrets such as `NEBIUS_API_KEY` and `STRIPE_MCP_API_KEY`.
+For the example above, create a repository secret named `CLEVER_APP_ID_COOKBOOK_09`, repository variables such as `ENV` and `BOOK_CATALOG_PATH`, and repository secrets such as `NEBIUS_API_KEY` and `STRIPE_MCP_API_KEY`.
 If a new cookbook introduces a new runtime setting name, add that name to `.github/cookbook-clever-config.json` and expose the matching GitHub Actions `vars` or `secrets` entry in `.github/workflows/deploy-cookbooks.yml`.
 Keep backend app ID variables cookbook-specific, such as `CLEVER_APP_ID_COOKBOOK_01` or `CLEVER_APP_ID_COOKBOOK_09`.
 The frontend app uses `CLEVER_APP_ID_FRONTEND`.

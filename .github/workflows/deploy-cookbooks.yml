@@ -141,16 +141,16 @@ jobs:
           COOKBOOK: ${{ matrix.cookbook }}
           COOKBOOK_VAR_NAMES: ${{ toJson(matrix.vars) }}
           COOKBOOK_SECRET_NAMES: ${{ toJson(matrix.secrets) }}
-          CLEVER_APP_ID_COOKBOOK_01: ${{ vars.CLEVER_APP_ID_COOKBOOK_01 }}
-          CLEVER_APP_ID_COOKBOOK_02: ${{ vars.CLEVER_APP_ID_COOKBOOK_02 }}
-          CLEVER_APP_ID_COOKBOOK_03: ${{ vars.CLEVER_APP_ID_COOKBOOK_03 }}
-          CLEVER_APP_ID_COOKBOOK_04: ${{ vars.CLEVER_APP_ID_COOKBOOK_04 }}
-          CLEVER_APP_ID_COOKBOOK_05: ${{ vars.CLEVER_APP_ID_COOKBOOK_05 }}
-          CLEVER_APP_ID_COOKBOOK_06: ${{ vars.CLEVER_APP_ID_COOKBOOK_06 }}
-          CLEVER_APP_ID_COOKBOOK_07: ${{ vars.CLEVER_APP_ID_COOKBOOK_07 }}
-          CLEVER_APP_ID_COOKBOOK_08: ${{ vars.CLEVER_APP_ID_COOKBOOK_08 }}
-          CLEVER_APP_ID_COOKBOOK_09: ${{ vars.CLEVER_APP_ID_COOKBOOK_09 }}
-          CLEVER_APP_ID_COOKBOOK_10: ${{ vars.CLEVER_APP_ID_COOKBOOK_10 }}
+          CLEVER_APP_ID_COOKBOOK_01: ${{ secrets.CLEVER_APP_ID_COOKBOOK_01 }}
+          CLEVER_APP_ID_COOKBOOK_02: ${{ secrets.CLEVER_APP_ID_COOKBOOK_02 }}
+          CLEVER_APP_ID_COOKBOOK_03: ${{ secrets.CLEVER_APP_ID_COOKBOOK_03 }}
+          CLEVER_APP_ID_COOKBOOK_04: ${{ secrets.CLEVER_APP_ID_COOKBOOK_04 }}
+          CLEVER_APP_ID_COOKBOOK_05: ${{ secrets.CLEVER_APP_ID_COOKBOOK_05 }}
+          CLEVER_APP_ID_COOKBOOK_06: ${{ secrets.CLEVER_APP_ID_COOKBOOK_06 }}
+          CLEVER_APP_ID_COOKBOOK_07: ${{ secrets.CLEVER_APP_ID_COOKBOOK_07 }}
+          CLEVER_APP_ID_COOKBOOK_08: ${{ secrets.CLEVER_APP_ID_COOKBOOK_08 }}
+          CLEVER_APP_ID_COOKBOOK_09: ${{ secrets.CLEVER_APP_ID_COOKBOOK_09 }}
+          CLEVER_APP_ID_COOKBOOK_10: ${{ secrets.CLEVER_APP_ID_COOKBOOK_10 }}
           ENV: ${{ vars.ENV }}
           LOG_LEVEL: ${{ vars.LOG_LEVEL }}
           CORS_ORIGINS: ${{ vars.CORS_ORIGINS }}
@@ -202,7 +202,7 @@ jobs:
           fi
           CLEVER_APP_ID="$(printenv "$CLEVER_APP_ID_VAR" || true)"
           if [ -z "$CLEVER_APP_ID" ]; then
-            echo "Missing GitHub variable $CLEVER_APP_ID_VAR for $COOKBOOK." >&2
+            echo "Missing GitHub secret $CLEVER_APP_ID_VAR for $COOKBOOK." >&2
             exit 1
           fi
           clever login --token "$CLEVER_TOKEN" --secret "$CLEVER_SECRET"
