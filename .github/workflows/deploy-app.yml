@@ -11,7 +11,7 @@ permissions:
 
 concurrency:
   group: deploy-app
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   deploy:
@@ -24,10 +24,46 @@ jobs:
           ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0  # full history needed for Clever Cloud git push
 
+      - id: deployable
+        run: |
+          set -euo pipefail
+
+          latest_main="$(git ls-remote origin refs/heads/main | awk '{print $1}')"
+          if [ "${{ github.event.workflow_run.head_sha }}" != "$latest_main" ]; then
+            echo "Skipping stale frontend deploy for ${{ github.event.workflow_run.head_sha }}; latest main is $latest_main."
+            echo "should_deploy=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if git rev-parse HEAD^ >/dev/null 2>&1; then
+            changed_files="$(git diff --name-only HEAD^ HEAD)"
+          else
+            changed_files="$(git ls-files)"
+          fi
+
+          should_deploy=false
+          while IFS= read -r file; do
+            case "$file" in
+              app/*|packages/*|scripts/*|README/*|schemas/*|README.md|package.json|bun.lock|bunfig.toml|.nvmrc|.github/workflows/deploy-app.yml|.github/workflows/lint-app.yml)
+                should_deploy=true
+                ;;
+              cookbooks/*/README.md|cookbooks/*/recipe.json|cookbooks/*/assets/*|cookbooks/*/docs/*)
+                should_deploy=true
+                ;;
+            esac
+          done <<< "$changed_files"
+
+          echo "should_deploy=$should_deploy" >> "$GITHUB_OUTPUT"
+          if [ "$should_deploy" = "false" ]; then
+            echo "No frontend-impacting changes detected; skipping Clever Cloud frontend deploy."
+          fi
+
       - name: Install Clever Cloud CLI
+        if: steps.deployable.outputs.should_deploy == 'true'
         run: npm install -g clever-tools
 
       - name: Deploy to Clever Cloud
+        if: steps.deployable.outputs.should_deploy == 'true'
         env:
           CLEVER_TOKEN: ${{ secrets.CLEVER_TOKEN }}
           CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
@@ -38,6 +74,7 @@ jobs:
           clever login --token "$CLEVER_TOKEN" --secret "$CLEVER_SECRET"
           clever link "$CLEVER_APP_ID_FRONTEND"
           clever env set NODE_ENV production
+          clever env set NEXT_TELEMETRY_DISABLED 1
           clever env set HOSTNAME 0.0.0.0
           clever env set CC_NODE_BUILD_TOOL bun
           clever env set CC_CUSTOM_BUILD_TOOL "bun"
