@@ -65,6 +65,7 @@ app = FastAPI(
 
 settings = get_settings()
 app.state.limiter = limiter
+app.state.cookbook_slug = "01-first-agent-on-nebius"
 
 # Middleware order matters: ASGI wraps last-added → first-added, so the LAST
 # `add_middleware` call runs FIRST on the request (and LAST on the response).
