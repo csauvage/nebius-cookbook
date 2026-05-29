@@ -22,6 +22,11 @@ jobs:
       deployables: ${{ steps.deployables.outputs.deployables }}
       has_deploys: ${{ steps.deployables.outputs.has_deploys }}
     steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 1
+
       - uses: actions/download-artifact@v4
         with:
           name: changed-cookbooks
@@ -31,14 +36,18 @@ jobs:
 
       - id: deployables
         env:
-          COOKBOOK_CLEVER_CONFIG: ${{ vars.COOKBOOK_CLEVER_CONFIG }}
           ACTIONS_VARS: ${{ toJson(vars) }}
         run: |
           set -euo pipefail
 
-          config="${COOKBOOK_CLEVER_CONFIG:-{}}"
+          config_file=".github/cookbook-clever-config.json"
+          if [ ! -f "$config_file" ]; then
+            echo "Missing $config_file." >&2
+            exit 1
+          fi
+          config="$(cat "$config_file")"
           if ! jq -e 'type == "object"' <<< "$config" >/dev/null; then
-            echo "COOKBOOK_CLEVER_CONFIG must be a JSON object mapping cookbook folder names to Clever config." >&2
+            echo "$config_file must be a JSON object mapping cookbook folder names to Clever config." >&2
             exit 1
           fi
           actions_vars="${ACTIONS_VARS:-{}}"

@@ -61,15 +61,15 @@ The workflow only rebuilds a backend when runtime code in that cookbook changed.
 
 ### Configuration
 
-Create one Clever Cloud app per cookbook backend you want to deploy, then add a repository variable named `COOKBOOK_CLEVER_CONFIG`.
-It is a JSON object keyed by cookbook folder name.
+Create one Clever Cloud app per cookbook backend you want to deploy, then edit `.github/cookbook-clever-config.json`.
+It is keyed by cookbook folder name.
 Each cookbook entry contains:
 
 - `app_id` — the GitHub repository variable name that stores the Clever app ID;
 - `vars` — GitHub repository variable names to sync into Clever;
 - `secrets` — GitHub repository secret names to sync into Clever.
 
-A committed example for Cookbook #1 lives at `.github/cookbook-clever-config.example.json`.
+The committed config lives at `.github/cookbook-clever-config.json`.
 
 ```json
 {
@@ -104,7 +104,7 @@ Only introduce a cookbook-specific prefix, such as `COOKBOOK_09_NEBIUS_API_KEY`,
 
 `.github/workflows/test-cookbooks.yml` detects changed runtime paths per cookbook.
 It tests only changed cookbooks, then publishes the changed cookbook list as a short-lived artifact.
-`.github/workflows/deploy-cookbooks.yml` consumes that artifact and deploys only changed cookbooks that are present in `COOKBOOK_CLEVER_CONFIG`.
+`.github/workflows/deploy-cookbooks.yml` consumes that artifact and deploys only changed cookbooks that are present in `.github/cookbook-clever-config.json`.
 
 Runtime-impacting paths include:
 
