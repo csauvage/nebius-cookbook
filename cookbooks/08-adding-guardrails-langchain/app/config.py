@@ -48,7 +48,7 @@ class Settings(BaseSettings):
 
     # Long-term memory inherited from Cookbook #6
     memory_backend: Literal["postgres", "memory"] = Field(default="postgres")
-    memory_database_url: str = Field(
+    postgresql_addon_uri: str = Field(
         default="postgresql://postgres:postgres@localhost:5432/nebius_cookbook"
     )
     long_term_memory_limit: int = Field(default=5, ge=1, le=20)
@@ -75,6 +75,12 @@ class Settings(BaseSettings):
                 return value
             return [v.strip() for v in value.split(",") if v.strip()]
         return value
+
+    @property
+    def memory_schema(self) -> str:
+        """Build the Postgres schema name from the deployment environment."""
+        prefix = "prod" if self.env == "production" else "dev"
+        return f"{prefix}_cbk_08"
 
 
 @lru_cache(maxsize=1)

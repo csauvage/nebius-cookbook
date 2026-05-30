@@ -23,6 +23,7 @@ MEMORY_PATTERNS = (
     ),
     re.compile(r"\bi (?:like|love|prefer) (?P<fact>.+)", re.IGNORECASE),
 )
+SCHEMA_NAME_RE = re.compile(r"^[a-z][a-z0-9_]{0,62}$")
 
 
 @dataclass(frozen=True)
@@ -96,8 +97,10 @@ class PostgresLongTermMemoryStore:
     can inspect and operate it with standard Postgres tooling.
     """
 
-    def __init__(self, database_url: str) -> None:
+    def __init__(self, database_url: str, schema: str) -> None:
         self._database_url = database_url
+        self._schema_sql = _quote_ident(schema)
+        self._table_sql = f'{self._schema_sql}."user_memories"'
         self._pool = None
 
     async def _get_pool(self):
@@ -106,9 +109,10 @@ class PostgresLongTermMemoryStore:
 
             self._pool = await asyncpg.create_pool(self._database_url, min_size=1, max_size=5)
             async with self._pool.acquire() as conn:
+                await conn.execute(f"create schema if not exists {self._schema_sql}")
                 await conn.execute(
-                    """
-                    create table if not exists user_memories (
+                    f"""
+                    create table if not exists {self._table_sql} (
                         id uuid primary key,
                         user_id text not null,
                         text text not null,
@@ -118,9 +122,9 @@ class PostgresLongTermMemoryStore:
                     """
                 )
                 await conn.execute(
-                    """
-                    create index if not exists user_memories_user_created_idx
-                    on user_memories (user_id, created_at desc)
+                    f"""
+                    create index if not exists "user_memories_user_created_idx"
+                    on {self._table_sql} (user_id, created_at desc)
                     """
                 )
         return self._pool
@@ -128,61 +132,52 @@ class PostgresLongTermMemoryStore:
     async def list_memories(self, user_id: str, *, limit: int) -> list[MemoryRecord]:
         pool = await self._get_pool()
         async with pool.acquire() as conn:
-            rows = await conn.fetch(
-                """
+            query = f"""
                 select id::text, user_id, text, source, created_at
-                from user_memories
+                from {self._table_sql}
                 where user_id = $1
                 order by created_at desc
                 limit $2
-                """,
-                user_id,
-                limit,
-            )
+                """  # noqa: S608 - table identifier is schema-validated and quoted.
+            rows = await conn.fetch(query, user_id, limit)
         return [_record_from_row(row) for row in rows]
 
     async def recall(self, user_id: str, query: str, *, limit: int) -> list[MemoryRecord]:
         pool = await self._get_pool()
         async with pool.acquire() as conn:
-            rows = await conn.fetch(
-                """
+            recall_query = f"""
                 select id::text, user_id, text, source, created_at,
                        ts_rank_cd(
                            to_tsvector('simple', text),
                            plainto_tsquery('simple', $2)
                        ) as rank
-                from user_memories
+                from {self._table_sql}
                 where user_id = $1
                 order by rank desc, created_at desc
                 limit $3
-                """,
-                user_id,
-                query,
-                limit,
-            )
+                """  # noqa: S608 - table identifier is schema-validated and quoted.
+            rows = await conn.fetch(recall_query, user_id, query, limit)
         return [_record_from_row(row) for row in rows]
 
     async def save_memory(self, user_id: str, text: str, *, source: str) -> MemoryRecord:
         pool = await self._get_pool()
         memory_id = uuid.uuid4()
         async with pool.acquire() as conn:
-            row = await conn.fetchrow(
-                """
-                insert into user_memories (id, user_id, text, source)
+            insert_query = f"""
+                insert into {self._table_sql} (id, user_id, text, source)
                 values ($1, $2, $3, $4)
                 returning id::text, user_id, text, source, created_at
-                """,
-                memory_id,
-                user_id,
-                text,
-                source,
-            )
+                """  # noqa: S608 - table identifier is schema-validated and quoted.
+            row = await conn.fetchrow(insert_query, memory_id, user_id, text, source)
         return _record_from_row(row)
 
     async def delete_user_memories(self, user_id: str) -> int:
         pool = await self._get_pool()
         async with pool.acquire() as conn:
-            result = await conn.execute("delete from user_memories where user_id = $1", user_id)
+            result = await conn.execute(
+                f"delete from {self._table_sql} where user_id = $1",  # noqa: S608
+                user_id,
+            )
         return int(result.rsplit(" ", 1)[-1])
 
 
@@ -194,6 +189,16 @@ def _record_from_row(row: object) -> MemoryRecord:
         source=str(row["source"]),
         created_at=row["created_at"],
     )
+
+
+def _quote_ident(value: str) -> str:
+    """Quote a trusted Postgres identifier after strict validation."""
+    if not SCHEMA_NAME_RE.fullmatch(value):
+        raise ValueError(
+            "memory schema must start with a lowercase letter and contain only lowercase "
+            "letters, numbers, and underscores"
+        )
+    return f'"{value}"'
 
 
 def extract_memories(prompt: str) -> list[str]:
@@ -249,5 +254,8 @@ def get_long_term_memory_store() -> LongTermMemoryStore:
             logger.warning("using_in_memory_long_term_memory")
             _memory_backend = InMemoryLongTermMemoryStore()
         else:
-            _memory_backend = PostgresLongTermMemoryStore(settings.memory_database_url)
+            _memory_backend = PostgresLongTermMemoryStore(
+                settings.postgresql_addon_uri,
+                settings.memory_schema,
+            )
     return _memory_backend

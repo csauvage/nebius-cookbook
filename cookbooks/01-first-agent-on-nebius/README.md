@@ -25,6 +25,7 @@ A single-endpoint API:
 | `GET /docs` | OpenAPI / Swagger UI |
 
 Everything is typed, every env var validated, every request tagged with a request ID, every Nebius call wrapped in tenacity-backed retries.
+This foundation recipe intentionally has no database dependency.
 
 ## Prerequisites
 
@@ -92,6 +93,7 @@ curl -N -X POST http://localhost:8000/agent/run \
 ```
 
 `history` is optional and capped (40 turns, 8 KB per message) by the request schema. Statelessness is a deliberate architectural choice — see *Design decisions* below.
+Cookbook #5 adds thread memory after this baseline is clear.
 
 ## Walk-through
 
@@ -177,6 +179,7 @@ Prometheus metrics include:
 - `nebius_request_duration_seconds{model}` — Nebius call duration
 
 The `path` label is the **route template** (`/agent/run`), not the raw URL — a deliberate choice, since high-cardinality labels (per-user, per-ID paths) are the fastest way to melt a Prometheus instance.
+Later recipes keep these same metrics while adding memory, guardrails, and actions.
 
 ### The streaming
 
