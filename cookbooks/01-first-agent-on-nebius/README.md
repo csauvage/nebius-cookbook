@@ -36,7 +36,7 @@ Everything is typed, every env var validated, every request tagged with a reques
 ## Run it
 
 ```bash
-git clone https://github.com/csauvage/nebius-cookbook.git
+git clone https://github.com/nebius/nebius-partner-cookbook.git
 cd nebius-cookbook/cookbooks/01-first-agent-on-nebius
 
 cp .env.example .env

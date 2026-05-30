@@ -11,7 +11,7 @@ const cookbooksDir = join(repoRoot, "cookbooks");
 const contentDir = join(repoRoot, "app", "src", "content");
 const recipesContentDir = join(contentDir, "recipes");
 
-const REPO_URL = process.env.GITHUB_REPO_URL ?? "https://github.com/csauvage/nebius-cookbook";
+const REPO_URL = process.env.GITHUB_REPO_URL ?? "https://github.com/nebius/nebius-partner-cookbook";
 
 await mkdir(recipesContentDir, { recursive: true });
 
