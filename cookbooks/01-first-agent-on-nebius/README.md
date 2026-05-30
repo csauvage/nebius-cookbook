@@ -34,6 +34,8 @@ This foundation recipe intentionally has no database dependency.
 - A Nebius API key — get one from the [Nebius console](https://nebius.com)
 - (optional) Docker, if you want to build the production image
 
+No partner service account is needed until the retrieval and memory recipes.
+
 ## Run it
 
 ```bash

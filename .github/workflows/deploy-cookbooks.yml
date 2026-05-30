@@ -80,6 +80,8 @@ jobs:
               | {
                   cookbook: .,
                   app_id_var: $config[.].app_id,
+                  values: ($config[.].values // {}),
+                  addons: ($config[.].addons // []),
                   vars: ($config[.].vars // []),
                   secrets: ($config[.].secrets // []),
                   unset: ($config[.].unset // [])
@@ -140,6 +142,8 @@ jobs:
           CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
           CLEVER_APP_ID_VAR: ${{ matrix.app_id_var }}
           COOKBOOK: ${{ matrix.cookbook }}
+          COOKBOOK_VALUE_MAP: ${{ toJson(matrix.values) }}
+          COOKBOOK_ADDON_NAMES: ${{ toJson(matrix.addons) }}
           COOKBOOK_VAR_NAMES: ${{ toJson(matrix.vars) }}
           COOKBOOK_SECRET_NAMES: ${{ toJson(matrix.secrets) }}
           COOKBOOK_UNSET_NAMES: ${{ toJson(matrix.unset) }}
@@ -153,6 +157,7 @@ jobs:
           CLEVER_APP_ID_COOKBOOK_08: ${{ secrets.CLEVER_APP_ID_COOKBOOK_08 }}
           CLEVER_APP_ID_COOKBOOK_09: ${{ secrets.CLEVER_APP_ID_COOKBOOK_09 }}
           CLEVER_APP_ID_COOKBOOK_10: ${{ secrets.CLEVER_APP_ID_COOKBOOK_10 }}
+          CLEVER_PG_ADDON: ${{ secrets.CLEVER_PG_ADDON }}
           ENV: ${{ vars.ENV }}
           LOG_LEVEL: ${{ vars.LOG_LEVEL }}
           CORS_ORIGINS: ${{ vars.CORS_ORIGINS }}
@@ -190,7 +195,6 @@ jobs:
           NEBIUS_API_KEY: ${{ secrets.NEBIUS_API_KEY }}
           TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
           PINECONE_API_KEY: ${{ secrets.PINECONE_API_KEY }}
-          MEMORY_DATABASE_URL: ${{ secrets.MEMORY_DATABASE_URL }}
           LANGSMITH_API_KEY: ${{ secrets.LANGSMITH_API_KEY }}
           STRIPE_SECRET_KEY: ${{ secrets.STRIPE_SECRET_KEY }}
           STRIPE_MCP_API_KEY: ${{ secrets.STRIPE_MCP_API_KEY }}
@@ -214,6 +218,30 @@ jobs:
           clever env set CC_PYTHON_UV_RUN_COMMAND "uv run uvicorn app.main:app --host 0.0.0.0 --port 8080" --alias "$alias"
           clever env set PORT 8080 --alias "$alias"
 
+          link_addons_json() {
+            local names_json="$1"
+            if [ -z "$names_json" ]; then
+              return
+            fi
+            if ! jq -e 'type == "array"' <<< "$names_json" >/dev/null; then
+              echo "addons entries must be a JSON array of GitHub secret names." >&2
+              exit 1
+            fi
+            jq -r '.[]' <<< "$names_json" | while IFS= read -r key; do
+              addon_id="$(printenv "$key" || true)"
+              if [ -z "$addon_id" ]; then
+                echo "Missing GitHub secret referenced by $COOKBOOK addon dependency: $key" >&2
+                exit 1
+              fi
+              if clever service --alias "$alias" --only-addons --format json \
+                | jq -e --arg addon "$addon_id" '.. | objects | select((.id? == $addon) or (.addonId? == $addon) or (.addon_id? == $addon))' >/dev/null; then
+                echo "Add-on $key is already linked to $COOKBOOK."
+              else
+                clever service link-addon "$addon_id" --alias "$alias"
+              fi
+            done
+          }
+
           sync_names_json() {
             local names_json="$1"
             local source_name="$2"
@@ -234,6 +262,22 @@ jobs:
             done
           }
 
+          sync_values_json() {
+            local values_json="$1"
+            if [ -z "$values_json" ]; then
+              return
+            fi
+            if ! jq -e 'type == "object"' <<< "$values_json" >/dev/null; then
+              echo "values entries must be a JSON object of Clever environment variables." >&2
+              exit 1
+            fi
+            jq -r 'to_entries[] | @tsv' <<< "$values_json" | while IFS=$'\t' read -r key value; do
+              clever env set "$key" "$value" --alias "$alias"
+            done
+          }
+
+          link_addons_json "${COOKBOOK_ADDON_NAMES:-[]}"
+          sync_values_json "${COOKBOOK_VALUE_MAP:-{}}"
           sync_names_json "${COOKBOOK_VAR_NAMES:-[]}" "variable"
           sync_names_json "${COOKBOOK_SECRET_NAMES:-[]}" "secret"
 

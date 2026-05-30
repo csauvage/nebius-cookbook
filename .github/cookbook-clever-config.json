@@ -86,5 +86,50 @@
     "unset": [
       "PINECONE_NAMESPACE"
     ]
+  },
+  "05-short-term-memory-langchain": {
+    "app_id": "CLEVER_APP_ID_COOKBOOK_05",
+    "vars": [
+      "ENV",
+      "LOG_LEVEL",
+      "CORS_ORIGINS",
+      "ALLOW_LOCALHOST_CORS",
+      "NEBIUS_BASE_URL",
+      "NEBIUS_MODEL",
+      "NEBIUS_ENABLE_PRICING_LOOKUP",
+      "NEBIUS_INPUT_PRICE_PER_MILLION_TOKENS",
+      "NEBIUS_OUTPUT_PRICE_PER_MILLION_TOKENS",
+      "DIRECT_RESPONSE_MAX_TOKENS",
+      "DELIBERATE_RESPONSE_MAX_TOKENS",
+      "FIRST_TOKEN_TARGET_MS"
+    ],
+    "secrets": [
+      "NEBIUS_API_KEY"
+    ]
+  },
+  "06-long-term-memory-langchain-postgres": {
+    "app_id": "CLEVER_APP_ID_COOKBOOK_06",
+    "addons": [
+      "CLEVER_PG_ADDON"
+    ],
+    "vars": [
+      "ENV",
+      "LOG_LEVEL",
+      "CORS_ORIGINS",
+      "ALLOW_LOCALHOST_CORS",
+      "NEBIUS_BASE_URL",
+      "NEBIUS_MODEL",
+      "NEBIUS_ENABLE_PRICING_LOOKUP",
+      "NEBIUS_INPUT_PRICE_PER_MILLION_TOKENS",
+      "NEBIUS_OUTPUT_PRICE_PER_MILLION_TOKENS",
+      "DIRECT_RESPONSE_MAX_TOKENS",
+      "DELIBERATE_RESPONSE_MAX_TOKENS",
+      "FIRST_TOKEN_TARGET_MS",
+      "MEMORY_BACKEND",
+      "LONG_TERM_MEMORY_LIMIT"
+    ],
+    "secrets": [
+      "NEBIUS_API_KEY"
+    ]
   }
 }
