@@ -6,7 +6,7 @@
  */
 
 export const GITHUB_REPO_URL =
-  process.env.NEXT_PUBLIC_GITHUB_REPO ?? "https://github.com/csauvage/nebius-cookbook";
+  process.env.NEXT_PUBLIC_GITHUB_REPO ?? "https://github.com/nebius/nebius-partner-cookbook";
 
 function envOrDefault(value: string | undefined, fallback: string): string {
   const trimmed = value?.trim();

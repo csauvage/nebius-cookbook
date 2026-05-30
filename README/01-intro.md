@@ -5,8 +5,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/csauvage/nebius-cookbook/actions/workflows/validate-recipes.yml"><img alt="validate" src="https://img.shields.io/github/actions/workflow/status/csauvage/nebius-cookbook/validate-recipes.yml?label=validate"></a>
-  <a href="https://github.com/csauvage/nebius-cookbook/actions/workflows/test-cookbooks.yml"><img alt="tests" src="https://img.shields.io/github/actions/workflow/status/csauvage/nebius-cookbook/test-cookbooks.yml?label=tests"></a>
+  <a href="https://github.com/nebius/nebius-partner-cookbook/actions/workflows/validate-recipes.yml"><img alt="validate" src="https://img.shields.io/github/actions/workflow/status/nebius/nebius-partner-cookbook/validate-recipes.yml?label=validate"></a>
+  <a href="https://github.com/nebius/nebius-partner-cookbook/actions/workflows/test-cookbooks.yml"><img alt="tests" src="https://img.shields.io/github/actions/workflow/status/nebius/nebius-partner-cookbook/test-cookbooks.yml?label=tests"></a>
   <a href="./LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
 </p>
 
