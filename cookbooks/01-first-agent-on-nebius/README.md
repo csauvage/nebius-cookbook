@@ -135,6 +135,7 @@ AsyncOpenAI(
 ```
 
 Nebius AgentKit is OpenAI-wire-compatible, so the OpenAI SDK works unchanged — the same `chat.completions.create(...)` call, the same streaming protocol. That compatibility is the reason every recipe in this cookbook can stay on one client library.
+Later cookbooks keep this client boundary and add capabilities around it.
 
 Two decisions worth calling out:
 

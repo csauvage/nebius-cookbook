@@ -142,15 +142,29 @@ Copy `.env.example` and keep secrets out of code.
 | `NEBIUS_BASE_URL` | `https://api.studio.nebius.ai/v1/` | OpenAI-compatible Nebius endpoint. |
 | `NEBIUS_MODEL` | `meta-llama/Llama-3.3-70B-Instruct` | Chat model. |
 | `MEMORY_BACKEND` | `postgres` | `postgres` for local/prod, `memory` for tests. |
-| `MEMORY_DATABASE_URL` | local Postgres URL | Postgres connection string. |
+| `POSTGRESQL_ADDON_URI` | local Postgres URL | Postgres connection string. Clever Cloud injects this when a Postgres add-on is linked. |
 | `LONG_TERM_MEMORY_LIMIT` | `5` | Maximum memories recalled or listed. |
 | `CORS_ORIGINS` | `http://localhost:3000` | Browser allowlist. |
 | `LOG_LEVEL` | `info` | Structured logging level. |
 
+## Sharing one Postgres database
+
+Postgres schemas let multiple cookbooks share one database without sharing tables.
+Think of a schema as a folder inside the database: cookbook #6 writes to `dev_cbk_06.user_memories` locally and `prod_cbk_06.user_memories` in production.
+The schema name is built from `ENV` and the cookbook number, so there is no extra environment variable to maintain.
+Cookbooks #7-#10 inherit the same pattern with their own schemas, for example `prod_cbk_07`, `prod_cbk_08`, `prod_cbk_09`, and `prod_cbk_10`.
+
+That gives you one managed Postgres instance, one connection URI, and isolated tables per cookbook.
+The app creates the configured schema and `user_memories` table on first use.
+For local development, keep `ENV=development`, which produces the `dev_cbk_NN` schemas.
+For Clever Cloud, link the same Postgres add-on to each cookbook app.
+Clever injects `POSTGRESQL_ADDON_URI`, which the app uses as its only Postgres connection string.
+Set `ENV=production` and the app automatically uses `prod_cbk_06` for this cookbook.
+
 ## Implementation Notes
 
 Long-term memory lives in `app/core/long_term_memory.py`.
-The production backend creates a `user_memories` table and indexes records by `user_id` and `created_at`.
+The production backend creates a schema-qualified `user_memories` table and indexes records by `user_id` and `created_at`.
 The test backend implements the same contract in memory.
 
 Recall is deliberately bounded.
@@ -165,6 +179,7 @@ A production system can replace this with a model-assisted memory writer, but ke
 
 - Derive `user_id` from auth instead of trusting request JSON.
 - Use a managed Postgres instance with backups, migrations, and connection pooling.
+- Keep `ENV=production` in deployed cookbook apps so memory lands in `prod_cbk_NN` schemas.
 - Add row-level tenancy controls if multiple customers share the same database.
 - Decide retention windows for user memories and checkpoints.
 - Keep deletion paths tested because privacy workflows are product behavior, not admin utilities.

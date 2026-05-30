@@ -150,8 +150,12 @@ If LangSmith is disabled, the endpoint returns `accepted: false` instead of fail
 | `LANGSMITH_PROJECT` | `nebius-cookbook-observability` | LangSmith project name. |
 | `LANGSMITH_ENDPOINT` | `https://api.smith.langchain.com` | LangSmith API URL. |
 | `MEMORY_BACKEND` | `postgres` | Inherited memory backend. |
-| `MEMORY_DATABASE_URL` | local Postgres URL | Inherited memory database. |
+| `POSTGRESQL_ADDON_URI` | local Postgres URL | Inherited memory database. Clever Cloud injects this when a Postgres add-on is linked. |
 | `NEBIUS_API_KEY` | required | Nebius API key. |
+
+Cookbooks #6-#10 can share one Postgres database by using different schemas.
+The schema is derived from `ENV` and the cookbook number: `dev_cbk_07` locally, `prod_cbk_07` when `ENV=production`.
+The app creates `prod_cbk_07.user_memories` on first use, separate from cookbook #6's `prod_cbk_06.user_memories`.
 
 ## Implementation Notes
 

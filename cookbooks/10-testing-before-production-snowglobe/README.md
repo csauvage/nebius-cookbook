@@ -42,6 +42,9 @@ A FastAPI service plus a simulation harness around Snowglobe:
 **Simulation complements tests.** Unit tests verify known cases.
 Snowglobe samples the unknown conversational surface.
 
+**Memory stays isolated.** When this recipe gets its runtime app, it should reuse the shared Postgres database from cookbooks #6-#9 with an environment-derived schema: `dev_cbk_10` locally and `prod_cbk_10` when `ENV=production`.
+That keeps simulated user memories separate from the action cookbook's `prod_cbk_09.user_memories` table.
+
 **Gate on deltas.** Absolute LLM-judge scores are noisy.
 The CI story should compare against a baseline and fail on meaningful regression.
 

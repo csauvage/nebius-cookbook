@@ -84,7 +84,12 @@ Approving it calls Stripe MCP and returns a test checkout URL.
 | `BOOK_CATALOG_PATH` | `data/stripe_books.json` | Generated catalog with Stripe Product and Price IDs. |
 | `APPROVAL_TTL_SECONDS` | `900` | Time window for approving a pending action. |
 | `MEMORY_BACKEND` | `postgres` | Inherited long-term memory backend. |
+| `POSTGRESQL_ADDON_URI` | local Postgres URL | Inherited memory database. Clever Cloud injects this when a Postgres add-on is linked. |
 | `LANGSMITH_TRACING` | `false` | Enables LangSmith SaaS traces when credentials are configured. |
+
+Cookbooks #6-#10 can share one Postgres database by using different schemas.
+The schema is derived from `ENV` and the cookbook number: `dev_cbk_09` locally, `prod_cbk_09` when `ENV=production`.
+The app creates `prod_cbk_09.user_memories` on first use, separate from the memory tables used by the previous cookbooks.
 
 ## Stripe MCP and Sandboxes
 

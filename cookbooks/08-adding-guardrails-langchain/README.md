@@ -149,7 +149,12 @@ Here the user sees status events while the model runs, then receives a single ap
 | `GUARDRAILS_MAX_OUTPUT_CHARS` | `6000` | Maximum approved output length. |
 | `LANGSMITH_TRACING` | `false` | Inherited LangSmith tracing toggle. |
 | `MEMORY_BACKEND` | `postgres` | Inherited long-term memory backend. |
+| `POSTGRESQL_ADDON_URI` | local Postgres URL | Inherited memory database. Clever Cloud injects this when a Postgres add-on is linked. |
 | `NEBIUS_API_KEY` | required | Nebius API key. |
+
+Cookbooks #6-#10 can share one Postgres database by using different schemas.
+The schema is derived from `ENV` and the cookbook number: `dev_cbk_08` locally, `prod_cbk_08` when `ENV=production`.
+The app creates `prod_cbk_08.user_memories` on first use, separate from the memory tables used by earlier cookbooks.
 
 ## Implementation Notes
 
