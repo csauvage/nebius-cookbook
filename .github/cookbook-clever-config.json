@@ -131,5 +131,108 @@
     "secrets": [
       "NEBIUS_API_KEY"
     ]
+  },
+  "07-observability-langsmith": {
+    "app_id": "CLEVER_APP_ID_COOKBOOK_07",
+    "addons": [
+      "CLEVER_PG_ADDON"
+    ],
+    "mapped_vars": {
+      "LANGSMITH_PROJECT": "LANGSMITH_PROJECT_COOKBOOK_07"
+    },
+    "vars": [
+      "ENV",
+      "LOG_LEVEL",
+      "CORS_ORIGINS",
+      "ALLOW_LOCALHOST_CORS",
+      "NEBIUS_BASE_URL",
+      "NEBIUS_MODEL",
+      "NEBIUS_ENABLE_PRICING_LOOKUP",
+      "NEBIUS_INPUT_PRICE_PER_MILLION_TOKENS",
+      "NEBIUS_OUTPUT_PRICE_PER_MILLION_TOKENS",
+      "DIRECT_RESPONSE_MAX_TOKENS",
+      "DELIBERATE_RESPONSE_MAX_TOKENS",
+      "FIRST_TOKEN_TARGET_MS",
+      "MEMORY_BACKEND",
+      "LONG_TERM_MEMORY_LIMIT",
+      "LANGSMITH_TRACING",
+      "LANGSMITH_ENDPOINT"
+    ],
+    "secrets": [
+      "NEBIUS_API_KEY",
+      "LANGSMITH_API_KEY"
+    ]
+  },
+  "08-adding-guardrails-langchain": {
+    "app_id": "CLEVER_APP_ID_COOKBOOK_08",
+    "addons": [
+      "CLEVER_PG_ADDON"
+    ],
+    "mapped_vars": {
+      "LANGSMITH_PROJECT": "LANGSMITH_PROJECT_COOKBOOK_08"
+    },
+    "vars": [
+      "ENV",
+      "LOG_LEVEL",
+      "CORS_ORIGINS",
+      "ALLOW_LOCALHOST_CORS",
+      "NEBIUS_BASE_URL",
+      "NEBIUS_MODEL",
+      "NEBIUS_ENABLE_PRICING_LOOKUP",
+      "NEBIUS_INPUT_PRICE_PER_MILLION_TOKENS",
+      "NEBIUS_OUTPUT_PRICE_PER_MILLION_TOKENS",
+      "DIRECT_RESPONSE_MAX_TOKENS",
+      "DELIBERATE_RESPONSE_MAX_TOKENS",
+      "FIRST_TOKEN_TARGET_MS",
+      "MEMORY_BACKEND",
+      "LONG_TERM_MEMORY_LIMIT",
+      "LANGSMITH_TRACING",
+      "LANGSMITH_ENDPOINT",
+      "GUARDRAILS_ENABLED",
+      "GUARDRAILS_TOPIC",
+      "GUARDRAILS_MAX_OUTPUT_CHARS"
+    ],
+    "secrets": [
+      "NEBIUS_API_KEY",
+      "LANGSMITH_API_KEY"
+    ]
+  },
+  "09-actions-with-mcp-stripe": {
+    "app_id": "CLEVER_APP_ID_COOKBOOK_09",
+    "addons": [
+      "CLEVER_PG_ADDON"
+    ],
+    "mapped_vars": {
+      "LANGSMITH_PROJECT": "LANGSMITH_PROJECT_COOKBOOK_09"
+    },
+    "vars": [
+      "ENV",
+      "LOG_LEVEL",
+      "CORS_ORIGINS",
+      "ALLOW_LOCALHOST_CORS",
+      "NEBIUS_BASE_URL",
+      "NEBIUS_MODEL",
+      "NEBIUS_ENABLE_PRICING_LOOKUP",
+      "NEBIUS_INPUT_PRICE_PER_MILLION_TOKENS",
+      "NEBIUS_OUTPUT_PRICE_PER_MILLION_TOKENS",
+      "DIRECT_RESPONSE_MAX_TOKENS",
+      "DELIBERATE_RESPONSE_MAX_TOKENS",
+      "FIRST_TOKEN_TARGET_MS",
+      "MEMORY_BACKEND",
+      "LONG_TERM_MEMORY_LIMIT",
+      "LANGSMITH_TRACING",
+      "LANGSMITH_ENDPOINT",
+      "GUARDRAILS_ENABLED",
+      "GUARDRAILS_TOPIC",
+      "GUARDRAILS_MAX_OUTPUT_CHARS",
+      "STRIPE_MCP_BASE_URL",
+      "BOOK_CATALOG_PATH",
+      "APPROVAL_TTL_SECONDS"
+    ],
+    "secrets": [
+      "NEBIUS_API_KEY",
+      "LANGSMITH_API_KEY",
+      "STRIPE_MCP_API_KEY"
+    ]
   }
 }

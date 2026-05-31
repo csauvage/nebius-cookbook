@@ -81,6 +81,7 @@ jobs:
                   cookbook: .,
                   app_id_var: $config[.].app_id,
                   values: ($config[.].values // {}),
+                  mapped_vars: ($config[.].mapped_vars // {}),
                   addons: ($config[.].addons // []),
                   vars: ($config[.].vars // []),
                   secrets: ($config[.].secrets // []),
@@ -143,6 +144,7 @@ jobs:
           CLEVER_APP_ID_VAR: ${{ matrix.app_id_var }}
           COOKBOOK: ${{ matrix.cookbook }}
           COOKBOOK_VALUE_MAP: ${{ toJson(matrix.values) }}
+          COOKBOOK_MAPPED_VAR_NAMES: ${{ toJson(matrix.mapped_vars) }}
           COOKBOOK_ADDON_NAMES: ${{ toJson(matrix.addons) }}
           COOKBOOK_VAR_NAMES: ${{ toJson(matrix.vars) }}
           COOKBOOK_SECRET_NAMES: ${{ toJson(matrix.secrets) }}
@@ -180,6 +182,9 @@ jobs:
           TAVILY_MAX_RESULTS: ${{ vars.TAVILY_MAX_RESULTS }}
           LANGSMITH_TRACING: ${{ vars.LANGSMITH_TRACING }}
           LANGSMITH_PROJECT: ${{ vars.LANGSMITH_PROJECT }}
+          LANGSMITH_PROJECT_COOKBOOK_07: ${{ vars.LANGSMITH_PROJECT_COOKBOOK_07 }}
+          LANGSMITH_PROJECT_COOKBOOK_08: ${{ vars.LANGSMITH_PROJECT_COOKBOOK_08 }}
+          LANGSMITH_PROJECT_COOKBOOK_09: ${{ vars.LANGSMITH_PROJECT_COOKBOOK_09 }}
           LANGSMITH_ENDPOINT: ${{ vars.LANGSMITH_ENDPOINT }}
           LANGCHAIN_TRACING_V2: ${{ vars.LANGCHAIN_TRACING_V2 }}
           MEMORY_BACKEND: ${{ vars.MEMORY_BACKEND }}
@@ -276,8 +281,28 @@ jobs:
             done
           }
 
+          sync_mapped_names_json() {
+            local names_json="$1"
+            if [ -z "$names_json" ]; then
+              return
+            fi
+            if ! jq -e 'type == "object" and all(to_entries[]; (.key | type) == "string" and (.value | type) == "string")' <<< "$names_json" >/dev/null; then
+              echo "mapped_vars entries must be a JSON object mapping Clever env names to GitHub variable names." >&2
+              exit 1
+            fi
+            jq -r 'to_entries[] | @tsv' <<< "$names_json" | while IFS=$'\t' read -r target_key source_key; do
+              value="$(printenv "$source_key" || true)"
+              if [ -z "$value" ]; then
+                echo "Missing GitHub mapped variable referenced by $COOKBOOK: $source_key -> $target_key" >&2
+                exit 1
+              fi
+              clever env set "$target_key" "$value" --alias "$alias"
+            done
+          }
+
           link_addons_json "${COOKBOOK_ADDON_NAMES:-[]}"
           sync_values_json "${COOKBOOK_VALUE_MAP:-{}}"
+          sync_mapped_names_json "${COOKBOOK_MAPPED_VAR_NAMES:-{}}"
           sync_names_json "${COOKBOOK_VAR_NAMES:-[]}" "variable"
           sync_names_json "${COOKBOOK_SECRET_NAMES:-[]}" "secret"
 

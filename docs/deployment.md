@@ -68,6 +68,7 @@ Each cookbook entry contains:
 
 - `app_id` — the GitHub repository secret name that stores the Clever app ID;
 - `values` — literal non-secret Clever environment values that belong in the repo;
+- `mapped_vars` — GitHub repository variable names to sync into different Clever environment names;
 - `addons` — GitHub repository secret names that contain Clever add-on IDs to link before deploy;
 - `vars` — GitHub repository variable names to sync into Clever;
 - `secrets` — GitHub repository secret names to sync into Clever.
@@ -82,11 +83,23 @@ The committed config lives at `.github/cookbook-clever-config.json`.
     "addons": [
       "CLEVER_PG_ADDON"
     ],
+    "mapped_vars": {
+      "LANGSMITH_PROJECT": "LANGSMITH_PROJECT_COOKBOOK_09"
+    },
     "vars": [
       "ENV",
       "LOG_LEVEL",
       "CORS_ORIGINS",
-      "LANGSMITH_PROJECT",
+      "NEBIUS_BASE_URL",
+      "NEBIUS_MODEL",
+      "MEMORY_BACKEND",
+      "LONG_TERM_MEMORY_LIMIT",
+      "LANGSMITH_TRACING",
+      "LANGSMITH_ENDPOINT",
+      "GUARDRAILS_ENABLED",
+      "GUARDRAILS_TOPIC",
+      "GUARDRAILS_MAX_OUTPUT_CHARS",
+      "STRIPE_MCP_BASE_URL",
       "BOOK_CATALOG_PATH",
       "APPROVAL_TTL_SECONDS"
     ],
@@ -101,13 +114,15 @@ The committed config lives at `.github/cookbook-clever-config.json`.
 
 The workflow uses the shared `CLEVER_TOKEN` and `CLEVER_SECRET` repository secrets.
 GitHub Actions is also the source of truth for backend runtime configuration.
-Before each deploy, it links configured `addons`, pushes literal `values`, resolves the configured GitHub variable and secret names, then pushes those values into the target Clever app using the same environment variable names.
-For the example above, create a repository secret named `CLEVER_APP_ID_COOKBOOK_09`, repository variables such as `ENV` and `BOOK_CATALOG_PATH`, and repository secrets such as `NEBIUS_API_KEY` and `STRIPE_MCP_API_KEY`.
+Before each deploy, it links configured `addons`, pushes literal `values`, resolves the configured GitHub variable and secret names, and then pushes those values into the target Clever app.
+Entries in `vars` use the same name in GitHub and Clever.
+Entries in `mapped_vars` let GitHub keep a cookbook-specific variable such as `LANGSMITH_PROJECT_COOKBOOK_09`, while Clever receives the application setting as `LANGSMITH_PROJECT`.
+For the example above, create a repository secret named `CLEVER_APP_ID_COOKBOOK_09`, repository variables such as `ENV`, `NEBIUS_MODEL`, and `BOOK_CATALOG_PATH`, and repository secrets such as `NEBIUS_API_KEY` and `STRIPE_MCP_API_KEY`.
 If a new cookbook introduces a new runtime setting name, add that name to `.github/cookbook-clever-config.json` and expose the matching GitHub Actions `vars` or `secrets` entry in `.github/workflows/deploy-cookbooks.yml`.
 Keep backend app ID secrets cookbook-specific, such as `CLEVER_APP_ID_COOKBOOK_01` or `CLEVER_APP_ID_COOKBOOK_09`.
 The frontend app uses the `CLEVER_APP_ID_FRONTEND` secret.
 Use plain shared names by default.
-Only introduce a cookbook-specific prefix, such as `COOKBOOK_09_NEBIUS_API_KEY`, when that cookbook must use a different value from the shared `NEBIUS_API_KEY`.
+Only introduce a cookbook-specific prefix, such as `LANGSMITH_PROJECT_COOKBOOK_09`, when that cookbook must use a different value from the shared setting name.
 
 For Postgres-backed memory in cookbooks #6-#10, the preferred Clever Cloud setup is to link the same Postgres add-on to each cookbook app.
 Clever add-on IDs are stored in GitHub secrets; the shared Postgres add-on is `CLEVER_PG_ADDON`.

@@ -26,6 +26,7 @@ A single-endpoint API:
 
 Everything is typed, every env var validated, every request tagged with a request ID, every Nebius call wrapped in tenacity-backed retries.
 This foundation recipe intentionally has no database dependency.
+It is also the deployment baseline that later recipes extend.
 
 ## Prerequisites
 
