@@ -1,6 +1,8 @@
 # Goodreads datasets
 
 These files are large and are not committed to the repository.
+They are referenced here for educational, non-commercial experimentation only.
+See [`../TRADEMARK.md`](../TRADEMARK.md) for the dataset notice.
 
 Download them from the UCSD Goodreads Book Graph dataset page:
 
