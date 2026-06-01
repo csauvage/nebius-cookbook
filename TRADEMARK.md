@@ -17,5 +17,5 @@ Do not use the Nebius name, logo, or wordmark in a way that suggests endorsement
 Some cookbook examples refer to the UCSD Goodreads Book Graph dataset as an educational retrieval corpus.
 The dataset files are not committed to this repository and must not be redistributed through this project.
 
-The Goodreads dataset is referenced here for educational, non-commercial experimentation only.
-Before using it in a commercial product, public customer demo, hosted service, benchmark, or redistributed artifact, review and comply with the dataset provider's terms and any rights attached to the underlying Goodreads data.
+The Goodreads dataset is referenced here for educational, non-commercial experimentation only, including public tutorial demos that teach how to build retrieval-backed agents.
+Before using it in a commercial product, paid hosted service, benchmark, or redistributed artifact, review and comply with the dataset provider's terms and any rights attached to the underlying Goodreads data.
