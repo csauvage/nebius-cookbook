@@ -14,13 +14,25 @@ This recipe keeps everything from Cookbook #6 and adds LangSmith as the agent-ru
 Prometheus still answers aggregate service questions.
 LangSmith answers per-run behavior questions.
 
+## What is a trace?
+
+A trace is the complete execution tree for one agent request.
+The root run is the request-level operation, and each meaningful internal step is a child run, often called a span.
+In this cookbook the root run is `agent.run`.
+Its children show memory recall, graph routing, prompt rendering, the Nebius model stream, memory persistence, and feedback correlation.
+
+That tree matters in production because an agent failure is rarely just "the model was bad."
+It may be bad recalled memory, an unexpected route, a bloated prompt, a slow model stream, a malformed output, or user feedback attached after the response.
+Logs can show that each step happened.
+A trace shows how the steps fit together for the exact request a reviewer is investigating.
+
 ## What you'll build
 
 A FastAPI service that extends the long-term-memory agent:
 
 1. **Inherited orchestration** — the LangGraph route from Cookbook #4 still chooses the response path.
 2. **Inherited memory** — `thread_id`, `user_id`, Postgres memory, memory summary, and deletion endpoints remain intact.
-3. **LangSmith tracing** — each run can be traced with metadata, tags, and redacted previews.
+3. **LangSmith tracing** — each run is traced with metadata, tags, redacted previews, and annotated child spans.
 4. **Feedback capture** — reviewers can attach feedback to a LangSmith run.
 5. **Privacy-aware telemetry** — traces store previews and identifiers, not raw secrets or unnecessary PII.
 6. **Credential-free local runs** — tracing is off by default so the recipe works without a LangSmith account.
@@ -32,22 +44,41 @@ request ──► memory recall ──► LangGraph route ──► Nebius strea
                               LangSmith trace
 ```
 
+## Trace Shape
+
+The code uses LangSmith annotations on the functions that are useful to inspect:
+
+| Span | Run type | Why it exists |
+| ---- | -------- | ------------- |
+| `agent.run` | `chain` | Root request trace and feedback target. |
+| `agent.load_context` | `retriever` | Loads short-term thread history and long-term user memories. |
+| `thread_memory.get_history` | `retriever` | Shows whether local thread memory contributed context. |
+| `long_term_memory.postgres.recall` | `retriever` | Shows durable user memory lookup. |
+| `agent.stream_response` | `chain` | Streams the graph and writer path. |
+| `agent.route_request` | `chain` | Records the graph routing decision. |
+| `agent.render_prompt_messages` | `chain` | Shows prompt assembly after memory injection. |
+| `nebius.chat_stream` | `llm` | Measures the Nebius model call and token usage. |
+| `agent.persist_context` | `tool` | Saves short-term and long-term memory after the answer. |
+| `long_term_memory.extract_memories` | `chain` | Shows deterministic memory extraction. |
+
+The annotations use `process_inputs`, `process_outputs`, and stream reducers from `app/core/langsmith_annotations.py`.
+That keeps traces readable and prevents streamed token chunks, secrets, and common direct identifiers from being stored verbatim.
+
 ## Prerequisites
 
 - Python 3.12+
 - [uv](https://docs.astral.sh/uv/)
-- Docker for local Postgres
+- Postgres 15+ running locally
 - A Nebius API key from the [Nebius console](https://nebius.com)
-- Optional: a LangSmith API key from [LangSmith](https://docs.langchain.com/langsmith/home)
+- A LangSmith API key from [LangSmith](https://docs.langchain.com/langsmith/home)
 
 ## Run it
 
 ```bash
 cp .env.example .env
-# Fill NEBIUS_API_KEY.
-# Optionally set LANGSMITH_TRACING=true and fill LANGSMITH_API_KEY.
+# Fill NEBIUS_API_KEY and LANGSMITH_API_KEY.
 
-docker compose up -d postgres
+createdb nebius_cookbook
 uv sync
 make dev
 ```
@@ -145,10 +176,10 @@ If LangSmith is disabled, the endpoint returns `accepted: false` instead of fail
 
 | Env var | Default | Purpose |
 | ------- | ------- | ------- |
-| `LANGSMITH_TRACING` | `false` | Enables LangSmith API calls. |
+| `LANGSMITH_TRACING` | `true` | Enables LangSmith API calls. |
 | `LANGSMITH_API_KEY` | unset | LangSmith API key. |
-| `LANGSMITH_PROJECT` | `nebius-cookbook-observability` | LangSmith project name. |
-| `LANGSMITH_ENDPOINT` | `https://api.smith.langchain.com` | LangSmith API URL. |
+| `LANGSMITH_PROJECT` | `Nebius Cookbook` | LangSmith project name. |
+| `LANGSMITH_ENDPOINT` | `https://eu.api.smith.langchain.com` | LangSmith API URL. |
 | `MEMORY_BACKEND` | `postgres` | Inherited memory backend. |
 | `POSTGRESQL_ADDON_URI` | local Postgres URL | Inherited memory database. Clever Cloud injects this when a Postgres add-on is linked. |
 | `NEBIUS_API_KEY` | required | Nebius API key. |
@@ -159,16 +190,88 @@ The app creates `prod_cbk_07.user_memories` on first use, separate from cookbook
 
 ## Implementation Notes
 
-`app/core/langsmith_observability.py` is a narrow adapter around `langsmith.Client`.
-It creates a run before memory recall and generation, updates the run after the final answer, and stores feedback through `/feedback`.
+`app/core/langsmith_observability.py` is a narrow adapter around `langsmith.Client` and the LangSmith trace context manager.
+It creates a root `agent.run` trace before memory recall and generation, closes it after the final answer, and stores feedback through `/feedback`.
 
 The adapter redacts emails and phone numbers before sending prompt and output previews.
 It records `cookbook`, `env`, `thread_id`, and `user_id` as metadata.
 Those identifiers are useful for debugging, but they still count as user-related data in many systems, so treat LangSmith as a production telemetry destination.
 
+The annotation pattern is intentionally small:
+
+```python
+from langsmith import traceable
+
+from app.core.langsmith_annotations import (
+    process_langsmith_inputs,
+    process_langsmith_outputs,
+)
+
+
+@traceable(
+    name="agent.route_request",
+    run_type="chain",
+    process_inputs=process_langsmith_inputs,
+    process_outputs=process_langsmith_outputs,
+)
+def route_request(state: AgentState) -> dict[str, str]:
+    ...
+```
+
+For streaming functions, the cookbook uses a reducer so the trace captures a compact summary instead of every emitted chunk:
+
+```python
+@traceable(
+    name="nebius.chat_stream",
+    run_type="llm",
+    metadata={"provider": "nebius"},
+    process_inputs=process_langsmith_inputs,
+    reduce_fn=summarize_chat_chunks,
+)
+async def stream_chat(...) -> AsyncIterator[ChatStreamChunk]:
+    ...
+```
+
+The route opens the request-level trace and lets annotated child spans attach to it:
+
+```python
+with observer.trace_agent_run(
+    prompt=payload.prompt,
+    thread_id=payload.thread_id,
+    user_id=payload.user_id,
+    model=settings.nebius_model,
+    env=settings.env,
+) as trace_run:
+    ...
+    trace_run.finish(output=assistant_answer)
+```
+
 Tracing failures do not break the agent response.
 If LangSmith is unavailable, the service logs a warning and continues.
 That is intentional because observability should not become an availability dependency for the agent path.
+
+## Using Traces in Production
+
+Use traces when you need to answer request-level questions:
+
+- Which memory records were recalled before the answer?
+- Did the graph choose the direct path or the deliberate path?
+- What prompt was assembled after context injection?
+- How long did the Nebius stream take to produce the first token?
+- Which model, environment, route, user namespace, and thread produced the run?
+- Which feedback score or review comment belongs to the exact run?
+
+Use LangSmith projects as operational boundaries.
+Development, staging, and production should be separate projects, or at least consistently separated with tags and metadata.
+This cookbook defaults to the EU LangSmith endpoint and a `Nebius Cookbook` project for the public demo, but a production rollout should choose project names that match the deployment environment.
+
+Keep Prometheus and LangSmith side by side.
+Prometheus should page you when aggregate latency, traffic, or error rates move.
+LangSmith should help you inspect the specific runs behind those metrics, compare traces, attach feedback, and turn failed runs into future evaluation examples.
+
+For sensitive deployments, decide the trace policy before launch.
+Common controls are redaction, hashed user identifiers, reduced output previews, environment-specific projects, trace sampling, and disabling tracing for regulated workflows.
+Never place raw secrets, access tokens, or full customer records in trace metadata.
 
 ## Production Checklist
 
@@ -176,6 +279,7 @@ That is intentional because observability should not become an availability depe
 - Redact or hash identifiers if your privacy policy requires it.
 - Decide which prompt and output previews are allowed in traces.
 - Attach deployment version, model id, and cookbook name to every trace.
+- Use annotation reducers for streaming responses and large retrieved payloads.
 - Keep Prometheus metrics for service-level latency and error rates.
 - Use LangSmith for run-level debugging, feedback review, and qualitative failure analysis.
 
@@ -210,6 +314,7 @@ They verify the disabled path and feedback endpoint without calling LangSmith.
 ## Reference
 
 - LangSmith docs — [docs.langchain.com/langsmith/home](https://docs.langchain.com/langsmith/home)
+- LangSmith custom instrumentation — [docs.langchain.com/langsmith/annotate-code](https://docs.langchain.com/langsmith/annotate-code)
 - LangChain observability — [docs.langchain.com/oss/python/langchain/observability](https://docs.langchain.com/oss/python/langchain/observability)
 
 ## License

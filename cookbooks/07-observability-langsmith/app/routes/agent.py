@@ -6,10 +6,12 @@ from collections.abc import AsyncIterator
 
 import structlog
 from fastapi import APIRouter, Depends, Request
+from langsmith import traceable
 from starlette.responses import StreamingResponse
 
 from app.config import Settings, get_settings
 from app.core.agent import Agent, AgentRunOptions
+from app.core.langsmith_annotations import process_langsmith_inputs, process_langsmith_outputs
 from app.core.langsmith_observability import LangSmithObserver, get_langsmith_observer
 from app.core.long_term_memory import (
     LongTermMemoryStore,
@@ -30,6 +32,62 @@ HEARTBEAT_INTERVAL_SECONDS = 15
 
 def _sse(event: str, data: dict[str, object]) -> bytes:
     return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n".encode()
+
+
+@traceable(
+    name="agent.load_context",
+    run_type="retriever",
+    process_inputs=process_langsmith_inputs,
+    process_outputs=process_langsmith_outputs,
+)
+async def _load_agent_context(
+    *,
+    payload: AgentRunRequest,
+    memory: ThreadMemoryStore,
+    long_term_memory: LongTermMemoryStore,
+    long_term_memory_limit: int,
+) -> tuple[list[dict[str, str]], list[object], list[dict[str, str]]]:
+    stored_history = await memory.get_history(payload.thread_id)
+    recalled = await long_term_memory.recall(
+        payload.user_id,
+        payload.prompt,
+        limit=long_term_memory_limit,
+    )
+    history = [
+        *memories_as_history(recalled),
+        *stored_history,
+        *(item.model_dump() for item in payload.history),
+    ]
+    return stored_history, recalled, history
+
+
+@traceable(
+    name="agent.persist_context",
+    run_type="tool",
+    process_inputs=process_langsmith_inputs,
+    process_outputs=process_langsmith_outputs,
+)
+async def _persist_agent_context(
+    *,
+    payload: AgentRunRequest,
+    memory: ThreadMemoryStore,
+    long_term_memory: LongTermMemoryStore,
+    assistant_answer: str,
+) -> tuple[int, list[str]]:
+    retained = await memory.append_turn(
+        payload.thread_id,
+        user=payload.prompt,
+        assistant=assistant_answer,
+    )
+    saved_memories = []
+    for text in extract_memories(payload.prompt):
+        saved = await long_term_memory.save_memory(
+            payload.user_id,
+            text,
+            source="user_prompt",
+        )
+        saved_memories.append(saved.id)
+    return retained, saved_memories
 
 
 @router.post("/run")
@@ -68,96 +126,80 @@ async def run_agent(
         last_event_at = loop.time()
 
         try:
-            assistant_chunks: list[str] = []
-            run_id = await observer.start_run(
+            with observer.trace_agent_run(
                 prompt=payload.prompt,
                 thread_id=payload.thread_id,
                 user_id=payload.user_id,
                 model=settings.nebius_model,
                 env=settings.env,
-            )
-            stored_history = await memory.get_history(payload.thread_id)
-            recalled = await long_term_memory.recall(
-                payload.user_id,
-                payload.prompt,
-                limit=settings.long_term_memory_limit,
-            )
-            history = [
-                *memories_as_history(recalled),
-                *stored_history,
-                *(item.model_dump() for item in payload.history),
-            ]
-            yield _sse(
-                "status",
-                {
-                    "phase": "memory_loaded",
-                    "threadId": payload.thread_id,
-                    "userId": payload.user_id,
-                    "langsmithRunId": run_id,
-                    "messages": len(stored_history),
-                    "longTermMemories": len(recalled),
-                },
-            )
-            async for event in agent.run(
-                payload.prompt,
-                options=AgentRunOptions(
-                    temperature=payload.temperature,
-                    max_tokens=payload.max_tokens,
-                    history=history,
-                ),
-                cancel_event=cancel_event,
-            ):
-                now = loop.time()
-                if now - last_event_at > HEARTBEAT_INTERVAL_SECONDS:
-                    yield _sse("heartbeat", {})
-                last_event_at = now
-                if event.name == "done":
-                    continue
-                if event.name == "token":
-                    text = event.data.get("text")
-                    if isinstance(text, str) and not text.startswith("\n\n---\nTime:"):
-                        assistant_chunks.append(text)
-                yield _sse(event.name, event.data)
-            if not cancel_event.is_set():
-                retained = await memory.append_turn(
-                    payload.thread_id,
-                    user=payload.prompt,
-                    assistant="".join(assistant_chunks).strip(),
+            ) as trace_run:
+                assistant_chunks: list[str] = []
+                stored_history, recalled, history = await _load_agent_context(
+                    payload=payload,
+                    memory=memory,
+                    long_term_memory=long_term_memory,
+                    long_term_memory_limit=settings.long_term_memory_limit,
                 )
                 yield _sse(
                     "status",
                     {
-                        "phase": "memory_saved",
+                        "phase": "memory_loaded",
                         "threadId": payload.thread_id,
-                        "messages": retained,
+                        "userId": payload.user_id,
+                        "langsmithRunId": trace_run.run_id,
+                        "messages": len(stored_history),
+                        "longTermMemories": len(recalled),
                     },
                 )
-                saved_memories = []
-                for text in extract_memories(payload.prompt):
-                    saved = await long_term_memory.save_memory(
-                        payload.user_id,
-                        text,
-                        source="user_prompt",
+                async for event in agent.run(
+                    payload.prompt,
+                    options=AgentRunOptions(
+                        temperature=payload.temperature,
+                        max_tokens=payload.max_tokens,
+                        history=history,
+                    ),
+                    cancel_event=cancel_event,
+                ):
+                    now = loop.time()
+                    if now - last_event_at > HEARTBEAT_INTERVAL_SECONDS:
+                        yield _sse("heartbeat", {})
+                    last_event_at = now
+                    if event.name == "done":
+                        continue
+                    if event.name == "token":
+                        text = event.data.get("text")
+                        if isinstance(text, str) and not text.startswith("\n\n---\nTime:"):
+                            assistant_chunks.append(text)
+                    yield _sse(event.name, event.data)
+                assistant_answer = "".join(assistant_chunks).strip()
+                if not cancel_event.is_set():
+                    retained, saved_memories = await _persist_agent_context(
+                        payload=payload,
+                        memory=memory,
+                        long_term_memory=long_term_memory,
+                        assistant_answer=assistant_answer,
                     )
-                    saved_memories.append(saved.id)
-                if saved_memories:
                     yield _sse(
                         "status",
                         {
-                            "phase": "long_term_memory_saved",
-                            "userId": payload.user_id,
-                            "memories": len(saved_memories),
+                            "phase": "memory_saved",
+                            "threadId": payload.thread_id,
+                            "messages": retained,
                         },
                     )
-                await observer.finish_run(run_id, output="".join(assistant_chunks).strip())
+                    if saved_memories:
+                        yield _sse(
+                            "status",
+                            {
+                                "phase": "long_term_memory_saved",
+                                "userId": payload.user_id,
+                                "memories": len(saved_memories),
+                            },
+                        )
+                trace_run.finish(output=assistant_answer)
             yield _sse("done", {})
         except Exception as exc:
             logger.exception("agent_failed", error=str(exc))
-            await observer.finish_run(
-                run_id if "run_id" in locals() else None,
-                output="",
-                error=str(exc),
-            )
             yield _sse("error", {"detail": "internal error"})
         finally:
             cancel_event.set()

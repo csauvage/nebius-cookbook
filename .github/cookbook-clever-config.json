@@ -155,8 +155,10 @@
     "addons": [
       "CLEVER_PG_ADDON"
     ],
-    "mapped_vars": {
-      "LANGSMITH_PROJECT": "LANGSMITH_PROJECT_COOKBOOK_07"
+    "values": {
+      "LANGSMITH_TRACING": "true",
+      "LANGSMITH_ENDPOINT": "https://eu.api.smith.langchain.com",
+      "LANGSMITH_PROJECT": "Nebius Cookbook"
     },
     "vars": [
       "ENV",
@@ -175,9 +177,7 @@
       "DELIBERATE_RESPONSE_MAX_TOKENS",
       "FIRST_TOKEN_TARGET_MS",
       "MEMORY_BACKEND",
-      "LONG_TERM_MEMORY_LIMIT",
-      "LANGSMITH_TRACING",
-      "LANGSMITH_ENDPOINT"
+      "LONG_TERM_MEMORY_LIMIT"
     ],
     "secrets": [
       "NEBIUS_API_KEY",
