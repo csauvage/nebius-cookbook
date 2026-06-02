@@ -204,6 +204,37 @@ Two production details that are easy to miss:
 
 **Middleware order is load-bearing.** ASGI wraps middleware last-added-runs-first, so the stack is arranged so CORS, size checks, security headers, request IDs, metrics, and rate limiting all happen before route work. Re-ordering `add_middleware` calls silently changes behaviour — there is a comment in `main.py` spelling out the request path.
 
+#### Rate limiting
+
+The limiter is enabled by default and allows 25 backend requests per IP per rolling 24-hour window.
+Set these values in `.env`:
+
+```dotenv
+RATE_LIMIT_ENABLED=true
+RATE_LIMIT_REQUESTS_PER_DAY=25
+RATE_LIMIT_REDIS_URL=
+RATE_LIMIT_TRUST_PROXY_HEADERS=false
+```
+
+Leave `RATE_LIMIT_REDIS_URL` empty for local in-memory counters, or point it at Redis for a shared counter across replicas:
+
+```dotenv
+RATE_LIMIT_REDIS_URL=redis://localhost:6379/0
+```
+
+When the quota is exceeded, the backend returns JSON `429` before opening an SSE stream:
+
+```json
+{
+  "detail": "daily rate limit exceeded",
+  "limit": 25,
+  "window": "24h",
+  "retryAfterSeconds": 12345
+}
+```
+
+See the full deployment notes in [`docs/rate-limiting.md`](../../docs/rate-limiting.md).
+
 ## Design decisions
 
 **Why a stateless server?** No session store means any instance can serve any request — horizontal scaling is just "add a replica," and a crash loses nothing. The cost is bandwidth: the client resends history each turn. For a chat workload that is a few KB; when it stops being cheap (long transcripts, RAG context), the answer is a server-side store keyed by session ID, not in-process state. Recipe #5 (Short-Term Memory) takes that step deliberately.
