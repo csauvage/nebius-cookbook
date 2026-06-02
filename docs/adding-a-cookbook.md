@@ -65,6 +65,7 @@ Build inside `cookbooks/NN-<slug>/app/`. The template gives you:
 - Healthchecks, metrics, structlog, security headers, rate limiting, CORS — all wired up
 
 Your job is to make the cookbook *teach* something. Replace `app/core/agent.py` with the logic your story promised. Add or remove routes as needed. Keep the observability and middleware. Keep the contract — Pydantic models on every boundary, settings via `pydantic-settings`, async everywhere.
+Rate limiting details and env examples live in [`rate-limiting.md`](./rate-limiting.md).
 
 ## Step 5 — Tests
 

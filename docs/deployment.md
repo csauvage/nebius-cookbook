@@ -124,6 +124,10 @@ The frontend app uses the `CLEVER_APP_ID_FRONTEND` secret.
 Use plain shared names by default.
 Only introduce a cookbook-specific prefix, such as `LANGSMITH_PROJECT_COOKBOOK_09`, when that cookbook must use a different value from the shared setting name.
 
+Backend rate limiting is documented in [`rate-limiting.md`](./rate-limiting.md).
+The non-secret variables `RATE_LIMIT_ENABLED`, `RATE_LIMIT_REQUESTS_PER_DAY`, and `RATE_LIMIT_TRUST_PROXY_HEADERS` are synced from GitHub repository variables.
+Keep `RATE_LIMIT_REDIS_URL` out of GitHub repository variables when using a platform Redis add-on; set it in the backend environment or let the platform inject it.
+
 For Postgres-backed memory in cookbooks #6-#10, the preferred Clever Cloud setup is to link the same Postgres add-on to each cookbook app.
 Clever add-on IDs are stored in GitHub secrets; the shared Postgres add-on is `CLEVER_PG_ADDON`.
 Clever then injects:

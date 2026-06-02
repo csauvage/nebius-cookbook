@@ -62,11 +62,13 @@ The stack is deliberately small and boring. Every recipe makes the same technica
 | Config | [pydantic-settings](https://docs.pydantic.dev/latest/concepts/pydantic_settings/) | Type-safe env validation at boot |
 | Logging | [structlog](https://www.structlog.org/) (JSON in prod) | Structured logs you can actually query |
 | Metrics | [prometheus-client](https://github.com/prometheus/client_python) | `/metrics` endpoint, standard format |
-| Rate limit | [slowapi](https://github.com/laurentS/slowapi) | Per-route, per-IP, sane defaults |
+| Rate limit | FastAPI middleware + Redis fallback | Per-IP daily quotas, Redis when configured, in-memory locally |
 | HTTP client | [httpx](https://www.python-httpx.org) with explicit timeouts | First-class async |
 | Retries | [tenacity](https://tenacity.readthedocs.io) | Exponential backoff for transient errors |
 | Tests | pytest + pytest-asyncio + [respx](https://lundberg.github.io/respx/) | No network in tests |
 | Lint/format | [ruff](https://docs.astral.sh/ruff/) | One tool, no mypy (intentional) |
+
+Backend rate limiting is documented in [`docs/rate-limiting.md`](docs/rate-limiting.md), including Redis setup, GitHub/Clever variables, headers, and 429 examples.
 
 ### Catalog site (JS/TS)
 

@@ -12,6 +12,7 @@ os.environ.setdefault("LOG_LEVEL", "warning")
 os.environ.setdefault("CORS_ORIGINS", "http://localhost:3000")
 os.environ.setdefault("LANGSMITH_TRACING", "false")
 os.environ.setdefault("MEMORY_BACKEND", "memory")
+os.environ["RATE_LIMIT_REDIS_URL"] = ""
 
 
 @pytest.fixture(autouse=True)
@@ -20,11 +21,17 @@ def _reset_settings_cache():
     import app.core.langsmith_observability as langsmith_observability
     import app.core.long_term_memory as long_term_memory
     from app.config import get_settings
+    from app.main import app
 
     get_settings.cache_clear()
+    reset = getattr(app.state.rate_limit_store, "reset", None)
+    if callable(reset):
+        reset()
     langsmith_observability._observer = None
     long_term_memory._memory_backend = long_term_memory.InMemoryLongTermMemoryStore()
     yield
     get_settings.cache_clear()
+    if callable(reset):
+        reset()
     langsmith_observability._observer = None
     long_term_memory._memory_backend = None

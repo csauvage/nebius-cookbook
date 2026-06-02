@@ -20,7 +20,7 @@ HEARTBEAT_INTERVAL_SECONDS = 15
 
 
 def _sse(event: str, data: dict[str, object]) -> bytes:
-    return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n".encode("utf-8")
+    return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n".encode()
 
 
 @router.post("/run")
@@ -56,7 +56,7 @@ async def run_agent(
                 last_event_at = now
                 yield _sse(event.name, event.data)
             yield _sse("done", {})
-        except Exception as exc:  # noqa: BLE001
+        except Exception as exc:
             logger.exception("agent_failed", error=str(exc))
             yield _sse("error", {"detail": "internal error"})
         finally:

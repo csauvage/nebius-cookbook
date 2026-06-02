@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import time
-from typing import Awaitable, Callable
+from collections.abc import Awaitable, Callable
 
 from prometheus_client import Counter, Histogram
 from starlette.requests import Request

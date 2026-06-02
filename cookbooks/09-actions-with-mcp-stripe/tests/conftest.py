@@ -15,6 +15,7 @@ os.environ.setdefault("LANGSMITH_TRACING", "false")
 os.environ.setdefault("MEMORY_BACKEND", "memory")
 os.environ.setdefault("STRIPE_MCP_API_KEY", "rk_test_mock")
 os.environ.setdefault("STRIPE_SECRET_KEY", "sk_test_mock")
+os.environ["RATE_LIMIT_REDIS_URL"] = ""
 
 
 @pytest.fixture(autouse=True)
@@ -48,14 +49,20 @@ def _reset_settings_cache(tmp_path):
     import app.core.langsmith_observability as langsmith_observability
     import app.core.long_term_memory as long_term_memory
     from app.config import get_settings
+    from app.main import app
 
     get_settings.cache_clear()
+    reset = getattr(app.state.rate_limit_store, "reset", None)
+    if callable(reset):
+        reset()
     approvals._approval_store = approvals.ApprovalStore()
     book_catalog._load_book_catalog.cache_clear()
     langsmith_observability._observer = None
     long_term_memory._memory_backend = long_term_memory.InMemoryLongTermMemoryStore()
     yield
     get_settings.cache_clear()
+    if callable(reset):
+        reset()
     approvals._approval_store = None
     book_catalog._load_book_catalog.cache_clear()
     langsmith_observability._observer = None

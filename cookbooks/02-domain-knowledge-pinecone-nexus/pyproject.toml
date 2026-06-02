@@ -10,6 +10,7 @@ dependencies = [
     "httpx>=0.27",
     "pydantic>=2.9",
     "pydantic-settings>=2.6",
+    "redis>=5.0",
     "pinecone>=5.0.0",
 ]
 

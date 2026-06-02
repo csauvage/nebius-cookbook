@@ -43,7 +43,10 @@ class Settings(BaseSettings):
     log_level: Literal["debug", "info", "warning", "error"] = Field(default="info")
 
     # Limits
-    rate_limit_per_minute: int = Field(default=10, ge=1)
+    rate_limit_enabled: bool = Field(default=True)
+    rate_limit_requests_per_day: int = Field(default=25, ge=1)
+    rate_limit_redis_url: str | None = Field(default=None)
+    rate_limit_trust_proxy_headers: bool = Field(default=False)
     request_timeout_seconds: int = Field(default=60, ge=1)
     direct_response_max_tokens: int = Field(default=384, ge=64, le=8192)
     deliberate_response_max_tokens: int = Field(default=700, ge=128, le=8192)

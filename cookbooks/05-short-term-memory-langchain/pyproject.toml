@@ -9,6 +9,7 @@ dependencies = [
     "openai>=1.50",
     "pydantic>=2.9",
     "pydantic-settings>=2.6",
+    "redis>=5.0",
     "structlog>=24.4",
     "slowapi>=0.1.9",
     "prometheus-client>=0.21",

@@ -10,15 +10,12 @@ import structlog
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
-from slowapi import Limiter
-from slowapi.errors import RateLimitExceeded
-from slowapi.util import get_remote_address
 from starlette.middleware.base import BaseHTTPMiddleware
-from starlette.requests import Request
-from starlette.responses import JSONResponse, Response
+from starlette.responses import Response
 
 from app import __version__
 from app.config import get_settings
+from app.core.rate_limit import RateLimitMiddleware, build_rate_limit_store
 from app.observability.logging import configure_logging
 from app.observability.metrics import metrics_middleware
 from app.observability.middleware import (
@@ -41,14 +38,14 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         env=settings.env,
         model=settings.nebius_model,
     )
+    await app.state.rate_limit_store.connect()
     try:
         yield
     finally:
         logger.info("shutdown")
+        await app.state.rate_limit_store.close()
         await asyncio.sleep(0)
 
-
-limiter = Limiter(key_func=get_remote_address)
 
 app = FastAPI(
     title="Nebius Cookbook — Long-Term Memory with LangChain and Postgres",
@@ -59,13 +56,27 @@ app = FastAPI(
 )
 
 settings = get_settings()
-app.state.limiter = limiter
 localhost_cors_regex = (
     r"^https?://(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$"
     if settings.env == "development" and settings.allow_localhost_cors
     else None
 )
+app.state.rate_limit_store = build_rate_limit_store(
+    settings.rate_limit_redis_url,
+    namespace="06-long-term-memory-langchain-postgres",
+)
 
+app.add_middleware(
+    RateLimitMiddleware,
+    enabled=settings.rate_limit_enabled,
+    requests_per_day=settings.rate_limit_requests_per_day,
+    store=app.state.rate_limit_store,
+    trust_proxy_headers=settings.rate_limit_trust_proxy_headers,
+)
+app.add_middleware(BaseHTTPMiddleware, dispatch=metrics_middleware)
+app.add_middleware(RequestIDMiddleware)
+app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(SizeLimitMiddleware, max_bytes=settings.max_request_bytes)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
@@ -75,15 +86,6 @@ app.add_middleware(
     allow_credentials=False,
     max_age=600,
 )
-app.add_middleware(BaseHTTPMiddleware, dispatch=metrics_middleware)
-app.add_middleware(RequestIDMiddleware)
-app.add_middleware(SecurityHeadersMiddleware)
-app.add_middleware(SizeLimitMiddleware, max_bytes=settings.max_request_bytes)
-
-
-@app.exception_handler(RateLimitExceeded)
-async def _rate_limit_handler(request: Request, exc: RateLimitExceeded) -> JSONResponse:
-    return JSONResponse({"detail": "rate limit exceeded"}, status_code=429)
 
 
 @app.get("/metrics")

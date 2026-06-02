@@ -196,13 +196,13 @@ Two production details that are easy to miss:
 
 ### The hardening
 
-- `slowapi` is wired for per-IP rate limiting; `/agent/run` is the throttle point and the limit is config-driven (`RATE_LIMIT_PER_MINUTE`, default 10).
+- The daily per-IP rate limiter protects backend routes before they call Nebius; it uses Redis when `RATE_LIMIT_REDIS_URL` is set and process-local memory otherwise (`RATE_LIMIT_REQUESTS_PER_DAY`, default 25).
 - CORS is allowlist-based — `CORS_ORIGINS` is parsed and validated at boot, never `*`.
 - Security headers: `x-content-type-options`, `referrer-policy`, `strict-transport-security`.
 - Request bodies above 64 KB are rejected with 413 *before* the body is read, via a `content-length` check in middleware.
 - Lifespan handlers log startup and shutdown; on shutdown the HTTP client is closed and in-flight requests are allowed to drain.
 
-**Middleware order is load-bearing.** ASGI wraps middleware last-added-runs-first, so the stack is arranged so the size-limit check runs before anything expensive, and CORS runs close to the route. Re-ordering `add_middleware` calls silently changes behaviour — there is a comment in `main.py` spelling out the request path.
+**Middleware order is load-bearing.** ASGI wraps middleware last-added-runs-first, so the stack is arranged so CORS, size checks, security headers, request IDs, metrics, and rate limiting all happen before route work. Re-ordering `add_middleware` calls silently changes behaviour — there is a comment in `main.py` spelling out the request path.
 
 ## Design decisions
 
@@ -219,7 +219,7 @@ Two production details that are easy to miss:
 | 500 on first request | `NEBIUS_API_KEY` unset or invalid | Settings validate at boot; a bad key surfaces on first Nebius call as a non-retried 4xx |
 | Stream stalls, no tokens | Upstream slow generation | 60 s read timeout, then a retried `httpx.TimeoutException`; client sees an `error` event |
 | Stream ends early | Client disconnected | Expected — disconnect watcher cancels the upstream call |
-| 429 responses | Rate limit hit | Back off; raise `RATE_LIMIT_PER_MINUTE` only behind authentication |
+| 429 responses | Daily per-IP rate limit hit | Back off; raise `RATE_LIMIT_REQUESTS_PER_DAY` only behind authentication |
 | 413 responses | Body over 64 KB | Raise `MAX_REQUEST_BYTES`, or trim client-side `history` |
 
 The `except Exception` in the route logs the full stack trace but emits only `{"detail": "internal error"}` to the client — internal details never cross the wire.

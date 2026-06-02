@@ -33,6 +33,11 @@ class Settings(BaseSettings):
         default_factory=lambda: ["http://localhost:3000"]
     )
 
+    rate_limit_enabled: bool = Field(default=True)
+    rate_limit_requests_per_day: int = Field(default=25, ge=1)
+    rate_limit_redis_url: str | None = Field(default=None)
+    rate_limit_trust_proxy_headers: bool = Field(default=False)
+
     retrieval_top_k: int = Field(default=10, ge=1, le=50)
     related_top_k: int = Field(default=4, ge=1, le=20)
     answer_max_tokens: int = Field(default=700, ge=1, le=4096)
