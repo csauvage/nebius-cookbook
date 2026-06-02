@@ -5,7 +5,7 @@
 Every recipe is independent. Pick one, clone the repo, and follow the recipe's own README.
 
 ```bash
-git clone https://github.com/csauvage/nebius-cookbook.git
+git clone https://github.com/nebius/nebius-partner-cookbook.git
 cd cookbook/cookbooks/01-first-agent-on-nebius
 
 cp .env.example .env

@@ -7,8 +7,8 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/csauvage/nebius-cookbook/actions/workflows/validate-recipes.yml"><img alt="validate" src="https://img.shields.io/github/actions/workflow/status/csauvage/nebius-cookbook/validate-recipes.yml?label=validate"></a>
-  <a href="https://github.com/csauvage/nebius-cookbook/actions/workflows/test-cookbooks.yml"><img alt="tests" src="https://img.shields.io/github/actions/workflow/status/csauvage/nebius-cookbook/test-cookbooks.yml?label=tests"></a>
+  <a href="https://github.com/nebius/nebius-partner-cookbook/actions/workflows/validate-recipes.yml"><img alt="validate" src="https://img.shields.io/github/actions/workflow/status/nebius/nebius-partner-cookbook/validate-recipes.yml?label=validate"></a>
+  <a href="https://github.com/nebius/nebius-partner-cookbook/actions/workflows/test-cookbooks.yml"><img alt="tests" src="https://img.shields.io/github/actions/workflow/status/nebius/nebius-partner-cookbook/test-cookbooks.yml?label=tests"></a>
   <a href="./LICENSE"><img alt="MIT license" src="https://img.shields.io/badge/license-MIT-blue.svg"></a>
 </p>
 
@@ -92,7 +92,7 @@ Every choice optimizes for being **boring**, **fast to onboard**, and **producti
 Every recipe is independent. Pick one, clone the repo, and follow the recipe's own README.
 
 ```bash
-git clone https://github.com/csauvage/nebius-cookbook.git
+git clone https://github.com/nebius/nebius-partner-cookbook.git
 cd cookbook/cookbooks/01-first-agent-on-nebius
 
 cp .env.example .env
@@ -146,12 +146,22 @@ The short version:
 
 The longer guide for new recipes lives in [`docs/adding-a-cookbook.md`](./docs/adding-a-cookbook.md).
 
+## Acknowledgements
+
+This cookbook was originally created by [Clément Sauvage](https://bitsncoffee.co). It took inspiration from the [OpenAI Cookbook](https://developers.openai.com/cookbook) and the [Next.js examples](https://github.com/vercel/next.js/tree/canary/examples) for its shape and pedagogical style.
+
+See [CONTRIBUTORS.md](./CONTRIBUTORS.md) for the complete list of contributors.
+
 ## License
 
 [MIT](./LICENSE). Use, fork, and remix freely. We'd love a link back if a recipe ends up powering something cool.
 
-## Credits
+## Maintenance
 
-Built and maintained by [Clément Sauvage](https://bitsncoffee.co) with the [Nebius](https://nebius.com) team. The cookbook took inspiration from the [OpenAI Cookbook](https://developers.openai.com/cookbook) and the [Next.js examples](https://github.com/vercel/next.js/tree/canary/examples) for its shape and pedagogical style.
+This repository is maintained by Nebius engineers as a community resource — not official product documentation. APIs and behavior may evolve. For authoritative reference, see [docs.nebius.com](https://docs.nebius.com).
 
-If you spot something off, [open an issue](https://github.com/csauvage/nebius-cookbook/issues) or send a PR.
+If you spot something off, [open an issue](https://github.com/nebius/nebius-partner-cookbook/issues) or send a PR.
+
+---
+
+© Nebius BV, 2026

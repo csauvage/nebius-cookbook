@@ -40,7 +40,7 @@ No partner service account is needed until the retrieval and memory recipes.
 ## Run it
 
 ```bash
-git clone https://github.com/csauvage/nebius-cookbook.git
+git clone https://github.com/nebius/nebius-partner-cookbook.git
 cd nebius-cookbook/cookbooks/01-first-agent-on-nebius
 
 cp .env.example .env

@@ -28,7 +28,7 @@ Required env vars:
 |---|---|---|
 | `CLEVER_APP_ID_FRONTEND` | `app_xxx` | GitHub repository secret used by `deploy-app.yml` |
 | `NEXT_PUBLIC_SITE_URL` | `https://cookbook.nebius.com` | Canonical URL, OG tags |
-| `NEXT_PUBLIC_GITHUB_REPO` | `https://github.com/csauvage/nebius-cookbook` | "Edit on GitHub" links |
+| `NEXT_PUBLIC_GITHUB_REPO` | `https://github.com/nebius/nebius-partner-cookbook` | "Edit on GitHub" links |
 | `NODE_ENV` | `production` | Standard |
 | `PORT` | (set by Clever Cloud) | Bound automatically |
 
