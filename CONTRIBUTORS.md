@@ -4,7 +4,11 @@ This cookbook is maintained by Nebius engineers and the wider community.
 
 ## Original author
 
-- [Clément Sauvage](https://bitsncoffee.co)
+- [Clément Sauvage](https://bitsncoffee.co) — cookbook platform and recipes
+
+## Blueprint authors
+
+- Tikhon Roshchupkin — [Sentinel compliance auditor](./blueprints/sentinel-compliance-auditor/)
 
 ## Contributors
 

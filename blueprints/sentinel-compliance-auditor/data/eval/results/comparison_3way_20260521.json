@@ -1,0 +1,689 @@
+{
+  "timestamp_naive": "2026-05-20T10:13:10",
+  "timestamp_agentic": "2026-05-20T10:13:10",
+  "timestamp_agentic_openai": "2026-05-21T10:15:37",
+  "modes": [
+    "naive",
+    "agentic",
+    "agentic-openai"
+  ],
+  "naive": {
+    "mode": "naive",
+    "model": "deepseek-ai/DeepSeek-V4-Pro",
+    "total": 120,
+    "failed": 0,
+    "input_tokens": 698170,
+    "output_tokens": 43663,
+    "judge_input_tokens": 50200,
+    "judge_output_tokens": 5187,
+    "answer_cost_usd": 1.3746,
+    "judge_cost_usd": 0.106,
+    "total_cost_usd": 1.4806,
+    "latency_total_s": 1715.2,
+    "latency_avg_s": 14.3,
+    "compliance_binary": {
+      "n": 32,
+      "matched": 25,
+      "accuracy": 0.781,
+      "recall_non_compliant": 0.864,
+      "precision_non_compliant": 0.826,
+      "f1_non_compliant": 0.844,
+      "recall_compliant": 0.6,
+      "precision_compliant": 0.667,
+      "f1_compliant": 0.632,
+      "macro_f1": 0.738,
+      "tp_non_compliant": 19,
+      "fp_non_compliant": 4,
+      "tn_compliant": 6,
+      "fn_non_compliant": 3,
+      "mismatches": [
+        {
+          "key": "q-008",
+          "expected": "compliant",
+          "predicted": "non_compliant"
+        },
+        {
+          "key": "q-041",
+          "expected": "non_compliant",
+          "predicted": "compliant"
+        },
+        {
+          "key": "q-048",
+          "expected": "non_compliant",
+          "predicted": "compliant"
+        },
+        {
+          "key": "q-092",
+          "expected": "compliant",
+          "predicted": "non_compliant"
+        },
+        {
+          "key": "q-093",
+          "expected": "compliant",
+          "predicted": "non_compliant"
+        },
+        {
+          "key": "q-094",
+          "expected": "compliant",
+          "predicted": "non_compliant"
+        },
+        {
+          "key": "q-104",
+          "expected": "non_compliant",
+          "predicted": "compliant"
+        }
+      ]
+    },
+    "compliance_3class": {
+      "matched": 19,
+      "total": 32,
+      "false_positives": 8,
+      "false_negatives": 5,
+      "macro_f1": 0.584,
+      "mismatches": [
+        {
+          "key": "q-008",
+          "expected": "compliant",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-039",
+          "expected": "partial",
+          "predicted": "gap"
+        },
+        {
+          "key": "q-041",
+          "expected": "gap",
+          "predicted": "compliant"
+        },
+        {
+          "key": "q-046",
+          "expected": "partial",
+          "predicted": "gap"
+        },
+        {
+          "key": "q-048",
+          "expected": "partial",
+          "predicted": "compliant"
+        },
+        {
+          "key": "q-050",
+          "expected": "gap",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-092",
+          "expected": "compliant",
+          "predicted": "gap"
+        },
+        {
+          "key": "q-093",
+          "expected": "compliant",
+          "predicted": "gap"
+        },
+        {
+          "key": "q-094",
+          "expected": "compliant",
+          "predicted": "gap"
+        },
+        {
+          "key": "q-097",
+          "expected": "partial",
+          "predicted": "gap"
+        },
+        {
+          "key": "q-098",
+          "expected": "partial",
+          "predicted": "gap"
+        },
+        {
+          "key": "q-102",
+          "expected": "gap",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-104",
+          "expected": "gap",
+          "predicted": "compliant"
+        }
+      ]
+    },
+    "per_category": {
+      "factual_single_hop": {
+        "n": 22,
+        "judge_correctness_avg": 1.0454545454545454,
+        "judge_citations_avg": 1.0454545454545454,
+        "binary_accuracy": null,
+        "binary_total": 0,
+        "level_accuracy_3class": null,
+        "level_total": 0
+      },
+      "multi_regulation": {
+        "n": 22,
+        "judge_correctness_avg": 0.7272727272727273,
+        "judge_citations_avg": 0.7272727272727273,
+        "binary_accuracy": null,
+        "binary_total": 0,
+        "level_accuracy_3class": null,
+        "level_total": 0
+      },
+      "edition_aware": {
+        "n": 14,
+        "judge_correctness_avg": 0.35714285714285715,
+        "judge_citations_avg": 0.2857142857142857,
+        "binary_accuracy": null,
+        "binary_total": 0,
+        "level_accuracy_3class": null,
+        "level_total": 0
+      },
+      "sop_compliance": {
+        "n": 35,
+        "judge_correctness_avg": null,
+        "judge_citations_avg": null,
+        "binary_accuracy": 0.78125,
+        "binary_total": 32,
+        "level_accuracy_3class": 0.59375,
+        "level_total": 32
+      },
+      "web_grounded": {
+        "n": 10,
+        "judge_correctness_avg": 0.5,
+        "judge_citations_avg": 0.2,
+        "binary_accuracy": null,
+        "binary_total": 0,
+        "level_accuracy_3class": null,
+        "level_total": 0
+      },
+      "negation_gap": {
+        "n": 17,
+        "judge_correctness_avg": 0.8823529411764706,
+        "judge_citations_avg": 0.6470588235294118,
+        "binary_accuracy": null,
+        "binary_total": 0,
+        "level_accuracy_3class": null,
+        "level_total": 0
+      }
+    }
+  },
+  "agentic": {
+    "mode": "agentic",
+    "model": "deepseek-ai/DeepSeek-V4-Pro",
+    "total": 120,
+    "failed": 0,
+    "input_tokens": 6520751,
+    "output_tokens": 332211,
+    "judge_input_tokens": 184443,
+    "judge_output_tokens": 6188,
+    "answer_cost_usd": 12.5741,
+    "judge_cost_usd": 0.3444,
+    "total_cost_usd": 12.9185,
+    "latency_total_s": 10936.6,
+    "latency_avg_s": 91.1,
+    "compliance_binary": {
+      "n": 35,
+      "matched": 27,
+      "accuracy": 0.771,
+      "recall_non_compliant": 1.0,
+      "precision_non_compliant": 0.758,
+      "f1_non_compliant": 0.862,
+      "recall_compliant": 0.2,
+      "precision_compliant": 1.0,
+      "f1_compliant": 0.333,
+      "macro_f1": 0.598,
+      "tp_non_compliant": 25,
+      "fp_non_compliant": 8,
+      "tn_compliant": 2,
+      "fn_non_compliant": 0,
+      "mismatches": [
+        {
+          "key": "q-008",
+          "expected": "compliant",
+          "predicted": "non_compliant"
+        },
+        {
+          "key": "q-089",
+          "expected": "compliant",
+          "predicted": "non_compliant"
+        },
+        {
+          "key": "q-090",
+          "expected": "compliant",
+          "predicted": "non_compliant"
+        },
+        {
+          "key": "q-091",
+          "expected": "compliant",
+          "predicted": "non_compliant"
+        },
+        {
+          "key": "q-092",
+          "expected": "compliant",
+          "predicted": "non_compliant"
+        },
+        {
+          "key": "q-093",
+          "expected": "compliant",
+          "predicted": "non_compliant"
+        },
+        {
+          "key": "q-094",
+          "expected": "compliant",
+          "predicted": "non_compliant"
+        },
+        {
+          "key": "q-095",
+          "expected": "compliant",
+          "predicted": "non_compliant"
+        }
+      ]
+    },
+    "compliance_3class": {
+      "matched": 14,
+      "total": 35,
+      "false_positives": 8,
+      "false_negatives": 13,
+      "macro_f1": 0.352,
+      "mismatches": [
+        {
+          "key": "q-006",
+          "expected": "gap",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-007",
+          "expected": "gap",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-008",
+          "expected": "compliant",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-038",
+          "expected": "gap",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-041",
+          "expected": "gap",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-042",
+          "expected": "gap",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-045",
+          "expected": "gap",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-049",
+          "expected": "gap",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-050",
+          "expected": "gap",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-051",
+          "expected": "gap",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-089",
+          "expected": "compliant",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-090",
+          "expected": "compliant",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-091",
+          "expected": "compliant",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-092",
+          "expected": "compliant",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-093",
+          "expected": "compliant",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-094",
+          "expected": "compliant",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-095",
+          "expected": "compliant",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-101",
+          "expected": "gap",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-102",
+          "expected": "gap",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-103",
+          "expected": "gap",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-104",
+          "expected": "gap",
+          "predicted": "partial"
+        }
+      ]
+    },
+    "per_category": {
+      "factual_single_hop": {
+        "n": 22,
+        "judge_correctness_avg": 1.9090909090909092,
+        "judge_citations_avg": 1.7272727272727273,
+        "binary_accuracy": null,
+        "binary_total": 0,
+        "level_accuracy_3class": null,
+        "level_total": 0
+      },
+      "multi_regulation": {
+        "n": 22,
+        "judge_correctness_avg": 2.0,
+        "judge_citations_avg": 1.6363636363636365,
+        "binary_accuracy": null,
+        "binary_total": 0,
+        "level_accuracy_3class": null,
+        "level_total": 0
+      },
+      "edition_aware": {
+        "n": 14,
+        "judge_correctness_avg": 1.7142857142857142,
+        "judge_citations_avg": 1.1428571428571428,
+        "binary_accuracy": null,
+        "binary_total": 0,
+        "level_accuracy_3class": null,
+        "level_total": 0
+      },
+      "sop_compliance": {
+        "n": 35,
+        "judge_correctness_avg": null,
+        "judge_citations_avg": null,
+        "binary_accuracy": 0.7714285714285715,
+        "binary_total": 35,
+        "level_accuracy_3class": 0.4,
+        "level_total": 35
+      },
+      "web_grounded": {
+        "n": 10,
+        "judge_correctness_avg": 1.7,
+        "judge_citations_avg": 1.2,
+        "binary_accuracy": null,
+        "binary_total": 0,
+        "level_accuracy_3class": null,
+        "level_total": 0
+      },
+      "negation_gap": {
+        "n": 17,
+        "judge_correctness_avg": 1.8823529411764706,
+        "judge_citations_avg": 1.4705882352941178,
+        "binary_accuracy": null,
+        "binary_total": 0,
+        "level_accuracy_3class": null,
+        "level_total": 0
+      }
+    }
+  },
+  "agentic-openai": {
+    "mode": "agentic-openai",
+    "model": "gpt-5.5",
+    "total": 120,
+    "failed": 0,
+    "input_tokens": 6339895,
+    "output_tokens": 384064,
+    "judge_input_tokens": 144178,
+    "judge_output_tokens": 5655,
+    "answer_cost_usd": 43.2214,
+    "judge_cost_usd": 0.8905,
+    "total_cost_usd": 44.1119,
+    "latency_total_s": 7786.5,
+    "latency_avg_s": 64.9,
+    "compliance_binary": {
+      "n": 35,
+      "matched": 27,
+      "accuracy": 0.771,
+      "recall_non_compliant": 1.0,
+      "precision_non_compliant": 0.758,
+      "f1_non_compliant": 0.862,
+      "recall_compliant": 0.2,
+      "precision_compliant": 1.0,
+      "f1_compliant": 0.333,
+      "macro_f1": 0.598,
+      "tp_non_compliant": 25,
+      "fp_non_compliant": 8,
+      "tn_compliant": 2,
+      "fn_non_compliant": 0,
+      "mismatches": [
+        {
+          "key": "q-008",
+          "expected": "compliant",
+          "predicted": "non_compliant"
+        },
+        {
+          "key": "q-047",
+          "expected": "compliant",
+          "predicted": "non_compliant"
+        },
+        {
+          "key": "q-088",
+          "expected": "compliant",
+          "predicted": "non_compliant"
+        },
+        {
+          "key": "q-089",
+          "expected": "compliant",
+          "predicted": "non_compliant"
+        },
+        {
+          "key": "q-092",
+          "expected": "compliant",
+          "predicted": "non_compliant"
+        },
+        {
+          "key": "q-093",
+          "expected": "compliant",
+          "predicted": "non_compliant"
+        },
+        {
+          "key": "q-094",
+          "expected": "compliant",
+          "predicted": "non_compliant"
+        },
+        {
+          "key": "q-095",
+          "expected": "compliant",
+          "predicted": "non_compliant"
+        }
+      ]
+    },
+    "compliance_3class": {
+      "matched": 15,
+      "total": 35,
+      "false_positives": 8,
+      "false_negatives": 12,
+      "macro_f1": 0.389,
+      "mismatches": [
+        {
+          "key": "q-006",
+          "expected": "gap",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-007",
+          "expected": "gap",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-008",
+          "expected": "compliant",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-038",
+          "expected": "gap",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-041",
+          "expected": "gap",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-042",
+          "expected": "gap",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-045",
+          "expected": "gap",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-047",
+          "expected": "compliant",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-049",
+          "expected": "gap",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-050",
+          "expected": "gap",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-088",
+          "expected": "compliant",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-089",
+          "expected": "compliant",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-092",
+          "expected": "compliant",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-093",
+          "expected": "compliant",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-094",
+          "expected": "compliant",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-095",
+          "expected": "compliant",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-101",
+          "expected": "gap",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-102",
+          "expected": "gap",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-103",
+          "expected": "gap",
+          "predicted": "partial"
+        },
+        {
+          "key": "q-104",
+          "expected": "gap",
+          "predicted": "partial"
+        }
+      ]
+    },
+    "per_category": {
+      "factual_single_hop": {
+        "n": 22,
+        "judge_correctness_avg": 1.9545454545454546,
+        "judge_citations_avg": 1.8636363636363635,
+        "binary_accuracy": null,
+        "binary_total": 0,
+        "level_accuracy_3class": null,
+        "level_total": 0
+      },
+      "multi_regulation": {
+        "n": 22,
+        "judge_correctness_avg": 2.0,
+        "judge_citations_avg": 1.7727272727272727,
+        "binary_accuracy": null,
+        "binary_total": 0,
+        "level_accuracy_3class": null,
+        "level_total": 0
+      },
+      "edition_aware": {
+        "n": 14,
+        "judge_correctness_avg": 1.5,
+        "judge_citations_avg": 1.6428571428571428,
+        "binary_accuracy": null,
+        "binary_total": 0,
+        "level_accuracy_3class": null,
+        "level_total": 0
+      },
+      "sop_compliance": {
+        "n": 35,
+        "judge_correctness_avg": null,
+        "judge_citations_avg": null,
+        "binary_accuracy": 0.7714285714285715,
+        "binary_total": 35,
+        "level_accuracy_3class": 0.42857142857142855,
+        "level_total": 35
+      },
+      "web_grounded": {
+        "n": 10,
+        "judge_correctness_avg": 1.4,
+        "judge_citations_avg": 1.3,
+        "binary_accuracy": null,
+        "binary_total": 0,
+        "level_accuracy_3class": null,
+        "level_total": 0
+      },
+      "negation_gap": {
+        "n": 17,
+        "judge_correctness_avg": 1.8823529411764706,
+        "judge_citations_avg": 1.7647058823529411,
+        "binary_accuracy": null,
+        "binary_total": 0,
+        "level_accuracy_3class": null,
+        "level_total": 0
+      }
+    }
+  }
+}

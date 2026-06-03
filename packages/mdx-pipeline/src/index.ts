@@ -4,6 +4,14 @@ export interface CompileOptions {
   repoUrl: string;
   cookbookSlugByDir: Record<string, string>;
   frontmatter?: Record<string, unknown>;
+  /**
+   * Top-level directory the content lives under. Defaults to "cookbooks";
+   * blueprints pass "blueprints". Used to resolve relative links against the
+   * canonical GitHub source.
+   */
+  baseDir?: string;
+  /** Catalog route prefix for sibling links (e.g. "recipes" or "blueprints"). */
+  siblingRoute?: string;
 }
 
 /**
@@ -71,8 +79,17 @@ const LINK_RE = /(!?)\[([^\]]+)\]\(([^)\s]+)(\s+"[^"]*")?\)/g;
 
 function rewriteLinks(markdown: string, options: CompileOptions): string {
   const { cookbookDir, repoUrl, cookbookSlugByDir } = options;
+  const baseDir = options.baseDir ?? "cookbooks";
+  const siblingRoute = options.siblingRoute ?? "recipes";
   return markdown.replace(LINK_RE, (_match, bang, label, target, title) => {
-    const rewritten = rewriteTarget(target, cookbookDir, repoUrl, cookbookSlugByDir);
+    const rewritten = rewriteTarget(
+      target,
+      cookbookDir,
+      repoUrl,
+      cookbookSlugByDir,
+      baseDir,
+      siblingRoute,
+    );
     return `${bang}[${label}](${rewritten}${title ?? ""})`;
   });
 }
@@ -82,6 +99,8 @@ function rewriteTarget(
   cookbookDir: string,
   repoUrl: string,
   cookbookSlugByDir: Record<string, string>,
+  baseDir: string,
+  siblingRoute: string,
 ): string {
   if (target.startsWith("http://") || target.startsWith("https://")) return target;
   if (target.startsWith("#")) return target;
@@ -92,16 +111,16 @@ function rewriteTarget(
   const path = hashIdx === -1 ? target : target.slice(0, hashIdx);
   const fragment = hashIdx === -1 ? "" : target.slice(hashIdx);
 
-  // Resolve relative to the cookbook directory.
-  const resolved = normalizePath(`cookbooks/${cookbookDir}/${path}`);
+  // Resolve relative to the content directory.
+  const resolved = normalizePath(`${baseDir}/${cookbookDir}/${path}`);
 
-  // Sibling cookbook? Send the reader to the catalog page for that recipe.
-  const siblingMatch = resolved.match(/^cookbooks\/([^/]+)\/?$/);
+  // Sibling in the same tier? Send the reader to its catalog page.
+  const siblingMatch = resolved.match(new RegExp(`^${baseDir}/([^/]+)/?$`));
   if (siblingMatch) {
     const dir = siblingMatch[1];
     if (dir && dir !== cookbookDir) {
       const slug = cookbookSlugByDir[dir];
-      if (slug) return `/recipes/${slug}${fragment}`;
+      if (slug) return `/${siblingRoute}/${slug}${fragment}`;
     }
   }
 

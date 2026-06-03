@@ -3,6 +3,7 @@ import { readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { generate as generateRecipesTable } from "./generators/recipes-table.ts";
+import { generate as generateBlueprintsTable } from "./generators/blueprints-table.ts";
 
 interface Section {
   id: string;
@@ -42,6 +43,12 @@ for (const section of config.sections) {
     if (section.generator === "recipes-table") {
       const body = (await generateRecipesTable(
         (section.options ?? {}) as Parameters<typeof generateRecipesTable>[0],
+        configDir,
+      )).trimEnd();
+      parts.push(body);
+    } else if (section.generator === "blueprints-table") {
+      const body = (await generateBlueprintsTable(
+        (section.options ?? {}) as Parameters<typeof generateBlueprintsTable>[0],
         configDir,
       )).trimEnd();
       parts.push(body);

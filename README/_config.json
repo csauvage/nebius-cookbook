@@ -17,6 +17,17 @@
         "heading": "## Recipes"
       }
     },
+    { "id": "blueprints-intro", "source": "human", "file": "02-blueprints.md" },
+    {
+      "id": "blueprints",
+      "source": "generated",
+      "generator": "blueprints-table",
+      "options": {
+        "blueprintsDir": "../blueprints",
+        "columns": ["title", "stack", "integrations", "runTime"],
+        "heading": ""
+      }
+    },
     { "id": "stack", "source": "human", "file": "05-stack.md" },
     { "id": "getting-started", "source": "human", "file": "03-getting-started.md" },
     { "id": "contributing", "source": "human", "file": "04-contributing.md" },

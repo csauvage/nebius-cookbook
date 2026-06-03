@@ -1,0 +1,15 @@
+/.env
+/.venv
+.langgraph_api/
+__pycache__/
+output/
+.claude/
+*.pyc
+*.egg-info/
+.DS_Store
+.idea/
+.mcp.json
+tmp.txt
+.codex/
+.streamlit/
+screenshots/

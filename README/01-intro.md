@@ -12,7 +12,7 @@
 
 ---
 
-The Nebius Cookbook is a curated collection of runnable, production-shaped recipes for building AI agents on Nebius AgentKit. Every recipe is a real FastAPI application — typed, observable, containerized, and tested — that you can clone, configure, and deploy in five minutes.
+The Nebius Cookbook is a curated collection of runnable, production-shaped code for building AI agents on Nebius AgentKit. It comes in two tiers. **Recipes** are small, sequenced FastAPI applications — typed, observable, containerized, and tested — that you can clone, configure, and deploy in five minutes. **Blueprints** are complete, deployable reference applications that show what a real agent looks like at full scale.
 
 It is for engineers who have called an LLM API from a script and want to know what the gap looks like between that script and something they would actually ship.
 
@@ -28,3 +28,5 @@ It is for engineers who have called an LLM API from a script and want to know wh
 Each recipe is **autonomous** — cloning a single cookbook directory is enough to run it, with no shared base packages and no implicit dependencies on the rest of the repo.
 
 The recipes are also a **sequence**. They form a narrative arc — Foundation → Retrieval → Grounding → Orchestration → Thread Memory → User Memory → Observability → Guardrails → Actions → Simulation — and each one assumes the concepts of the one before it: #2 builds on #1, #3 on #2, and so on. You *can* run any cookbook on its own, but the documentation is written for a reader following them in order.
+
+**Blueprints** sit outside that sequence. Where a recipe teaches one concept, a blueprint is a finished application — larger, opinionated, and deployable as-is — that combines many of those concepts into something you could put in front of users. They may diverge from the recipe stack (a React frontend, a LangGraph deployment, a bundled data corpus) and live under [`blueprints/`](./blueprints/).
