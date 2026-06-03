@@ -20,6 +20,8 @@ dist/
 out/
 app/src/content/recipes/
 app/src/content/recipes-manifest.json
+app/src/content/blueprints/
+app/src/content/blueprints-manifest.json
 *.tsbuildinfo
 
 # Environment

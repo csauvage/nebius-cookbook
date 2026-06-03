@@ -25,6 +25,25 @@ curl -N -X POST http://localhost:8000/agent/run \
 
 You should see Server-Sent Events streaming back, with `status`, `token`, and `done` events.
 
+### Run a blueprint
+
+Blueprints are larger, self-contained applications under [`blueprints/`](./blueprints/). Each has its own README, `Makefile`, and setup. For example, the Sentinel compliance auditor:
+
+```bash
+git clone https://github.com/nebius/nebius-partner-cookbook.git
+cd nebius-partner-cookbook/blueprints/sentinel-compliance-auditor
+
+cp .env.example .env
+# Fill NEBIUS_API_KEY, PINECONE_API_KEY, TAVILY_API_KEY
+
+make install
+make ingest && make ingest-regulations   # build the Pinecone knowledge base
+make dev                                  # LangGraph dev server
+make ui                                   # FastAPI + React UI
+```
+
+See [`blueprints/sentinel-compliance-auditor/README.md`](./blueprints/sentinel-compliance-auditor/README.md) for the full walkthrough.
+
 ### Prerequisites
 
 A laptop with:
@@ -42,7 +61,7 @@ The Next.js site that hosts this catalog lives in `app/`.
 
 ```bash
 bun install
-bun run build:recipes   # compile cookbook READMEs to MDX
+bun run build:content   # compile recipe + blueprint READMEs to MDX
 cd app
 bun run dev
 ```
