@@ -113,7 +113,8 @@ When an audit finding is a gap or partial at medium+ severity, the `create_jira_
 ### Regulations
 - 36 regulation frameworks in `data/regulations/` as .txt, .md, .pdf, and .xml files
 - 2,386 chunks ingested into Pinecone namespace `regulations` (from 22 .txt/.md source files)
-- Historical editions: HIPAA (2017, 2020, 2024, current), NIST AI RMF (2022 drafts, final), EU AI Act (2021 proposal, final), SR 11-7 (2011 original, 2026 revised)
+- Historical editions: HIPAA (2017, 2020, 2024, current), NIST AI RMF (2022 drafts, final), EU AI Act (2021 proposal, final)
+- SOC 2 (AICPA) and PCI DSS (PCI SSC) texts are copyrighted and not included — see `data/regulations/README.md` for download instructions
 - Each chunk carries `regulation`, `edition`, `section`, and `source` metadata for filtered retrieval
 - PDFs are extracted to .txt via `scripts/extract_pdf_text.py` (pymupdf) before ingestion
 - See `data/regulations/README.md` for full file inventory and sources

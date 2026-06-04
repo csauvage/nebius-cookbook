@@ -26,7 +26,6 @@ REGULATION_MAP = {
     "california_sb942": "California SB 942",
     "california_ab853": "California AB 853",
     "sr_11_7": "SR 11-7",
-    "sr_26_2": "SR 11-7",
     # Financial laws
     "bsa_31cfr": "BSA / 31 CFR",
     "ecoa_regulation_b": "ECOA / Reg B",
@@ -69,7 +68,6 @@ EDITION_PATTERNS = {
     "_draft1_2022": "2022-draft1",
     "_draft2_2022": "2022-draft2",
     "_2021_commission_proposal": "2021-proposal",
-    "_2026": "2026",
 }
 
 

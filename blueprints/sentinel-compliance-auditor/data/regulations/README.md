@@ -6,12 +6,11 @@ Reference texts for Sentinel's target regulations. Used for grounding the compli
 
 ## SOC 2
 
-| File | Description | Source |
-|------|-------------|--------|
-| `soc2_trust_services_criteria_2017_revised_2022.pdf` | 2017 Trust Services Criteria with Revised Points of Focus (2022) | AICPA |
-| `soc2_trust_services_criteria_2017_revised_2022.txt` | Same, extracted text (75 pages, 124 chunks) | pymupdf |
-| `soc2_description_criteria_2018_revised_2022.pdf` | 2018 SOC 2 Description Criteria (revised 2022) | AICPA |
-| `soc2_description_criteria_2018_revised_2022.txt` | Same, extracted text (36 pages, 60 chunks) | pymupdf |
+Not included — AICPA copyrighted material. Download from [AICPA Trust Services Criteria](https://us.aicpa.org/interestareas/frc/assuranceadvisoryservices/trustservicescriteria) and place as:
+- `soc2_trust_services_criteria_2017_revised_2022.pdf` — 2017 Trust Services Criteria with Revised Points of Focus (2022)
+- `soc2_description_criteria_2018_revised_2022.pdf` — 2018 SOC 2 Description Criteria (revised 2022)
+
+Then run `python scripts/extract_pdf_text.py` to generate `.txt` files.
 
 ## HIPAA
 
@@ -77,10 +76,6 @@ The AI Act entered into force 1 Aug 2024, fully applicable 2 Aug 2026. An "AI om
 |------|-------------|--------|
 | `sr_11_7_occ_model_risk_management.pdf` | OCC Bulletin 2011-12a: original guidance (2011) | OCC |
 | `sr_11_7_occ_model_risk_management.txt` | Same, extracted text (15 chunks) | pymupdf |
-| `sr_26_2_model_risk_management_2026.pdf` | Fed SR 26-2: revised interagency guidance (Apr 2026) | Federal Reserve |
-| `sr_26_2_model_risk_management_2026.txt` | Same, extracted text (15 chunks, edition: 2026) | pymupdf |
-
-SR 11-7 was rescinded April 2026 and replaced by interagency guidance (OCC 2026-13 / Fed SR 26-2 / FDIC). The revised guidance excludes generative/agentic AI from scope and applies to banks >$30B total assets.
 
 ## California AI Laws
 
@@ -142,7 +137,8 @@ SB 1047 was vetoed Sep 2024. SB 53 is its successor — lighter-touch transparen
 | `bsa_31cfr_chapter_x.xml` / `.txt` | Bank Secrecy Act: 31 CFR Chapter X (FinCEN rules, AML, CTR, SAR) | eCFR API |
 | `ecoa_regulation_b_12cfr1002.xml` / `.txt` | Equal Credit Opportunity Act: Regulation B (12 CFR 1002) | eCFR API |
 | `fcra_fair_credit_reporting_act.pdf` / `.txt` | Fair Credit Reporting Act (15 USC Chapter 41 Subchapter III, 67 pages) | GovInfo/GPO |
-| `pci_dss_quick_guide.pdf` / `.txt` | PCI DSS Quick Reference Guide v3.2.1 | PCI SSC |
+
+PCI DSS Quick Reference Guide (PCI SSC, copyrighted) is not included. Download from [PCI SSC Document Library](https://www.pcisecuritystandards.org/document_library/) and place as `pci_dss_quick_guide.pdf`, then run `python scripts/extract_pdf_text.py`.
 
 ## Utilities
 
