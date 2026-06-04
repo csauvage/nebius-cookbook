@@ -1,6 +1,6 @@
 # Grounding — Real-Time Data with Tavily
 
-Recipe **03 of 10** in the Nebius Cookbook arc:
+Recipe **03 of 10** in the Agent Blueprint Recipes arc:
 
 > Foundation → Retrieval → **Grounding** → Orchestration → Thread Memory → User Memory → Observability → Guardrails → Actions → Simulation
 

@@ -1,6 +1,6 @@
 ## Acknowledgements
 
-This cookbook was originally created by [Clément Sauvage](https://bitsncoffee.co). It took inspiration from the [OpenAI Cookbook](https://developers.openai.com/cookbook) and the [Next.js examples](https://github.com/vercel/next.js/tree/canary/examples) for its shape and pedagogical style.
+Agent Blueprint Recipes was originally created by [Clément Sauvage](https://bitsncoffee.co). It took inspiration from the [OpenAI Cookbook](https://developers.openai.com/cookbook) and the [Next.js examples](https://github.com/vercel/next.js/tree/canary/examples) for its shape and pedagogical style.
 
 See [CONTRIBUTORS.md](./CONTRIBUTORS.md) for the complete list of contributors.
 

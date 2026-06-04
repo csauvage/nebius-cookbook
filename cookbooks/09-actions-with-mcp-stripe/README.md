@@ -2,7 +2,7 @@
 
 > Let a guarded book agent create a Stripe test-mode checkout link, but only after explicit user approval.
 
-Recipe **09 of 10** in the Nebius Cookbook arc:
+Recipe **09 of 10** in the Agent Blueprint Recipes arc:
 
 > Foundation → Retrieval → Grounding → Orchestration → Thread Memory → User Memory → Observability → Guardrails → **Actions** → Simulation
 

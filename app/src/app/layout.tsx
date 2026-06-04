@@ -43,8 +43,8 @@ const jersey = Jersey_15({
 
 export const metadata: Metadata = {
   title: {
-    default: "Nebius Cookbook",
-    template: "%s — Nebius Cookbook",
+    default: "Agent Blueprint Recipes",
+    template: "%s — Agent Blueprint Recipes",
   },
   description: "Production-grade recipes for building AI agents on Nebius AgentKit.",
   metadataBase: new URL(SITE_URL),

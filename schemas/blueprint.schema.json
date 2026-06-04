@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://nebius.com/cookbook/schemas/blueprint.schema.json",
-  "title": "Nebius Cookbook Blueprint",
+  "title": "Agent Blueprint",
   "description": "Metadata for a single blueprint — a complete, deployable reference application. Looser than recipe.schema.json: blueprints are not part of the sequenced cookbook arc and may diverge from the uniform recipe stack (e.g. a React UI, a LangGraph deploy, a bundled data corpus).",
   "type": "object",
   "additionalProperties": false,

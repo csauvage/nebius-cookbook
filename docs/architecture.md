@@ -1,6 +1,6 @@
 # Architecture
 
-This document explains how the Nebius Cookbook monorepo is organized and why. For adding a cookbook, see [`adding-a-cookbook.md`](./adding-a-cookbook.md). For the contribution workflow, see [`../CONTRIBUTING.md`](../CONTRIBUTING.md).
+This document explains how the Agent Blueprint Recipes monorepo is organized and why. For adding a cookbook, see [`adding-a-cookbook.md`](./adding-a-cookbook.md). For the contribution workflow, see [`../CONTRIBUTING.md`](../CONTRIBUTING.md).
 
 ## The two worlds
 

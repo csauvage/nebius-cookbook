@@ -34,7 +34,7 @@ export default async function BlueprintPage({ params }: { params: Promise<{ slug
           <Link href="/" className="inline-flex items-center gap-3">
             <NebiusLogo height={20} />
             <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-ink-soft">
-              / Partner Cookbook
+              / Agent Blueprint Recipes
             </span>
           </Link>
           <Link

@@ -94,7 +94,7 @@ export default async function Image() {
             }}
           >
             <span>[ Session Ready ]</span>
-            <span style={{ color: "#ddff46" }}>/ Cookbook · live</span>
+            <span style={{ color: "#ddff46" }}>/ Agent Blueprint Recipes · live</span>
           </div>
           <div
             style={{

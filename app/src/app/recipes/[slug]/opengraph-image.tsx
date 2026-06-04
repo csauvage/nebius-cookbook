@@ -166,7 +166,7 @@ export default async function Image({ params }: { params: Promise<{ slug: string
               textTransform: "uppercase",
             }}
           >
-            {recipe.estimatedReadingTime} read · Nebius Cookbook
+            {recipe.estimatedReadingTime} read · Agent Blueprint Recipes
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@
 
 > Validate agent input and output before unsafe content reaches the model or the user.
 
-Recipe **08 of 10** in the Nebius Cookbook arc:
+Recipe **08 of 10** in the Agent Blueprint Recipes arc:
 
 > Foundation → Retrieval → Grounding → Orchestration → Thread Memory → User Memory → Observability → **Guardrails** → Actions → Simulation
 
@@ -148,7 +148,7 @@ Here the user sees status events while the model runs, then receives a single ap
 | `GUARDRAILS_TOPIC` | `books and reading recommendations` | Human-readable topic boundary. |
 | `GUARDRAILS_MAX_OUTPUT_CHARS` | `6000` | Maximum approved output length. |
 | `LANGSMITH_TRACING` | `false` | Inherited LangSmith tracing toggle. |
-| `LANGSMITH_PROJECT` | `Nebius Cookbook` | Inherited LangSmith project name. |
+| `LANGSMITH_PROJECT` | `Agent Blueprint Recipes` | Inherited LangSmith project name. |
 | `LANGSMITH_ENDPOINT` | `https://eu.api.smith.langchain.com` | Inherited LangSmith API URL. |
 | `MEMORY_BACKEND` | `postgres` | Inherited long-term memory backend. |
 | `POSTGRESQL_ADDON_URI` | local Postgres URL | Inherited memory database. Clever Cloud injects this when a Postgres add-on is linked. |

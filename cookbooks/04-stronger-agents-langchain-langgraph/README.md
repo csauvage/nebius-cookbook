@@ -2,7 +2,7 @@
 
 > Turn the hand-wired Nebius agent into a typed graph that can choose the shortest useful path to an answer.
 
-Recipe **04 of 10** in the Nebius Cookbook arc:
+Recipe **04 of 10** in the Agent Blueprint Recipes arc:
 
 > Foundation → Retrieval → Grounding → **Orchestration** → Thread Memory → User Memory → Observability → Guardrails → Actions → Simulation
 

@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://nebius.com/cookbook/schemas/recipe.schema.json",
-  "title": "Nebius Cookbook Recipe",
+  "title": "Agent Blueprint Recipe",
   "description": "Metadata for a single cookbook recipe. Source of truth for the recipes table and the web app catalog.",
   "type": "object",
   "additionalProperties": false,

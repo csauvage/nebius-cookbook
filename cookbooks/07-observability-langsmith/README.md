@@ -2,7 +2,7 @@
 
 > Trace, inspect, annotate, and debug a stateful Nebius-backed agent with LangSmith.
 
-Recipe **07 of 10** in the Nebius Cookbook arc:
+Recipe **07 of 10** in the Agent Blueprint Recipes arc:
 
 > Foundation → Retrieval → Grounding → Orchestration → Thread Memory → User Memory → **Observability** → Guardrails → Actions → Simulation
 
@@ -178,7 +178,7 @@ If LangSmith is disabled, the endpoint returns `accepted: false` instead of fail
 | ------- | ------- | ------- |
 | `LANGSMITH_TRACING` | `true` | Enables LangSmith API calls. |
 | `LANGSMITH_API_KEY` | unset | LangSmith API key. |
-| `LANGSMITH_PROJECT` | `Nebius Cookbook` | LangSmith project name. |
+| `LANGSMITH_PROJECT` | `Agent Blueprint Recipes` | LangSmith project name. |
 | `LANGSMITH_ENDPOINT` | `https://eu.api.smith.langchain.com` | LangSmith API URL. |
 | `MEMORY_BACKEND` | `postgres` | Inherited memory backend. |
 | `POSTGRESQL_ADDON_URI` | local Postgres URL | Inherited memory database. Clever Cloud injects this when a Postgres add-on is linked. |
@@ -263,7 +263,7 @@ Use traces when you need to answer request-level questions:
 
 Use LangSmith projects as operational boundaries.
 Development, staging, and production should be separate projects, or at least consistently separated with tags and metadata.
-This cookbook defaults to the EU LangSmith endpoint and a `Nebius Cookbook` project for the public demo, but a production rollout should choose project names that match the deployment environment.
+This cookbook defaults to the EU LangSmith endpoint and an `Agent Blueprint Recipes` project for the public demo, but a production rollout should choose project names that match the deployment environment.
 
 Keep Prometheus and LangSmith side by side.
 Prometheus should page you when aggregate latency, traffic, or error rates move.

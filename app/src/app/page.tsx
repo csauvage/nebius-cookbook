@@ -20,7 +20,7 @@ export default function HomePage() {
             <div className="flex items-center gap-3">
               <NebiusLogo height={28} />
               <span className="font-mono text-[11px] uppercase tracking-[0.22em] text-ink-soft">
-                / Cookbook · v0.1
+                / Agent Blueprint Recipes · v0.1
               </span>
               <span className="ml-1 inline-flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[0.18em] text-accent">
                 <span className="size-1.5 rounded-full bg-accent phosphor-dot" aria-hidden />
@@ -99,7 +99,7 @@ export default function HomePage() {
           <span>
             Build with &lt;3 by{" "}
             <a
-              href="https://clementsauvage.me/?utm_source=nebius_cookbook&utm_medium=referral&utm_campaign=nebius_cookbook"
+            href="https://clementsauvage.me/?utm_source=agent_blueprint_recipes&utm_medium=referral&utm_campaign=agent_blueprint_recipes"
               className="transition hover:text-accent"
               target="_blank"
               rel="noreferrer"

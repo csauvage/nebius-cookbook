@@ -2,7 +2,7 @@
 
 > Persist user preferences and facts across conversation threads with a Postgres-backed memory layer.
 
-Recipe **06 of 10** in the Nebius Cookbook arc:
+Recipe **06 of 10** in the Agent Blueprint Recipes arc:
 
 > Foundation → Retrieval → Grounding → Orchestration → Thread Memory → **User Memory** → Observability → Guardrails → Actions → Simulation
 

@@ -2,7 +2,7 @@
 
 > Let the agent continue one conversation without forcing the client to replay every previous turn.
 
-Recipe **05 of 10** in the Nebius Cookbook arc:
+Recipe **05 of 10** in the Agent Blueprint Recipes arc:
 
 > Foundation → Retrieval → Grounding → Orchestration → **Thread Memory** → User Memory → Observability → Guardrails → Actions → Simulation
 

@@ -435,7 +435,7 @@ function FloatingHeader({
           <Link
             href="/"
             className="inline-flex items-center pr-1"
-            title="AgentKit Cookbook"
+            title="Agent Blueprint Recipes"
           >
             <NebiusLogo height={18} />
           </Link>

@@ -158,7 +158,7 @@
     "values": {
       "LANGSMITH_TRACING": "true",
       "LANGSMITH_ENDPOINT": "https://eu.api.smith.langchain.com",
-      "LANGSMITH_PROJECT": "Nebius Cookbook"
+      "LANGSMITH_PROJECT": "Agent Blueprint Recipes"
     },
     "vars": [
       "ENV",
@@ -192,7 +192,7 @@
     "values": {
       "LANGSMITH_TRACING": "true",
       "LANGSMITH_ENDPOINT": "https://eu.api.smith.langchain.com",
-      "LANGSMITH_PROJECT": "Nebius Cookbook"
+      "LANGSMITH_PROJECT": "Agent Blueprint Recipes"
     },
     "vars": [
       "ENV",

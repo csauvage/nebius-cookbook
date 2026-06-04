@@ -7,7 +7,7 @@ export function GitHubCorner() {
       href={GITHUB_REPO_URL}
       target="_blank"
       rel="noreferrer"
-      aria-label="Open the Nebius Cookbook repository on GitHub"
+      aria-label="Open the Agent Blueprint Recipes repository on GitHub"
       title="Open on GitHub"
       className="group fixed right-0 top-0 z-50 block size-20 overflow-hidden text-paper transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-paper sm:size-24"
     >

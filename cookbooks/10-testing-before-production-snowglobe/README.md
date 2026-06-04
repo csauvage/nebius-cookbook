@@ -2,7 +2,7 @@
 
 > 🚧 **Scaffold only.** This recipe is planned but not yet implemented. This folder currently holds metadata and documentation for the Snowglobe testing cookbook.
 
-Recipe **10 of 10** in the Nebius Cookbook arc:
+Recipe **10 of 10** in the Agent Blueprint Recipes arc:
 
 > Foundation → Retrieval → Grounding → Orchestration → Thread Memory → User Memory → Observability → Guardrails → Actions → **Simulation**
 
