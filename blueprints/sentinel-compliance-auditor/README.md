@@ -1,47 +1,51 @@
 # Sentinel — Regulatory Compliance Auditor Agent
 
-> Part of the [Nebius Partner Cookbook](../../README.md) as a **Blueprint** — a complete, deployable reference application. Authored by Tikhon Roshchupkin.
-
 Sentinel is an AI-powered compliance auditor that assesses 200 enterprise SOPs against 36 regulation frameworks (HIPAA, SOC 2, GDPR, EU AI Act, NIST AI RMF, SR 11-7, California SB 53/SB 942/AB 853, BSA, ECOA, FCRA, PCI DSS, OWASP, FDA, NIST SP 800-series, EU AMLD4/ePrivacy/MDR/SCCs). Regulation text is retrieved from Pinecone via agentic RAG. Built for the [Nebius Blueprint for Agents](https://nebius.com/) demo (Nebius Inflection, June 9, 2026).
 
 ## Architecture
 
 ```
-User Query
+User Query (via UI or LangGraph API)
     |
     v
-+------------------------+
-|  Sentinel ReAct Agent  |  LangGraph (+ deepagents when available)
-|  (DeepSeek-V4-Pro)     |
-+------------------------+
++-----------------------------------+
+|  Sentinel Outer Agent             |  LangGraph ReAct (+ deepagents)
+|  Prototype / Grounded / Optimized |  GPT-5.5 or DeepSeek-V4-Pro
+|  / Production (Nemotron Ultra)    |  or Nemotron-3-Ultra-550b
++-----------------------------------+
     |
-    +---> audit_all_sops (10-wide ThreadPoolExecutor)
+    +---> list_sops (search/discover SOPs, synonym mapping)
+    |
+    +---> audit_sops / audit_all_sops (ThreadPoolExecutor fan-out)
     |         |
-    |         v  (per SOP)
-    |    +-------------------+
-    |    |  Sub-Agent        |  LangGraph ReAct
-    |    |  (audit_single_   |
-    |    |   sop)            |
-    |    +-------------------+
+    |         v  (per SOP, up to MAX_AUDIT_WORKERS in parallel)
+    |    +----------------------------+
+    |    |  Sub-Agent (sop_auditor)   |  LangGraph ReAct
+    |    |  Same model as outer agent |  Retrieval capped at 30 calls
+    |    +----------------------------+
     |         |
+    |         +---> read_sop (full SOP text)
     |         +---> retrieve_regulation_rag (Pinecone semantic search)
-    |         +---> search_web (Tavily live search)
-    |         +---> read_sop (SOP text)
+    |         +---> search_web (Tavily, capped)
+    |         +---> record_finding (per requirement, survives truncation)
     |         |
     |         v
-    |    Structured JSON Findings
+    |    Findings accumulated incrementally
     |
-    +---> create_jira_ticket
-              |
-              v
-         Jira Cloud REST API → ticket on Kanban board
+    +---> create_jira_ticket / create_jira_tickets (batch)
+    |         |
+    |         v
+    |    Jira Cloud REST API → tickets on Kanban board
+    |
+    +---> search_web (outer agent, for ad-hoc questions)
+    +---> list_regulations / retrieve_regulation_text_tool
 ```
 
-**Models:** DeepSeek-V4-Pro, Nemotron Ultra, Kimi K2.6, GLM-5.1 on Nebius · GPT-5.5 on OpenAI
+**Models:** Nemotron-3-Ultra-550b (Production), DeepSeek-V4-Pro (Optimized), GPT-5.5 (Prototype/Grounded) on Nebius + OpenAI
 **Orchestration:** LangGraph ReAct agent with per-SOP sub-agents, optional deepagents upgrade
 **Retrieval:** Pinecone vector search (Qwen3-Embedding-8B, 4096 dims)
 **Grounding:** Tavily live regulation search
-**Observability:** LangSmith tracing with cost tracking + [LangSmith MCP](https://docs.langchain.com/langsmith/langsmith-remote-mcp) integration
+**Observability:** LangSmith tracing with cost tracking
 **Actuation:** Jira Cloud REST API for filing compliance gap tickets
 **Deployment:** LangGraph Cloud + UI (FastAPI + React)
 
@@ -149,7 +153,6 @@ sentinel_agent/
 │   ├── company_profile.md     # Meridian Health Technologies background
 │   ├── compliance_matrix.json # Ground truth
 │   └── compliance_matrix_revised.json # Revised ground truth (16 SOC 2 corrections)
-├── .mcp.json                  # MCP server config (LangSmith, gitignored)
 ├── langgraph.json             # LangGraph deployment config
 ├── pyproject.toml             # Dependencies
 ├── Makefile                   # Build/run targets
@@ -278,22 +281,6 @@ Compliance level distribution: 170 compliant (40%), 161 partial (38%), 89 gap (2
 Each SOP audit fans out a dedicated sub-agent with multiple tool calls (regulation retrieval, web search), so token counts are dominated by sub-agent usage across 200 SOPs. Token usage and cost are displayed live in the UI. Use `scripts/validate_run.py` to get exact cost/token/latency breakdowns for any LangSmith run.
 
 ## Integrations
-
-### LangSmith MCP
-
-A [LangSmith remote MCP server](https://docs.langchain.com/langsmith/langsmith-remote-mcp) is configured in `.mcp.json` for accessing LangSmith data from Claude Code and Codex. Uses OAuth authentication — a browser login flow runs on first use.
-
-Available MCP tools:
-- `list_projects` — list LangSmith projects
-- `fetch_runs` — fetch runs by project, trace ID, or filters
-- `get_thread_history` — retrieve thread message history
-- `list_datasets` / `read_dataset` / `list_examples` / `read_example` — dataset access
-- `list_experiments` / `run_experiment` — experiment management
-- `list_prompts` / `get_prompt_by_name` / `push_prompt` — prompt hub
-- `get_billing_usage` — billing and usage stats
-- `create_dataset` / `update_examples` — dataset creation and mutation
-
-Use these tools to inspect audit run traces, compare run metrics, or debug sub-agent behavior without leaving the editor.
 
 ### Jira Cloud
 

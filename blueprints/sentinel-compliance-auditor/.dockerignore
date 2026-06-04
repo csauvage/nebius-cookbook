@@ -10,6 +10,8 @@ demo/
 scripts/
 ui/
 tests/
+data/regulations/
+data/eval/
 README.md
 Makefile
 .env.example
