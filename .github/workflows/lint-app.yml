@@ -43,8 +43,8 @@ jobs:
       - name: Confirm README.md is in sync
         run: bun run build:readme --check
 
-      - name: Build recipe manifest
-        run: bun run build:recipes
+      - name: Build content manifests
+        run: bun run build:content
 
       - name: Lint Next.js app
         working-directory: app

@@ -24,6 +24,10 @@ app/src/content/blueprints/
 app/src/content/blueprints-manifest.json
 *.tsbuildinfo
 
+# Security scan artifacts
+kingfisher-result*.json
+semgrep-report-*.json
+
 # Environment
 .env
 .env.local
