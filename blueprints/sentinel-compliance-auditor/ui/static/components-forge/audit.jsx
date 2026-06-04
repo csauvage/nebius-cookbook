@@ -190,7 +190,7 @@ const AuditScreen = ({ loadStatus }) => {
               placeholder="Ask the auditor — e.g. ‘Audit SOP-ISEC-008 against HIPAA §164.312’"
               disabled={audit.status === "running"}
               style={{
-                flex: 1, border: 0, outline: "none",
+                flex: 1, minWidth: 0, border: 0, outline: "none",
                 background: "transparent",
                 font: "400 15px/22px var(--forge-font)",
                 color: "var(--forge-on-dark)",
@@ -205,7 +205,7 @@ const AuditScreen = ({ loadStatus }) => {
               onClick={() => sendAudit(draft.trim())}
               disabled={!draft.trim() || audit.status === "running"}
               icon={<Icon name="send" size={12} color="var(--forge-ink)" stroke={2.5} />}
-              style={{ marginTop: 2 }}>
+              style={{ marginTop: 2, flexShrink: 0 }}>
               Send
             </Btn>
           </div>

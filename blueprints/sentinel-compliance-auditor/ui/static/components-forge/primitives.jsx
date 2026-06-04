@@ -164,7 +164,7 @@ const StatusChip = ({ tone = "cold", children, style }) => {
 };
 
 // ── BUTTON
-const Btn = ({ variant = "ink", icon, iconRight, size = "m", children, style, ...p }) => {
+const Btn = ({ variant = "ink", icon, iconRight, size = "m", children, style, disabled, ...p }) => {
   const h = { s: 28, m: 38, l: 44 }[size];
   const px = { s: 12, m: 18, l: 22 }[size];
   const fs = { s: 12, m: 13, l: 14 }[size];
@@ -176,15 +176,16 @@ const Btn = ({ variant = "ink", icon, iconRight, size = "m", children, style, ..
   };
   const v = variants[variant];
   return (
-    <button {...p} style={{
+    <button {...p} disabled={disabled} style={{
       display: "inline-flex", alignItems: "center", gap: 8,
       height: h, padding: `0 ${px}px`,
       borderRadius: variant === "lime" || variant === "ink" ? 12 : "var(--forge-r-pill)",
       background: v.bg, color: v.fg, border: v.border,
       font: `700 ${fs}px/1 var(--forge-font)`,
-      cursor: "pointer", letterSpacing: "0.005em",
+      cursor: disabled ? "default" : "pointer", letterSpacing: "0.005em",
       whiteSpace: "nowrap",
-      transition: "filter .15s",
+      opacity: disabled ? 0.45 : 1,
+      transition: "filter .15s, opacity .15s",
       ...style,
     }}>{icon}{children}{iconRight}</button>
   );
