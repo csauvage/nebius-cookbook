@@ -1,6 +1,5 @@
  
-1 
- 
+1  
  
 Board of Governors of the Federal Reserve System  
 Federal Deposit Insurance Corporation 
@@ -29,10 +28,8 @@ banking organization. Each banking organization ultimately is responsible for ad
 risk management practices that are appropriate and effective for managing the specific risks the 
 banking organization faces or is likely to face.  
 
-
  
-2 
- 
+2  
 There are a variety of ways for a banking organization to structure model risk 
 management practices. Not all models present the same level of risk, and a similar model at two 
 different banking organizations may present different risks. As such, practices that are 
@@ -60,10 +57,8 @@ practices stemming from insufficient management of model risk.
 2 For a description of the banking organizations supervised by each agency, refer to the definition of “appropriate 
 Federal banking agency” in section 3(q) of the Federal Deposit Insurance Act (12 U.S.C. 1813(q)).  
 
-
  
-3 
- 
+3  
 less typically are subject to internal risk management and governance practices appropriate for 
 the size and risk profile of these banking organizations, and generally excluding them from this 
 guidance is consistent with a tailored supervisory approach. However, in some situations, this 
@@ -91,10 +86,8 @@ determination of appropriate governance and controls for any tools, processes, o
 document. However, the principles described in this guidance apply to traditional statistical and quantitative models 
 and non-generative, non-agentic AI models. 
 
-
  
-4 
- 
+4  
 A model’s inherent risk reflects several fundamental factors, such as the assumptions 
 made in developing the model, the model’s complexity, the quality of inputs for the model, and 
 data constraints. Inherent risk increases with model complexity and the criticality or number of 
@@ -114,16 +107,13 @@ monitoring model performance and conditions under which the use of those models 
 material to the banking organization in the future. In contrast, models deemed of higher 
 materiality by the banking organization—either through model exposure or purpose—warrant 
 more comprehensive and rigorous oversight. 
-  
-The overall magnitude of model risk reflects a model’s inherent risk in the context of 
+  The overall magnitude of model risk reflects a model’s inherent risk in the context of 
 model materiality (i.e., model exposure and purpose). However, even a fundamentally sound 
 model producing accurate outputs consistent with the model’s design objective can exhibit high 
 model risk if it is misapplied or misused.  
 
-
  
-5 
- 
+5  
 Sound practice involves assessing model risk both individually and in aggregate. 
 Aggregate risk reflects interactions and dependencies among models; reliance on common 
 assumptions, data, or methodologies; and any other factors that could adversely affect several 
@@ -148,10 +138,8 @@ Sound model development activities are aligned with model purpose, business use,
 banking organization policy. Model development is not purely a technical exercise. The 
 developer’s judgment influences the model’s conceptual design and soundness, inputs, 
 
-
  
-6 
- 
+6  
 assumptions, and methodology, all of which affect a model’s inherent risk. Because model 
 development is often multidisciplinary, tailored to actual use, and involves significant 
 subjectivity throughout its lifecycle, sound development practices are important for effective 
@@ -176,10 +164,8 @@ with relatively less complex operations, model testing may be more limited in sc
 Model Use 
 Effective model use depends on a clear understanding of a model’s limitations. Model 
 
-
  
-7 
- 
+7  
 use enables ongoing performance assessment as conditions evolve. User feedback provides 
 business insights that enhance future development. Constructive engagement, particularly around 
 model design, assumptions, and outcomes, strengthens both model understanding and model 
@@ -204,10 +190,8 @@ model methodology, frequency and scope of model changes, data limitations, and o
 constraints. Sound practice recognizes that validation approaches may differ across models based 
 on their characteristics and use. Validation generally occurs prior to a model’s first use. 
 
-
  
-8 
- 
+8  
 However, certain circumstances (e.g., an urgent business need) may necessitate using the model 
 before validation is completed. In those cases, sound practice involves greater attention to the 
 model’s limitations when considering the appropriateness of its use, informing relevant 
@@ -232,10 +216,8 @@ modeling aspects to critical analysis by evaluating both the quality and extent 
 evidence. 
 Outcomes Analysis 
 
-
  
-9 
- 
+9  
 Outcomes analysis compares model outputs to corresponding real-world outcomes to 
 assess model performance relative to model objectives and business use. Outcomes analysis and 
 other elements of the validation process may identify material errors or persistent deviations 
@@ -259,10 +241,8 @@ An effective ongoing monitoring plan may also include regularly assessing any mo
 limitations at the development stage and over time, along with procedures for responding to any 
 issues that may occur, before and after a model is approved for use. The frequency and scope of 
 
-
  
-10 
- 
+10  
 monitoring reports will depend on the nature of the model, the availability of new data or 
 modeling approaches, and model materiality. 
 VI. GOVERNANCE AND CONTROLS  
@@ -287,10 +267,8 @@ model risk management practices are rigorous and effective and whether related p
 implemented accordingly. For banking organizations that use external resources to help manage 
 model risk, sound practice involves maintaining proper oversight and integrating that work into 
 
-
  
-11 
- 
+11  
 broader model risk management activities. Organizations benefit from clearly defining roles and 
 responsibilities when delegating these activities.  
 Model Inventory 
@@ -315,10 +293,8 @@ principles of model risk management remain applicable.
 An important element of model risk management is the validation of vendor products, 
 either by internal or outside parties. Sound practice includes developing an understanding of the 
 
-
  
-12 
- 
+12  
 vendor model, including its conceptual soundness, design, development data, and performance. 
 Similarly, sound practice involves conducting ongoing monitoring and outcome analysis to 
 assess whether vendor models are accurate, remain fit for purpose, and continue to be reliable. 

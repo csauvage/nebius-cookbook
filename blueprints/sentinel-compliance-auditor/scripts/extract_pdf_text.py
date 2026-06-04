@@ -2,7 +2,7 @@
 """Extract text from regulation PDFs into .txt files for ingestion."""
 
 import os
-import pymupdf
+from pypdf import PdfReader
 
 REGULATIONS_DIR = os.path.join(os.path.dirname(__file__), "..", "data", "regulations")
 
@@ -17,13 +17,12 @@ PDFS = [
 
 
 def extract_pdf(pdf_path: str, txt_path: str) -> None:
-    doc = pymupdf.open(pdf_path)
+    reader = PdfReader(pdf_path)
     pages = []
-    for page in doc:
-        text = page.get_text("text")
+    for page in reader.pages:
+        text = page.extract_text() or ""
         if text.strip():
             pages.append(text)
-    doc.close()
 
     full_text = "\n\n".join(pages)
     with open(txt_path, "w", encoding="utf-8") as f:

@@ -51,7 +51,6 @@ reviewed and integrated on a semi-annual basis. NIST is requesting a first round
 via email to AIframework@nist.gov by September 29, 2022. Comments also will be welcomed 
 during discussions at a third AI RMF workshop on October 18-19, 2022, and beyond. 
 
-
 AI RMF 2nd Draft for public comment by September 29, 2022 
 iii 
 The NIST Trustworthy and Responsible AI Resource Center 
@@ -68,28 +67,19 @@ implementation resources. The AI Resource Center is expected to include a standa
 metrics hub, along with a terminology knowledge base and relevant technical and policy
 documents.
  Contributed guidance may address issues including but not limited to: 
-•
-how an industry or sector may utilize the Framework
-•
-how smaller organizations can use the Framework
-•
-how stakeholder engagement elements of the Framework can be put in place (including
+• how an industry or sector may utilize the Framework
+• how smaller organizations can use the Framework
+• how stakeholder engagement elements of the Framework can be put in place (including
 practices for involving external stakeholder communities for assessing risk, and advancing
 diversity, equity, and inclusiveness considerations within organizational teams that produce
 AI)
-•
-how the AI RMF can be used for procurement or acquisition activities
-•
-approaches for integrating teams across one or more parts of the AI lifecycle
-•
-how the Framework can be used with other AI risk management guidance
-•
-how the Framework can help address security concerns, including guarding against
+• how the AI RMF can be used for procurement or acquisition activities
+• approaches for integrating teams across one or more parts of the AI lifecycle
+• how the Framework can be used with other AI risk management guidance
+• how the Framework can help address security concerns, including guarding against
 adversarial attacks on AI systems
-•
-socio-technical approaches for evaluating AI system risks
-•
-techniques for enhancing human oversight of AI system risks
+• socio-technical approaches for evaluating AI system risks
+• techniques for enhancing human oversight of AI system risks
 Criteria for Inclusion of Contributions in the AI RMF Playbook and NIST Trustworthy
 and Responsible AI Resource Center 
 In order to be considered by NIST for inclusion in the Playbook or the NIST Trustworthy and 
@@ -101,7 +91,6 @@ NIST may include commercial entities, equipment, or materials in its guidance or
 Trustworthy and Responsible AI Resource Center in order to support Framework understanding 
 and use. Such identification does not imply recommendation or endorsement by NIST, nor that 
 the entities, materials, or equipment are necessarily the best available for the purpose. 
-
 
 AI RMF 2nd Draft for public comment by September 29, 2022 
 iv 
@@ -116,87 +105,37 @@ resources will have different minor revision identifiers. At a high level, all c
 tracked using a Version Control Table which identifies the history, including version number, 
 date of change, and description of change. 
 
-
 AI RMF 2nd Draft for public comment by September 29, 2022 
 v 
 Table of Contents 
 Part 1 
-1.
-OVERVIEW
-1 
-1.1. 
-Trustworthy and Responsible AI 
-1 
-1.2. 
-Purpose of the AI RMF 
-2 
-1.3. 
-Where to Get More Information 
-3 
-2.
-AUDIENCE
-4 
-3.
-FRAMING RISK
-7 
-3.1. 
-Understanding Risk, Impacts, and Harms 
-7 
-3.2. 
-Challenges for AI Risk Management 
-8 
-4.
-AI RISKS AND TRUSTWORTHINESS
-10 
-4.1. 
-Valid and Reliable 
-13 
-4.2. 
-Safe 
-13 
-4.3. 
-Fair – and Bias Is Managed 
-14 
-4.4. 
-Secure and Resilient 
-14 
-4.5. 
-Transparent and Accountable 
-15 
-4.6. 
-Explainable and Interpretable 
-15 
-4.7. 
-Privacy-Enhanced 
-16 
-5.
-EFFECTIVENESS OF THE AI RMF
-16 
+1. OVE RVIEW 1 
+1.1. Trustworthy and Responsible AI 1 
+1.2. Purpose of the AI RMF 2 
+1.3. Where to Get More Information 3 
+2. AUDIENCE 4 
+3. FRAMING RISK 7 
+3.1. Understanding Risk, Impacts, and Harms 7 
+3.2. Challenges for AI Risk Management 8 
+4. AI RISKS AND TRUSTWORTHINESS 10 
+4.1. Valid and Reliable 13 
+4.2. Safe 13 
+4.3. Fair – and Bias Is Managed 14 
+4.4. Secure and Resilient 14 
+4.5. Transparent and Accountable 15 
+4.6. Explainable and Interpretable 15 
+4.7. Privacy-Enhanced 16 
+5. EFFECTIVENESS OF THE AI RMF 16 
 Part 2 
-6.
-AI RMF CORE
-17 
-6.1. 
-Govern 
-18 
-6.2. 
-Map 
-20 
-6.3. 
-Measure 
-23 
-6.4. 
-Manage 
-25 
-7.
-AI RMF PROFILES
-26 
+6. AI  RMF CORE 17 
+6.1. Govern 18 
+6.2. Map 20 
+6.3. Measure 23 
+6.4. Manage 25 
+7. AI RMF PROFILES 26 
 Appendices 
-APPENDIX A: DESCRIPTIONS OF AI ACTOR TASKS FROM FIGURE 1 
-27 
-APPENDIX B: HOW AI RISKS DIFFER FROM TRADITIONAL SOFTWARE RISKS 
-30 
-
+APPENDIX A: DESCRIPTIONS OF AI ACTOR TASKS FROM FIGURE 1 27 
+APPENDIX B: HOW AI RISKS DIFFER FROM TRADITIONAL SOFTWARE RISKS 30 
 
 AI RMF 2nd Draft for public comment by September 29, 2022 
 1 
@@ -246,7 +185,6 @@ levels of autonomy (Adapted from:
 OECD Recommendation on AI:2019; 
 ISO/IEC 22989:2022). 
 
-
 AI RMF 2nd Draft for public comment by September 29, 2022 
 2 
 is used, its interactions with other AI systems, who operates it, and the social context into which 
@@ -286,7 +224,6 @@ to applicable laws and regulations, this document is not intended to supersede e
 regulations, laws, or other mandates. 
 The research community may find the AI RMF to be useful in evaluating various aspects of 
 trustworthy and responsible AI and related impacts.  
-
 
 AI RMF 2nd Draft for public comment by September 29, 2022 
 3 
@@ -328,7 +265,6 @@ guidance published by NIST serves as an informative reference, all such guidance
 voluntary. 
  
 
-
 AI RMF 2nd Draft for public comment by September 29, 2022 
 4 
  
@@ -366,8 +302,8 @@ Identifying and managing AI risks and impacts – both positive and negative –
 set of perspectives and stakeholders. The AI RMF is intended to be used by AI actors, defined by 
 the Organisation for Economic Co-operation and Development (OECD) as “those who play an 
 active role in the AI system lifecycle, including organizations and individuals that deploy or 
-operate AI” [OECD (2019) Artificial Intelligence in Society | OECD iLibrary].  
-
+operate AI” [OECD (2019) Artificial Intelligence in Society | OECD iLibrary
+].  
 
 AI RMF 2nd Draft for public comment by September 29, 2022 
 5 
@@ -452,12 +388,12 @@ negative impact is related to actual harms. Figure 3 provides examples of potent
 can be related to AI systems. 
 Risk management can drive AI developers and users to understand and account for the inherent 
 uncertainties and inaccuracies in their models and systems, which in turn can improve their 
-overall performance and trustworthiness. 
+overall performance and trustworthiness.
+ 
 “Risk management refers to 
 coordinated activities to direct and 
 control an organization with regard 
 to risk” (Source: ISO 31000:2018). 
-
 
 AI RMF 2nd Draft for public comment by September 29, 2022 
 8 
@@ -520,7 +456,6 @@ process. Doing so can mitigate risks and harms to enterprises and individuals, c
 society. In some cases where an AI system presents the highest risk – where negative impacts are 
 imminent, severe harms are actually occurring, or catastrophic risks are present – development 
 
-
 AI RMF 2nd Draft for public comment by September 29, 2022 
 10 
 and deployment should cease in a safe manner until risks can be sufficiently mitigated. 
@@ -542,7 +477,8 @@ In some scenarios the AI RMF may be utilized along with related guidance and fra
 managing AI system risks or broader enterprise risks. Some risks related to AI systems are 
 common across other types of software development and deployment. Overlapping risks include 
 privacy concerns related to the use of underlying data to train AI systems, and security concerns 
-related to the confidentiality, integrity and availability of training and output data for AI systems.  
+related to the confidentiality, integrity and availability of training and output data for AI systems. 
+ 
 Organizations need to establish and maintain the appropriate accountability mechanisms, roles 
 and responsibilities, culture, and incentive structures for risk management to be effective. Use of 
 the AI RMF alone will not lead to these changes or provide the appropriate incentives. Effective 
@@ -556,7 +492,6 @@ This Framework articulates the following characteristics of trustworthy AI, and 
 for addressing them. Trustworthy AI is: valid and reliable, safe, fair and bias is managed, 
 secure and resilient, accountable and transparent, explainable and interpretable, and 
 privacy-enhanced.  
-
 
 AI RMF 2nd Draft for public comment by September 29, 2022 
 11 
@@ -597,24 +532,18 @@ United States Executive Order (EO) 13960.
 AI RMF 2nd Draft for public comment by September 29, 2022 
 12 
 Table 1: Mapping of AI RMF taxonomy to AI policy documents. 
-AI RMF 
-OECD AI 
+AI RMF OECD AI 
 Recommendation 
 EU AI Act 
 (Proposed) 
 EO 13960 
-Valid and reliable 
-Robustness 
-Technical 
+Valid and reliable Robustness Technical 
 robustness 
 Purposeful and performance 
 driven 
 Accurate, reliable, and effective 
 Regularly monitored 
-Safe 
-Safety 
-Safety 
-Safe 
+Safe Safety Safety Safe 
 Fair and bias is 
 managed 
 Human-centered values 
@@ -627,8 +556,7 @@ Lawful and respectful of our
 Nation’s values 
 Secure and 
 resilient 
-Security 
-Security & 
+Security Security & 
 resilience 
 Secure and resilient 
 Transparent and 
@@ -649,13 +577,10 @@ Responsible and traceable
 Regularly monitored 
 Explainable and 
 interpretable 
-Explainability 
- 
-Understandable by subject 
+Explainability  Understandable by subject 
 matter experts, users, and 
 others, as appropriate 
-Privacy-enhanced 
-Human values; Respect 
+Privacy-enhanced Human values; Respect 
 for human rights 
 Privacy 
 Data governance 
@@ -679,7 +604,6 @@ challenges are exacerbated by AI system opacity and the resulting lack of interp
 which humans are empowered and incentivized to challenge AI system suggestions must be understood. 
 Data about the frequency and rationale with which humans overrule AI system suggestions in deployed 
 systems can be useful to collect and analyze. 
-
 
 AI RMF 2nd Draft for public comment by September 29, 2022 
 13 
@@ -719,7 +643,6 @@ that can render a system dangerous. Other practical approaches for AI safety oft
 rigorous simulation and in-domain testing, real-time monitoring, and the ability to shut down or 
 modify systems that deviate from intended or expected functionality.  
 
-
 AI RMF 2nd Draft for public comment by September 29, 2022 
 14 
 AI safety measures should take cues from measures of safety used in other fields, such as 
@@ -747,7 +670,8 @@ exhibited in AI models and systems can perpetuate and amplify negative impacts o
 groups, communities, organizations, and society – and at a speed and scale far beyond the 
 traditional discriminatory practices that can result from implicit human or systemic biases. Bias 
 is tightly associated with the concepts of transparency as well as fairness in society. (See NIST 
-Special Publication 1270, “Towards a Standard for Identifying and Managing Bias in Artificial 
+Special Publication 1270, “
+Towards a Standard for Identifying and Managing Bias in Artificial 
 Intelligence.”) 
 4.4. Secure and Resilient 
 AI systems that can withstand adversarial attacks, or more generally, unexpected changes in their 
@@ -758,7 +682,6 @@ and availability through protection mechanisms that prevent unauthorized access 
 said to be secure. 
 Security and resilience are related but distinct characteristics. While resilience is the ability to 
 return to normal function after an attack, security includes resilience but also encompasses 
-
 
 AI RMF 2nd Draft for public comment by September 29, 2022 
 15 
@@ -795,10 +718,10 @@ individual differences such as the user’s knowledge and skill level. Explainab
 more easily debugged and monitored, and they lend themselves to more thorough 
 documentation, audit, and governance. Risks to interpretability can often be addressed by 
 communicating a description of why an AI system made a particular prediction or 
-recommendation. (See NISTIR 8312, “Four Principles of Explainable Artificial Intelligence” and 
+recommendation. (See NISTIR 8312, “Four Principles of Explainable Artificial Intelligence
+” and 
 NISTIR 8367, “Psychological Foundations of Explainability and Interpretability in Artificial 
 Intelligence”.) 
-
 
 AI RMF 2nd Draft for public comment by September 29, 2022 
 16 
@@ -837,9 +760,7 @@ processes, responsibilities, common pitfalls, and approaches for continuous impr
 » enhanced contextual knowledge for increased awareness of downstream risks; 
 » enhanced awareness of the importance and efficacy of stakeholder engagement efforts; and 
 » enhanced capacity for TEVV of AI systems and associated risks. 
- 
- 
-
+  
 
 AI RMF 2nd Draft for public comment by September 29, 2022 
 17 
@@ -894,7 +815,6 @@ training, deploying, and monitoring of such systems. Governance should address s
 including third-party software or hardware systems and data as well as internally developed AI 
 systems. 
 
-
 AI RMF 2nd Draft for public comment by September 29, 2022 
 19 
 Govern is a cross-cutting function that is infused throughout AI risk management and informs 
@@ -916,8 +836,7 @@ time.
 Practices related to governing AI risks are described in the NIST AI RMF Playbook.  
 Table 2 lists the Govern function’s categories and subcategories. 
 Table 2: Categories and subcategories for the Govern function. 
-Category 
-Subcategory 
+Category Subcategory 
 Govern: A culture of risk management is cultivated and present 
 GOVERN 1: Policies, 
 processes, procedures, and 
@@ -952,11 +871,9 @@ AI risk management training to enable them to perform their duties and
 responsibilities consistent with related policies, procedures, and 
 agreements. 
 
-
 AI RMF 2nd Draft for public comment by September 29, 2022 
 20 
-Category 
-Subcategory 
+Category Subcategory 
 GOVERN 2.3: Executive leadership of the organization considers 
 decisions about risks associated with AI system development and 
 deployment to be their responsibility. 
@@ -991,7 +908,8 @@ place for robust stakeholder
 engagement. 
 GOVERN 5.1: Organizational policies and practices are in place to 
 collect, consider, prioritize, and integrate external stakeholder feedback 
-regarding the potential individual and societal impacts related to AI risks. 
+regarding the potential individual and societal impacts related to AI risks.
+ 
 GOVERN 5.2: Mechanisms are established to enable AI actors to 
 regularly incorporate adjudicated stakeholder feedback into system 
 design and implementation.  
@@ -1011,7 +929,6 @@ processes such as model management, and an initial decision about appropriatenes
 for an AI solution. Determination of whether AI use is appropriate or warranted can be 
 considered in comparison to the status quo per a qualitative or quantitative analysis of benefits, 
 costs, and risks. Outcomes in the Map function are the basis for the Measure and Manage 
-
 
 AI RMF 2nd Draft for public comment by September 29, 2022 
 21 
@@ -1037,8 +954,7 @@ capabilities, risks, benefits, and impacts evolve over time.
 Practices related to mapping AI risks are described in the NIST AI RMF Playbook.  
 Table 3 lists the Map function’s categories and subcategories. 
 Table 3: Categories and subcategories for the Map function.  
-Category 
-Subcategory 
+Category Subcategory 
 Map: Context is recognized and risks related to the context are identified 
 MAP 1: Context is established 
 and understood. 
@@ -1057,18 +973,17 @@ defined or – in the case of assessing existing AI systems – re-evaluated.
 MAP 1.4: The organization’s mission and relevant goals for the AI 
 technology are understood. 
 
-
 AI RMF 2nd Draft for public comment by September 29, 2022 
 22 
-Category 
-Subcategory 
+Category Subcategory 
 MAP 1.5: Organizational risk tolerances are determined.  
 MAP 1.6: Practices and personnel for design activities enable regular 
 engagement with stakeholders, and integrate actionable user and 
 community feedback about unanticipated negative impacts.  
 MAP 1.7: System requirements (e.g., “the system shall respect the privacy 
 of its users”) are elicited and understood from stakeholders. Design 
-decisions take socio-technical implications into account to address AI risks. 
+decisions take socio-technical implications into account to address AI risks.
+ 
 MAP 2: Classification of the 
 AI system is performed. 
 MAP 2.1: The specific task, and methods used to implement the task, that 
@@ -1113,7 +1028,6 @@ MAP 5.3: Assessments of benefits versus impacts are based on analyses of
 impact, magnitude, and likelihood of risk.  
  
 
-
 AI RMF 2nd Draft for public comment by September 29, 2022 
 23 
 6.3. Measure 
@@ -1140,8 +1054,7 @@ risks, and impacts evolve over time.
 Practices related to measuring AI risks will be described in the NIST AI RMF Playbook.  
 Table 4 lists the Measure function’s categories and subcategories. 
 Table 4: Categories and subcategories for the Measure function. 
-Category 
-Subcategory 
+Category Subcategory 
 Measure: Identified risks are assessed, analyzed, or tracked  
 MEASURE 1: Appropriate 
 methods and metrics are 
@@ -1161,11 +1074,9 @@ and affected communities are consulted in support of assessments.
 MEASURE 2.1: Test sets, metrics, and details about the tools used during 
 test, evaluation, validation, and verification (TEVV) are documented. 
 
-
 AI RMF 2nd Draft for public comment by September 29, 2022 
 24 
-Category 
-Subcategory 
+Category Subcategory 
 MEASURE 2: Systems are 
 evaluated for trustworthy 
 characteristics. 
@@ -1218,7 +1129,6 @@ MEASURE 4.3: Measurable performance improvements (e.g., participatory
 methods) based on stakeholder consultations are identified and 
 documented. 
 
-
 AI RMF 2nd Draft for public comment by September 29, 2022 
 25 
 6.4. Manage  
@@ -1237,8 +1147,7 @@ systems as methods, contexts, risks, and stakeholder expectations evolve over ti
 Practices related to managing AI risks will be described in the NIST AI RMF Playbook.  
 Table 5 lists the Manage function’s categories and subcategories. 
 Table 5: Categories and subcategories for the Manage function.  
-Category 
-Subcategory 
+Category Subcategory 
 Manage: Risks are prioritized and acted upon based on a projected impact 
 MANAGE 1: AI risks based 
 on impact assessments and 
@@ -1277,11 +1186,9 @@ managed.
 MANAGE 3.1: Risks from third-party resources are regularly 
 monitored, and risk controls are applied and documented. 
 
-
 AI RMF 2nd Draft for public comment by September 29, 2022 
 26 
-Category 
-Subcategory 
+Category Subcategory 
 MANAGE 4: Responses to 
 identified and measured risks 
 are documented and 
@@ -1319,9 +1226,7 @@ as current and target profiles. Submissions to be included in the NIST Trustwort
 Responsible AI Resource Center will inform NIST and the broader community about the 
 usefulness of the AI RMF and will likely lead to improvements which can be incorporated into 
 future versions of the framework. 
- 
- 
-
+  
 
 AI RMF 2nd Draft for public comment by September 29, 2022 
 27 
@@ -1348,7 +1253,8 @@ or incorporate the output of AI systems, evaluators and auditors, and members of
 community are part of this group. 
 Test, Evaluation, Verification, and Validation (TEVV) tasks are performed by AI actors who 
 examine the AI system or its components, or detect and remediate problems throughout the AI 
-lifecycle. Tasks can be incorporated into a phase as early as design, where tests are planned in 
+lifecycle. Tasks 
+can be incorporated into a phase as early as design, where tests are planned in 
 accordance with the design requirement.  
 ● TEVV tasks for design, planning, and data may center on internal and external validation 
 of assumptions for system design, data collection, and measurements, relative to the 
@@ -1360,7 +1266,6 @@ testing, tuning, and recalibration for systems and process integration, user exp
 and compliance with existing legal, regulatory, and ethical specifications.  
 ● TEVV tasks for operations involve ongoing monitoring for periodic updates, testing, and 
 recalibration of models, and the detection of emergent properties and related impacts.  
-
 
 AI RMF 2nd Draft for public comment by September 29, 2022 
 28 
@@ -1401,7 +1306,6 @@ stage of the AI system lifecycle as well as post-deployment monitoring.
 Affected Individuals/Communities encompass any individual, group, community, or 
 stakeholder organization affected by AI systems or decisions based on the output of AI systems, 
 
-
 AI RMF 2nd Draft for public comment by September 29, 2022 
 29 
 directly or indirectly. These individuals do not necessarily interact with the system and can be 
@@ -1412,10 +1316,9 @@ advocacy groups, environmental groups, and civil society organizations.
 The general public is most likely to directly experience positive and negative impacts of AI 
 technologies. They may provide the motivation for actions taken by the other stakeholders and 
 can include individuals, communities, and consumers in the context where an AI system is 
-developed or deployed. 
+developed or deployed.
  
- 
-
+  
 
 AI RMF 2nd Draft for public comment by September 29, 2022 
 30 
@@ -1428,9 +1331,9 @@ features that present risks can also be beneficial. For example, pre-trained mod
 learning can advance research and increase accuracy and resilience when compared to other 
 models and approaches. Identifying contextual factors in the Map function will assist AI actors 
 in determining the level of risk and potential management efforts. 
-Compared to traditional software, AI-specific risks that are new or increased include:  
-» 
-“Oracle problem” - the data used for building an AI system is considered oracle, but data may 
+Compared to traditional software, AI-specific risks that are new or increased include: 
+ 
+» “Oracle problem” - the data used for building an AI system is considered oracle, but data may 
 not be a true or appropriate representation of the context or intended use of the AI system. 
 Additionally, bias and other data quality issues can affect AI system trustworthiness, which 
 could lead to negative impacts. 
@@ -1458,7 +1361,6 @@ guidance are unable to:
 » adequately manage the problem of bias in AI systems; 
 » comprehensively address security concerns related to evasion, model extraction, membership 
 inference, or other machine learning attacks; 
-
 
 AI RMF 2nd Draft for public comment by September 29, 2022 
 31 

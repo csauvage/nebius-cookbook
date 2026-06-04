@@ -24,7 +24,7 @@ Regulation texts live in `data/regulations/` as `.txt` and `.md` files. Regulati
 Key modules:
 - `sentinel/retrieval/regulations.py` — Pinecone regulation text retrieval: `retrieve_regulation_text()`, `retrieve_for_sop()`, `format_regulation_context()`
 - `sentinel/retrieval/ingest_regulations.py` — chunks .txt/.md files, embeds, upserts into Pinecone
-- `scripts/extract_pdf_text.py` — extracts text from regulation PDFs (pymupdf) for ingestion
+- `scripts/extract_pdf_text.py` — extracts text from regulation PDFs (pypdf) for ingestion
 
 ### Sub-agent architecture (not single-shot LLM calls)
 Each SOP is audited by a dedicated ReAct sub-agent (`audit_single_sop` in `tools.py`) built with `langchain.agents.create_agent`. The sub-agent has its own tool loop with access to a regulation knowledge base, Tavily (web search), the SOP text, and a `record_finding` tool. It determines which regulations apply based on the SOP's content and business unit, queries the knowledge base for each applicable regulation, and calls `record_finding` for each assessed requirement. `audit_all_sops` fans out 200 sub-agents through a `ThreadPoolExecutor` (configurable via `MAX_AUDIT_WORKERS`). Do not revert to single-shot LLM calls.
@@ -116,7 +116,7 @@ When an audit finding is a gap or partial at medium+ severity, the `create_jira_
 - Historical editions: HIPAA (2017, 2020, 2024, current), NIST AI RMF (2022 drafts, final), EU AI Act (2021 proposal, final)
 - SOC 2 (AICPA) and PCI DSS (PCI SSC) texts are copyrighted and not included — see `data/regulations/README.md` for download instructions
 - Each chunk carries `regulation`, `edition`, `section`, and `source` metadata for filtered retrieval
-- PDFs are extracted to .txt via `scripts/extract_pdf_text.py` (pymupdf) before ingestion
+- PDFs are extracted to .txt via `scripts/extract_pdf_text.py` (pypdf) before ingestion
 - See `data/regulations/README.md` for full file inventory and sources
 
 ## Integrations

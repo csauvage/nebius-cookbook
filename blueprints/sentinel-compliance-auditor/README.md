@@ -231,7 +231,7 @@ SOP definitions and metadata are in `scripts/sop_taxonomy.py`. The company profi
 
 ### Regulations
 
-Located in `data/regulations/` as `.txt`, `.md`, `.pdf`, and `.xml` files. See `data/regulations/README.md` for the full inventory and sources. PDFs are extracted to `.txt` via `scripts/extract_pdf_text.py` (pymupdf) before ingestion.
+Located in `data/regulations/` as `.txt`, `.md`, `.pdf`, and `.xml` files. See `data/regulations/README.md` for the full inventory and sources. PDFs are extracted to `.txt` via `scripts/extract_pdf_text.py` (pypdf) before ingestion.
 
 To ingest into Pinecone:
 

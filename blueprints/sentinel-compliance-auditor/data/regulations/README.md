@@ -53,7 +53,7 @@ GDPR has not been substantively amended since adoption (April 2016, effective Ma
 | `eu_ai_act_regulation_eu_2024_1689.pdf` | Regulation (EU) 2024/1689 — official final text (not ingested, covered by .md) | EUR-Lex |
 | `eu_ai_act_full_text.md` | Navigable article-by-article text, current edition (111 chunks) | artificialintelligenceact.eu |
 | `eu_ai_act_2021_commission_proposal.pdf` | COM/2021/206 — original Commission proposal (108 pages) | EUR-Lex |
-| `eu_ai_act_2021_commission_proposal.txt` | Same, extracted text (237 chunks, edition: 2021-proposal) | pymupdf |
+| `eu_ai_act_2021_commission_proposal.txt` | Same, extracted text (237 chunks, edition: 2021-proposal) | pypdf |
 
 The AI Act entered into force 1 Aug 2024, fully applicable 2 Aug 2026. An "AI omnibus" simplification package had political agreement on 7 May 2026.
 
@@ -62,20 +62,20 @@ The AI Act entered into force 1 Aug 2024, fully applicable 2 Aug 2026. An "AI om
 | File | Description | Source |
 |------|-------------|--------|
 | `nist_ai_rmf_100_1.pdf` | NIST AI 100-1: AI Risk Management Framework (final, Jan 2023) | NIST |
-| `nist_ai_rmf_100_1.txt` | Same, extracted text (80 chunks) | pymupdf |
+| `nist_ai_rmf_100_1.txt` | Same, extracted text (80 chunks) | pypdf |
 | `nist_ai_600_1_genai_profile.pdf` | NIST AI 600-1: Generative AI Profile (Jul 2024) | NIST |
-| `nist_ai_600_1_genai_profile.txt` | Same, extracted text (106 chunks) | pymupdf |
+| `nist_ai_600_1_genai_profile.txt` | Same, extracted text (106 chunks) | pypdf |
 | `nist_ai_rmf_100_1_draft1_2022.pdf` | NIST AI 100-1: 1st public draft (Mar 2022) | NIST |
-| `nist_ai_rmf_100_1_draft1_2022.txt` | Same, extracted text (44 chunks, edition: 2022-draft1) | pymupdf |
+| `nist_ai_rmf_100_1_draft1_2022.txt` | Same, extracted text (44 chunks, edition: 2022-draft1) | pypdf |
 | `nist_ai_rmf_100_1_draft2_2022.pdf` | NIST AI 100-1: 2nd public draft (Aug 2022) | NIST |
-| `nist_ai_rmf_100_1_draft2_2022.txt` | Same, extracted text (64 chunks, edition: 2022-draft2) | pymupdf |
+| `nist_ai_rmf_100_1_draft2_2022.txt` | Same, extracted text (64 chunks, edition: 2022-draft2) | pypdf |
 
 ## SR 11-7 / Model Risk Management
 
 | File | Description | Source |
 |------|-------------|--------|
 | `sr_11_7_occ_model_risk_management.pdf` | OCC Bulletin 2011-12a: original guidance (2011) | OCC |
-| `sr_11_7_occ_model_risk_management.txt` | Same, extracted text (15 chunks) | pymupdf |
+| `sr_11_7_occ_model_risk_management.txt` | Same, extracted text (15 chunks) | pypdf |
 
 ## California AI Laws
 
@@ -145,6 +145,6 @@ PCI DSS Quick Reference Guide (PCI SSC, copyrighted) is not included. Download f
 | Script | Description |
 |--------|-------------|
 | `scripts/convert_ecfr_xml_to_txt.py` | Converts eCFR XML to readable plain text |
-| `scripts/extract_pdf_text.py` | Extracts text from regulation PDFs via pymupdf |
+| `scripts/extract_pdf_text.py` | Extracts text from regulation PDFs via pypdf |
 | `scripts/fetch_gdpr_articles.py` | Fetches GDPR articles from gdpr-info.eu |
 | `scripts/fetch_eu_ai_act_articles.py` | Fetches EU AI Act articles from artificialintelligenceact.eu |

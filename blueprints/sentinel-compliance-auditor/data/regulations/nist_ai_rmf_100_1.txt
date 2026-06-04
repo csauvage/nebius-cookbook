@@ -14,7 +14,6 @@ Gina M. Raimondo, Secretary
 National Institute of Standards and Technology
 Laurie E. Locascio, NIST Director and Under Secretary of Commerce for Standards and Technology
 
-
 Certain commercial entities, equipment, or materials may be identified in this document in order to describe 
 an experimental procedure or concept adequately. Such identification is not intended to imply recommenda-
 tion or endorsement by the National Institute of Standards and Technology, nor is it intended to imply that 
@@ -32,144 +31,72 @@ version number, date of change, and description of change. NIST plans to update 
 frequently. Comments on the AI RMF Playbook may be sent via email to AIframework@nist.gov at any time
 and will be reviewed and integrated on a semi-annual basis.
 
-
 Table of Contents
-Executive Summary
-1
-Part 1: Foundational Information
-4
-1
-Framing Risk
-4
-1.1
-Understanding and Addressing Risks, Impacts, and Harms
-4
-1.2
-Challenges for AI Risk Management
-5
-1.2.1
-Risk Measurement
-5
-1.2.2
-Risk Tolerance
-7
-1.2.3
-Risk Prioritization
-7
-1.2.4
-Organizational Integration and Management of Risk
-8
-2
-Audience
-9
-3
-AI Risks and Trustworthiness
-12
-3.1
-Valid and Reliable
-13
-3.2
-Safe
-14
-3.3
-Secure and Resilient
-15
-3.4
-Accountable and Transparent
-15
-3.5
-Explainable and Interpretable
-16
-3.6
-Privacy-Enhanced
-17
-3.7
-Fair – with Harmful Bias Managed
-17
-4
-Effectiveness of the AI RMF
-19
-Part 2: Core and Profiles
-20
-5
-AI RMF Core
-20
-5.1
-Govern
-21
-5.2
-Map
-24
-5.3
-Measure
-28
-5.4
-Manage
-31
-6
-AI RMF Profiles
-33
-Appendix A: Descriptions of AI Actor Tasks from Figures 2 and 3
-35
-Appendix B: How AI Risks Differ from Traditional Software Risks
-38
-Appendix C: AI Risk Management and Human-AI Interaction
-40
-Appendix D: Attributes of the AI RMF
-42
+Executive Summary 1
+Part 1: Foundational Information 4
+1 Framing Risk 4
+1.1 Understanding and Addressing Risks, Impacts, and Harms 4
+1.2 Challenges for AI Risk Management 5
+1.2.1 Risk Measurement 5
+1.2.2 Risk Tolerance 7
+1.2.3 Risk Prioritization 7
+1.2.4 Organizational Integration and Management of Risk 8
+2 Audience 9
+3 AI Risks and Trustworthiness 12
+3.1 Valid and Reliable 13
+3.2 Safe 14
+3.3 Secure and Resilient 15
+3.4 Accountable and Transparent 15
+3.5 Explainable and Interpretable 16
+3.6 Privacy-Enhanced 17
+3.7 Fair – with Harmful Bias Managed 17
+4 Effectiveness of the AI RMF 19
+Part 2: Core and Profiles 20
+5 AI RMF Core 20
+5.1 Govern 21
+5.2 Map 24
+5.3 Measure 28
+5.4 Manage 31
+6 AI RMF Profiles 33
+Appendix A: Descriptions of AI Actor Tasks from Figures 2 and 3 35
+Appendix B: How AI Risks Differ from Traditional Software Risks 38
+Appendix C: AI Risk Management and Human-AI Interaction 40
+Appendix D: Attributes of the AI RMF 42
 List of Tables
-Table 1 Categories and subcategories for the GOVERN function.
-22
-Table 2 Categories and subcategories for the MAP function.
-26
-Table 3 Categories and subcategories for the MEASURE function.
-29
-Table 4 Categories and subcategories for the MANAGE function.
-32
+Table 1 Categories and subcategories for the GOVERN function. 22
+Table 2 Categories and subcategories for the MAP function. 26
+Table 3 Categories and subcategories for the MEASURE function. 29
+Table 4 Categories and subcategories for the MANAGE function. 32
 i
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 List of Figures
-Fig. 1
-Examples of potential harms related to AI systems. Trustworthy AI systems
+Fig. 1 Examples of potential harms related to AI systems. Trustworthy AI systems
 and their responsible use can mitigate negative risks and contribute to bene-
-fits for people, organizations, and ecosystems.
-5
-Fig. 2
-Lifecycle and Key Dimensions of an AI System. Modified from OECD
+fits for people, organizations, and ecosystems. 5
+Fig. 2 Lifecycle and Key Dimensions of an AI System. Modified from OECD
 (2022) OECD Framework for the Classification of AI systems — OECD
 Digital Economy Papers. The two inner circles show AI systems’ key di-
 mensions and the outer circle shows AI lifecycle stages. Ideally, risk man-
 agement efforts start with the Plan and Design function in the application
 context and are performed throughout the AI system lifecycle. See Figure 3
-for representative AI actors.
-10
-Fig. 3
-AI actors across AI lifecycle stages. See Appendix A for detailed descrip-
+for representative AI actors. 10
+Fig. 3 AI actors across AI lifecycle stages. See Appendix A for detailed descrip-
 tions of AI actor tasks, including details about testing, evaluation, verifica-
 tion, and validation tasks. Note that AI actors in the AI Model dimension
 (Figure 2) are separated as a best practice, with those building and using the
-models separated from those verifying and validating the models.
-11
-Fig. 4
-Characteristics of trustworthy AI systems. Valid & Reliable is a necessary
+models separated from those verifying and validating the models. 11
+Fig. 4 Characteristics of trustworthy AI systems. Valid & Reliable is a necessary
 condition of trustworthiness and is shown as the base for other trustworthi-
 ness characteristics. Accountable & Transparent is shown as a vertical box
-because it relates to all other characteristics.
-12
-Fig. 5
-Functions organize AI risk management activities at their highest level to
+because it relates to all other characteristics. 12
+Fig. 5 Functions organize AI risk management activities at their highest level to
 govern, map, measure, and manage AI risks. Governance is designed to be
 a cross-cutting function to inform and be infused throughout the other three
-functions.
-20
+functions. 20
 Page ii
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 Executive Summary
 Artificial intelligence (AI) technologies have significant potential to transform society and
 people’s lives – from commerce and health to transportation and cybersecurity to the envi-
@@ -183,7 +110,7 @@ The AI RMF refers to an AI system as an engineered or machine-based system that
 can, for a given set of objectives, generate outputs such as predictions, recommenda-
 tions, or decisions influencing real or virtual environments. AI systems are designed
 to operate with varying levels of autonomy (Adapted from: OECD Recommendation
-on AI:2019; ISO/IEC 22989:2022).
+on AI:2019; ISO /IEC 22989:2022).
 While there are myriad standards and best practices to help organizations mitigate the risks
 of traditional software or information-based systems, the risks posed by AI systems are in
 many ways unique (See Appendix B). AI systems, for example, may be trained on data that
@@ -209,21 +136,19 @@ or unexpected negative and positive impacts. Understanding and managing the risk
 systems will help to enhance trustworthiness, and in turn, cultivate public trust.
 Page 1
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 Social responsibility can refer to the organization’s responsibility “for the impacts
 of its decisions and activities on society and the environment through transparent
-and ethical behavior” (ISO 26000:2010). Sustainability refers to the “state of the
+and ethical behavior” ( ISO 26000:2010). Sustainability refers to the “state of the
 global system, including environmental, social, and economic aspects, in which the
 needs of the present are met without compromising the ability of future generations
-to meet their own needs” (ISO/IEC TR 24368:2022). Responsible AI is meant to
+to meet their own needs” ( ISO /IEC TR 24368:2022). Responsible AI is meant to
 result in technology that is also equitable and accountable. The expectation is that
 organizational practices are carried out in accord with “professional responsibility,”
 defined by ISO as an approach that “aims to ensure that professionals who design,
 develop, or deploy AI systems and applications or AI-based products or systems,
 recognize their unique position to exert influence on people, society, and the future
-of AI” (ISO/IEC TR 24368:2022).
+of AI” (ISO /IEC TR 24368:2022).
 As directed by the National Artificial Intelligence Initiative Act of 2020 (P.L. 116-283),
 the goal of the AI RMF is to offer a resource to the organizations designing, developing,
 deploying, or using AI systems to help manage the many risks of AI and promote trustwor-
@@ -252,16 +177,14 @@ the risks related to AI and describes the intended audience. Next, AI risks and 
 ness are analyzed, outlining the characteristics of trustworthy AI systems, which include
 Page 2
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 valid and reliable, safe, secure and resilient, accountable and transparent, explainable and
 interpretable, privacy enhanced, and fair with their harmful biases managed.
 Part 2 comprises the “Core” of the Framework. It describes four specific functions to help
-organizations address the risks of AI systems in practice. These functions – GOVERN,
-MAP, MEASURE, and MANAGE – are broken down further into categories and subcate-
+organizations address the risks of AI systems in practice. These functions – GOVERN ,
+MAP, MEASURE , and MANAGE – are broken down further into categories and subcate-
 gories. While GOVERN applies to all stages of organizations’ AI risk management pro-
-cesses and procedures, the MAP, MEASURE, and MANAGE functions can be applied in AI
+cesses and procedures, the MAP, MEASURE , and MANAGE functions can be applied in AI
 system-specific contexts and at specific stages of the AI lifecycle.
 Additional resources related to the Framework are included in the AI RMF Playbook,
 which is available via the NIST AI RMF website:
@@ -280,19 +203,15 @@ captured in an associated AI Risk Management Framework Roadmap to which NIST and
 the broader community can contribute.
 Page 3
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 Part 1: Foundational Information
-1.
-Framing Risk
+1. Framing Risk
 AI risk management offers a path to minimize potential negative impacts of AI systems,
 such as threats to civil liberties and rights, while also providing opportunities to maximize
 positive impacts. Addressing, documenting, and managing AI risks and potential negative
 impacts effectively can lead to more trustworthy AI systems.
-1.1
-Understanding and Addressing Risks, Impacts, and Harms
-In the context of the AI RMF, risk refers to the composite measure of an event’s probability
+1.1 Understanding and Addressing Risks, Impacts, and Harms
+In the context of the AI RMF,risk refers to the composite measure of an event’s probability
 of occurring and the magnitude or degree of the consequences of the corresponding event.
 The impacts, or consequences, of AI systems can be positive, negative, or both and can
 result in opportunities or threats (Adapted from: ISO 31000:2018). When considering the
@@ -323,18 +242,14 @@ often perceived as being more objective than humans or as offering greater capab
 than general software.
 Page 4
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 Fig. 1. Examples of potential harms related to AI systems. Trustworthy AI systems and their
 responsible use can mitigate negative risks and contribute to benefits for people, organizations, and
 ecosystems.
-1.2
-Challenges for AI Risk Management
+1.2 Challenges for AI Risk Management
 Several challenges are described below. They should be taken into account when managing
 risks in pursuit of AI trustworthiness.
-1.2.1
-Risk Measurement
+1.2.1 Risk Measurement
 AI risks or failures that are not well-defined or adequately understood are difficult to mea-
 sure quantitatively or qualitatively. The inability to appropriately measure AI risks does not
 imply that an AI system necessarily poses either a high or low risk. Some risk measurement
@@ -355,9 +270,7 @@ Tracking emergent risks: Organizations’ risk management efforts will be enhanc
 identifying and tracking emergent risks and considering techniques for measuring them.
 Page 5
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 AI system impact assessment approaches can help AI actors understand potential impacts
 or harms within specific contexts.
 Availability of reliable metrics: The current lack of consensus on robust and verifiable
@@ -394,11 +307,8 @@ comparison. This is difficult to systematize since AI systems carry out differen
 perform tasks differently – than humans.
 Page 6
 
-
-NIST AI 100-1
-AI RMF 1.0
-1.2.2
-Risk Tolerance
+NIST AI 100-1 AI RMF 1.0
+1.2.2 Risk Tolerance
 While the AI RMF can be used to prioritize risk, it does not prescribe risk tolerance. Risk
 tolerance refers to the organization’s or AI actor’s (see Appendix A) readiness to bear the
 risk in order to achieve its objectives. Risk tolerance can be influenced by legal or regula-
@@ -424,8 +334,7 @@ risk management may depend on existing guidelines for specific applications and
 use case settings. Where established guidelines do not exist, organizations should
 define reasonable risk tolerance. Once tolerance is defined, this AI RMF can be used
 to manage risks and to document risk management processes.
-1.2.3
-Risk Prioritization
+1.2.3 Risk Prioritization
 Attempting to eliminate negative risk entirely can be counterproductive in practice because
 not all incidents and failures can be eliminated. Unrealistic expectations about risk may
 lead organizations to allocate resources in a manner that makes risk triage inefficient or
@@ -438,9 +347,7 @@ to which an AI system may be customized or tailored to the specific context of u
 AI deployer can be a contributing factor.
 Page 7
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 When applying the AI RMF, risks which the organization determines to be highest for the
 AI systems within a given context of use call for the most urgent prioritization and most
 thorough risk management process. In cases where an AI system presents unacceptable
@@ -462,8 +369,7 @@ Residual risk – defined as risk remaining after risk treatment (Source: ISO GU
 directly impacts end users or affected individuals and communities. Documenting residual
 risks will call for the system provider to fully consider the risks of deploying the AI product
 and will inform end users about potential negative impacts of interacting with the system.
-1.2.4
-Organizational Integration and Management of Risk
+1.2.4 Organizational Integration and Management of Risk
 AI risks should not be considered in isolation. Different AI actors have different responsi-
 bilities and awareness depending on their roles in the lifecycle. For example, organizations
 developing an AI system often will not have information about how the system may be
@@ -481,9 +387,7 @@ its training and output data; and general security of the underlying software an
 for AI systems.
 Page 8
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 Organizations need to establish and maintain the appropriate accountability mechanisms,
 roles and responsibilities, culture, and incentive structures for risk management to be ef-
 fective. Use of the AI RMF alone will not lead to these changes or provide the appropriate
@@ -492,8 +396,7 @@ senior levels and may require cultural change within an organization or industry
 tion, small to medium-sized organizations managing AI risks or implementing the AI RMF
 may face different challenges than large organizations, depending on their capabilities and
 resources.
-2.
-Audience
+2. Audience
 Identifying and managing AI risks and potential impacts – both positive and negative – re-
 quires a broad set of perspectives and actors across the AI lifecycle. Ideally, AI actors will
 represent a diversity of experience, expertise, and backgrounds and comprise demograph-
@@ -524,9 +427,7 @@ a separate AI RMF audience who informs the primary audience. These AI actors may
 clude trade associations, standards developing organizations, researchers, advocacy groups,
 Page 9
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 Fig. 2. Lifecycle and Key Dimensions of an AI System. Modified from OECD (2022) OECD
 Framework for the Classification of AI systems — OECD Digital Economy Papers. The two inner
 circles show AI systems’ key dimensions and the outer circle shows AI lifecycle stages. Ideally,
@@ -548,19 +449,14 @@ making these implicit aspects more explicit. This broader collective perspective
 opportunities for surfacing problems and identifying existing and emergent risks.
 Page 10
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 Fig. 3. AI actors across AI lifecycle stages. See Appendix A for detailed descriptions of AI actor tasks, including details about testing,
 evaluation, verification, and validation tasks. Note that AI actors in the AI Model dimension (Figure 2) are separated as a best practice, with
 those building and using the models separated from those verifying and validating the models.
 Page 11
 
-
-NIST AI 100-1
-AI RMF 1.0
-3.
-AI Risks and Trustworthiness
+NIST AI 100-1 AI RMF 1.0
+3. AI Risks and Trustworthiness
 For AI systems to be trustworthy, they often need to be responsive to a multiplicity of cri-
 teria that are of value to interested parties. Approaches which enhance AI trustworthiness
 can reduce negative AI risks. This Framework articulates the following characteristics of
@@ -593,13 +489,11 @@ between predictive accuracy and interpretability. Or, under certain conditions s
 sparsity, privacy-enhancing techniques can result in a loss in accuracy, affecting decisions
 Page 12
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 about fairness and other values in certain domains. Dealing with tradeoffs requires tak-
 ing into account the decision-making context. These analyses can highlight the existence
 and extent of tradeoffs between different measures, but they do not answer questions about
-how to navigate the tradeoff. Those depend on the values at play in the relevant context and
+how to navigate the tradeoff. Those depend on the values at play in the relevantcontext and
 should be resolved in a manner that is both transparent and appropriately justifiable.
 There are multiple approaches for enhancing contextual awareness in the AI lifecycle. For
 example, subject matter experts can assist in the evaluation of TEVV findings and work
@@ -622,26 +516,23 @@ given context or purpose, and how to use it responsibly. The decision to commiss
 or deploy an AI system should be based on a contextual assessment of trustworthi-
 ness characteristics and the relative risks, impacts, costs, and benefits, and informed
 by a broad set of interested parties.
-3.1
-Valid and Reliable
+3.1 Valid and Reliable
 Validation is the “confirmation, through the provision of objective evidence, that the re-
 quirements for a specific intended use or application have been fulfilled” (Source: ISO
 9000:2015). Deployment of AI systems which are inaccurate, unreliable, or poorly gener-
 alized to data and settings beyond their training creates and increases negative AI risks and
 reduces trustworthiness.
 Reliability is defined in the same standard as the “ability of an item to perform as required,
-without failure, for a given time interval, under given conditions” (Source: ISO/IEC TS
+without failure, for a given time interval, under given conditions” (Source: ISO /IEC TS
 5723:2022). Reliability is a goal for overall correctness of AI system operation under the
 conditions of expected use and over a given period of time, including the entire lifetime of
 the system.
 Page 13
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 Accuracy and robustness contribute to the validity and trustworthiness of AI systems, and
 can be in tension with one another in AI systems.
-Accuracy is defined by ISO/IEC TS 5723:2022 as “closeness of results of observations,
+Accuracy is defined by ISO /IEC TS 5723:2022 as “closeness of results of observations,
 computations, or estimates to the true values or the values accepted as being true.” Mea-
 sures of accuracy should consider computational-centric measures (e.g., false positive and
 false negative rates), human-AI teaming, and demonstrate external validity (generalizable
@@ -651,7 +542,7 @@ clearly defined and realistic test sets – that are representative of condition
 tation. Accuracy measurements may include disaggregation of results for different data
 segments.
 Robustness or generalizability is defined as the “ability of a system to maintain its level
-of performance under a variety of circumstances” (Source: ISO/IEC TS 5723:2022). Ro-
+of performance under a variety of circumstances” (Source: ISO /IEC TS 5723:2022). Ro-
 bustness is a goal for appropriate system functionality in a broad set of conditions and
 circumstances, including uses of AI systems not initially anticipated. Robustness requires
 not only that the system perform exactly as it does under expected uses, but also that it
@@ -663,10 +554,9 @@ accuracy, robustness, and reliability contribute to trustworthiness and should t
 sideration that certain types of failures can cause greater harm. AI risk management efforts
 should prioritize the minimization of potential negative impacts, and may need to include
 human intervention in cases where the AI system cannot detect or correct errors.
-3.2
-Safe
+3.2 Safe
 AI systems should “not under defined conditions, lead to a state in which human life,
-health, property, or the environment is endangered” (Source: ISO/IEC TS 5723:2022). Safe
+health, property, or the environment is endangered” (Source: ISO /IEC TS 5723:2022). Safe
 operation of AI systems is improved through:
 • responsible design, development, and deployment practices;
 • clear information to deployers on responsible use of the system;
@@ -678,9 +568,7 @@ risk of serious injury or death call for the most urgent prioritization and most
 management process.
 Page 14
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 Employing safety considerations during the lifecycle and starting as early as possible with
 planning and design can prevent failures or conditions that can render a system dangerous.
 Other practical approaches for AI safety often relate to rigorous simulation and in-domain
@@ -689,13 +577,12 @@ vention into systems that deviate from intended or expected functionality.
 AI safety risk management approaches should take cues from efforts and guidelines for
 safety in fields such as transportation and healthcare, and align with existing sector- or
 application-specific guidelines or standards.
-3.3
-Secure and Resilient
+3.3 Secure and Resilient
 AI systems, as well as the ecosystems in which they are deployed, may be said to be re-
 silient if they can withstand unexpected adverse events or unexpected changes in their envi-
 ronment or use – or if they can maintain their functions and structure in the face of internal
 and external change and degrade safely and gracefully when this is necessary (Adapted
-from: ISO/IEC TS 5723:2022). Common security concerns relate to adversarial examples,
+from: ISO /IEC TS 5723:2022). Common security concerns relate to adversarial examples,
 data poisoning, and the exfiltration of models, training data, or other intellectual property
 through AI system endpoints. AI systems that can maintain confidentiality, integrity, and
 availability through protection mechanisms that prevent unauthorized access and use may
@@ -706,10 +593,9 @@ ity to return to normal function after an unexpected adverse event, security inc
 silience but also encompasses protocols to avoid, protect against, respond to, or recover
 from attacks. Resilience relates to robustness and goes beyond the provenance of the data
 to encompass unexpected or adversarial use (or abuse or misuse) of the model or data.
-3.4
-Accountable and Transparent
+3.4 Accountable and Transparent
 Trustworthy AI depends upon accountability. Accountability presupposes transparency.
-Transparency reflects the extent to which information about an AI system and its outputs is
+Transparencyreflects the extent to which information about an AI system and its outputs is
 available to individuals interacting with such a system – regardless of whether they are even
 aware that they are doing so. Meaningful transparency provides access to appropriate levels
 of information based on the stage of the AI lifecycle and tailored to the role or knowledge
@@ -722,9 +608,7 @@ necessary for actionable redress related to AI system outputs that are incorrect
 lead to negative impacts. Transparency should consider human-AI interaction: for exam-
 Page 15
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 ple, how a human operator or user is notified when a potential or actual adverse outcome
 caused by an AI system is detected. A transparent system is not necessarily an accurate,
 privacy-enhanced, secure, or fair system. However, it is difficult to determine whether an
@@ -747,8 +631,7 @@ property rights laws.
 As transparency tools for AI systems and related documentation continue to evolve, devel-
 opers of AI systems are encouraged to test different types of transparency tools in cooper-
 ation with AI deployers to ensure that AI systems are used as intended.
-3.5
-Explainable and Interpretable
+3.5 Explainable and Interpretable
 Explainability refers to a representation of the mechanisms underlying AI systems’ oper-
 ation, whereas interpretability refers to the meaning of AI systems’ output in the context
 of their designed functional purposes. Together, explainability and interpretability assist
@@ -764,9 +647,7 @@ skill level. Explainable systems can be debugged and monitored more easily, and 
 themselves to more thorough documentation, audit, and governance.
 Page 16
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 Risks to interpretability often can be addressed by communicating a description of why
 an AI system made a particular prediction or recommendation. (See “Four Principles of
 Explainable Artificial Intelligence” and “Psychological Foundations of Explainability and
@@ -776,8 +657,7 @@ each other. Transparency can answer the question of “what happened” in the s
 plainability can answer the question of “how” a decision was made in the system. Inter-
 pretability can answer the question of “why” a decision was made by the system and its
 meaning or context to the user.
-3.6
-Privacy-Enhanced
+3.6 Privacy-Enhanced
 Privacy refers generally to the norms and practices that help to safeguard human autonomy,
 identity, and dignity. These norms and practices typically address freedom from intrusion,
 limiting observation, or individuals’ agency to consent to disclosure or control of facets of
@@ -794,8 +674,7 @@ as de-identification and aggregation for certain model outputs, can support desi
 privacy-enhanced AI systems. Under certain conditions such as data sparsity, privacy-
 enhancing techniques can result in a loss in accuracy, affecting decisions about fairness
 and other values in certain domains.
-3.7
-Fair – with Harmful Bias Managed
+3.7 Fair – with Harmful Bias Managed
 Fairness in AI includes concerns for equality and equity by addressing issues such as harm-
 ful bias and discrimination. Standards of fairness can be complex and difficult to define be-
 cause perceptions of fairness differ among cultures and may shift depending on application.
@@ -806,9 +685,7 @@ groups may still be inaccessible to individuals with disabilities or affected by
 divide or may exacerbate existing disparities or systemic biases.
 Page 17
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 Bias is broader than demographic balance and data representativeness. NIST has identified
 three major categories of AI bias to be considered and managed: systemic, computational
 and statistical, and human-cognitive. Each of these can occur in the absence of prejudice,
@@ -830,11 +707,8 @@ tion about bias, including the three categories, see NIST Special Publication 12
 a Standard for Identifying and Managing Bias in Artificial Intelligence.)
 Page 18
 
-
-NIST AI 100-1
-AI RMF 1.0
-4.
-Effectiveness of the AI RMF
+NIST AI 100-1 AI RMF 1.0
+4. Effectiveness of the AI RMF
 Evaluations of AI RMF effectiveness – including ways to measure bottom-line improve-
 ments in the trustworthiness of AI systems – will be part of future NIST activities, in
 conjunction with the AI community.
@@ -863,16 +737,13 @@ for continuous improvement;
 • augmented capacity for TEVV of AI systems and associated risks.
 Page 19
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 Part 2: Core and Profiles
-5.
-AI RMF Core
+5. AI RMF Core
 The AI RMF Core provides outcomes and actions that enable dialogue, understanding, and
 activities to manage AI risks and responsibly develop trustworthy AI systems. As illus-
-trated in Figure 5, the Core is composed of four functions: GOVERN, MAP, MEASURE,
-and MANAGE. Each of these high-level functions is broken down into categories and sub-
+trated in Figure 5, the Core is composed of four functions: GOVERN , MAP, MEASURE ,
+and MANAGE . Each of these high-level functions is broken down into categories and sub-
 categories. Categories and subcategories are subdivided into specific actions and outcomes.
 Actions do not constitute a checklist, nor are they necessarily an ordered set of steps.
 Fig. 5. Functions organize AI risk management activities at their highest level to govern, map,
@@ -885,9 +756,7 @@ side the organization. Having a diverse team contributes to more open sharing of
 assumptions about purposes and functions of the technology being designed, developed,
 Page 20
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 deployed, or evaluated – which can create opportunities to surface problems and identify
 existing and emergent risks.
 An online companion resource to the AI RMF, the NIST AI RMF Playbook, is available
@@ -904,13 +773,12 @@ to select from among the categories and subcategories; others may choose and hav
 the capacity to apply all categories and subcategories. Assuming a governance struc-
 ture is in place, functions may be performed in any order across the AI lifecycle as
 deemed to add value by a user of the framework. After instituting the outcomes in
-GOVERN, most users of the AI RMF would start with the MAP function and con-
-tinue to MEASURE or MANAGE. However users integrate the functions, the process
+GOVERN , most users of the AI RMF would start with the MAP function and con-
+tinue to MEASURE or MANAGE . However users integrate the functions, the process
 should be iterative, with cross-referencing between functions as necessary. Simi-
 larly, there are categories and subcategories with elements that apply to multiple
 functions, or that logically should take place before certain subcategory decisions.
-5.1
-Govern
+5.1 Govern
 The GOVERN function:
 • cultivates and implements a culture of risk management within organizations design-
 ing, developing, deploying, evaluating, or acquiring AI systems;
@@ -928,11 +796,9 @@ and
 issues concerning use of third-party software or hardware systems and data.
 Page 21
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 GOVERN is a cross-cutting function that is infused throughout AI risk management and
-enables the other functions of the process. Aspects of GOVERN, especially those related to
+enables the other functions of the process. Aspects of GOVERN , especially those related to
 compliance or evaluation, should be integrated into each of the other functions. Attention
 to governance is a continual and intrinsic requirement for effective AI risk management
 over an AI system’s lifespan and the organization’s hierarchy.
@@ -974,14 +840,11 @@ on the organization’s risk tolerance.
 GOVERN 1.4: The risk management process and its outcomes are
 established through transparent policies, procedures, and other
 controls based on organizational risk priorities.
-Categories
-Subcategories
+Categories Subcategories
 Continued on next page
 Page 22
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 Table 1: Categories and subcategories for the GOVERN function. (Continued)
 GOVERN 1.5: Ongoing monitoring and periodic review of the
 risk management process and its outcomes are planned and or-
@@ -1041,14 +904,11 @@ GOVERN 4.1: Organizational policies and practices are in place
 to foster a critical thinking and safety-first mindset in the design,
 development, deployment, and uses of AI systems to minimize
 potential negative impacts.
-Categories
-Subcategories
+Categories Subcategories
 Continued on next page
 Page 23
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 Table 1: Categories and subcategories for the GOVERN function. (Continued)
 that considers and
 communicates AI
@@ -1087,10 +947,8 @@ fringement of a third-party’s intellectual property or other rights.
 GOVERN 6.2: Contingency processes are in place to handle
 failures or incidents in third-party data or AI systems deemed to
 be high-risk.
-Categories
-Subcategories
-5.2
-Map
+Categories Subcategories
+5.2 Map
 The MAP function establishes the context to frame risks related to an AI system. The AI
 lifecycle consists of many interdependent activities involving a diverse set of actors (See
 Figure 3). In practice, AI actors in charge of one part of the process often do not have full
@@ -1103,9 +961,7 @@ system decisions. As a result, the best intentions within one dimension of the A
 can be undermined via interactions with decisions and conditions in other, later activities.
 Page 24
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 This complexity and varying levels of visibility can introduce uncertainty into risk man-
 agement practices. Anticipating, assessing, and otherwise addressing potential sources of
 negative risk can mitigate this uncertainty and enhance the integrity of the decision process.
@@ -1144,9 +1000,7 @@ Practices related to mapping AI risks are described in the NIST AI RMF Playbook.
 2 lists the MAP function’s categories and subcategories.
 Page 25
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 Table 2: Categories and subcategories for the MAP function.
 MAP 1: Context is
 established and
@@ -1188,14 +1042,11 @@ and how system output may be utilized and overseen by humans
 is documented. Documentation provides sufficient information
 to assist relevant AI actors when making decisions and taking
 subsequent actions.
-Categories
-Subcategories
+Categories Subcategories
 Continued on next page
 Page 26
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 Table 2: Categories and subcategories for the MAP function. (Continued)
 MAP 2.3: Scientific integrity and TEVV considerations are iden-
 tified and documented, including those related to experimental
@@ -1251,23 +1102,18 @@ past uses of AI systems in similar contexts, public incident re-
 ports, feedback from those external to the team that developed
 or deployed the AI system, or other data are identified and
 documented.
-Categories
-Subcategories
+Categories Subcategories
 Continued on next page
 Page 27
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 Table 2: Categories and subcategories for the MAP function. (Continued)
 MAP 5.2: Practices and personnel for supporting regular en-
 gagement with relevant AI actors and integrating feedback about
 positive, negative, and unanticipated impacts are in place and
 documented.
-Categories
-Subcategories
-5.3
-Measure
+Categories Subcategories
+5.3 Measure
 The MEASURE function employs quantitative, qualitative, or mixed-method tools, tech-
 niques, and methodologies to analyze, assess, benchmark, and monitor AI risk and related
 impacts. It uses knowledge relevant to AI risks identified in the MAP function and informs
@@ -1299,9 +1145,7 @@ cumbent on Framework users to continue applying the MEASURE function to AI syste
 as knowledge, methodologies, risks, and impacts evolve over time.
 Page 28
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 Practices related to measuring AI risks are described in the NIST AI RMF Playbook. Table
 3 lists the MEASURE function’s categories and subcategories.
 Table 3: Categories and subcategories for the MEASURE function.
@@ -1320,8 +1164,7 @@ of existing controls are regularly assessed and updated, including
 reports of errors and potential impacts on affected communities.
 MEASURE 1.3: Internal experts who did not serve as front-line
 developers for the system and/or independent assessors are in-
-volved in regular assessments and updates.
-Domain experts,
+volved in regular assessments and updates. Domain experts,
 users, AI actors external to the team that developed or deployed
 the AI system, and affected communities are consulted in support
 of assessments as necessary per organizational risk tolerance.
@@ -1346,17 +1189,14 @@ MEASURE 2.5: The AI system to be deployed is demonstrated
 to be valid and reliable. Limitations of the generalizability be-
 yond the conditions under which the technology was developed
 are documented.
-Categories
-Subcategories
+Categories Subcategories
 Continued on next page
 Page 29
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 Table 3: Categories and subcategories for the MEASURE function. (Continued)
 MEASURE 2.6: The AI system is evaluated regularly for safety
-risks – as identified in the MAP function. The AI system to be de-
+risks – as identified in theMAP function. The AI system to be de-
 ployed is demonstrated to be safe, its residual negative risk does
 not exceed the risk tolerance, and it can fail safely, particularly if
 made to operate beyond its knowledge limits. Safety metrics re-
@@ -1394,14 +1234,11 @@ MEASURE 3.2: Risk tracking approaches are considered for
 settings where AI risks are difficult to assess using currently
 available measurement techniques or where metrics are not yet
 available.
-Categories
-Subcategories
+Categories Subcategories
 Continued on next page
 Page 30
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 Table 3: Categories and subcategories for the MEASURE function. (Continued)
 MEASURE 3.3: Feedback processes for end users and impacted
 communities to report problems and appeal system outcomes are
@@ -1414,8 +1251,7 @@ gathered and
 assessed.
 MEASURE 4.1: Measurement approaches for identifying AI risks
 are connected to deployment context(s) and informed through
-consultation with domain experts and other end users.
-Ap-
+consultation with domain experts and other end users. Ap-
 proaches are documented.
 MEASURE 4.2: Measurement results regarding AI system trust-
 worthiness in deployment context(s) and across the AI lifecycle
@@ -1427,10 +1263,8 @@ clines based on consultations with relevant AI actors, in-
 cluding affected communities, and field data about context-
 relevant risks and trustworthiness characteristics are identified
 and documented.
-Categories
-Subcategories
-5.4
-Manage
+Categories Subcategories
+5.4 Manage
 The MANAGE function entails allocating risk resources to mapped and measured risks on
 a regular basis and as defined by the GOVERN function. Risk treatment comprises plans to
 respond to, recover from, and communicate about incidents or events.
@@ -1448,9 +1282,7 @@ the MANAGE function to deployed AI systems as methods, contexts, risks, and need
 expectations from relevant AI actors evolve over time.
 Page 31
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 Practices related to managing AI risks are described in the NIST AI RMF Playbook. Table
 4 lists the MANAGE function’s categories and subcategories.
 Table 4: Categories and subcategories for the MANAGE function.
@@ -1511,14 +1343,11 @@ documented.
 MANAGE 3.2: Pre-trained models which are used for develop-
 ment are monitored as part of AI system regular monitoring and
 maintenance.
-Categories
-Subcategories
+Categories Subcategories
 Continued on next page
 Page 32
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 Table 4: Categories and subcategories for the MANAGE function. (Continued)
 MANAGE 4: Risk
 treatments,
@@ -1542,10 +1371,8 @@ MANAGE 4.3: Incidents and errors are communicated to relevant
 AI actors, including affected communities. Processes for track-
 ing, responding to, and recovering from incidents and errors are
 followed and documented.
-Categories
-Subcategories
-6.
-AI RMF Profiles
+Categories Subcategories
+6. AI RMF Profiles
 AI RMF use-case profiles are implementations of the AI RMF functions, categories, and
 subcategories for a specific setting or application based on the requirements, risk tolerance,
 and resources of the Framework user: for example, an AI RMF hiring profile or an AI
@@ -1568,10 +1395,8 @@ resources needed (e.g., staffing, funding) to achieve AI risk management goals i
 effective, prioritized manner.
 Page 33
 
-
-NIST AI 100-1
-AI RMF 1.0
-AI RMF cross-sectoral profiles cover risks of models or applications that can be used across
+NIST AI 100-1 AI RMF 1.0
+AI RMF cross-sectoral profilescover risks of models or applications that can be used across
 use cases or sectors. Cross-sectoral profiles can also cover how to govern, map, measure,
 and manage risks for activities or business processes common across sectors such as the
 use of large language models, cloud-based services or acquisition.
@@ -1579,9 +1404,7 @@ This Framework does not prescribe profile templates, allowing for flexibility in
 tation.
 Page 34
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 Appendix A:
 Descriptions of AI Actor Tasks from Figures 2 and 3
 AI Design tasks are performed during the Application Context and Data and Input phases
@@ -1622,9 +1445,7 @@ the AI lifecycle. They are carried out by AI actors who examine the AI system or
 components, or detect and remediate problems. Ideally, AI actors carrying out verification
 Page 35
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 and validation tasks are distinct from those who perform test and evaluation actions. Tasks
 can be incorporated into a phase as early as design, where tests are planned in accordance
 with the design requirement.
@@ -1665,9 +1486,7 @@ Governance and Oversight tasks are assumed by AI actors with management, fiducia
 and legal authority and responsibility for the organization in which an AI system is de-
 Page 36
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 signed, developed, and/or deployed. Key AI actors responsible for AI governance include
 organizational management, senior leadership, and the Board of Directors. These actors
 are parties that are concerned with the impact and sustainability of the organization as a
@@ -1697,9 +1516,7 @@ group can include individuals, communities, and consumers associated with the co
 which an AI system is developed or deployed.
 Page 37
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 Appendix B:
 How AI Risks Differ from Traditional Software Risks
 As with traditional software, risks from AI-based technology can be bigger than an en-
@@ -1707,7 +1524,7 @@ terprise, span organizations, and lead to societal impacts. AI systems also brin
 risks that are not comprehensively addressed by current risk frameworks and approaches.
 Some AI system features that present risks also can be beneficial. For example, pre-trained
 models and transfer learning can advance research and increase accuracy and resilience
-when compared to other models and approaches. Identifying contextual factors in the MAP
+when compared to other models and approaches. Identifying contextual factors in theMAP
 function will assist AI actors in determining the level of risk and potential management
 efforts.
 Compared to traditional software, AI-specific risks that are new or increased include the
@@ -1741,9 +1558,7 @@ test, since AI systems are not subject to the same controls as traditional code 
 opment.
 Page 38
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 • Computational costs for developing AI systems and their impact on the environment
 and planet.
 • Inability to predict or detect the side effects of AI-based systems beyond statistical
@@ -1762,7 +1577,7 @@ outcome-based rather than prescriptive and are often structured around a Core se
 tions, categories, and subcategories. While there are significant differences between these
 frameworks based on the domain addressed – and because AI risk management calls for
 addressing many other types of risks – frameworks like those mentioned above may inform
-security and privacy considerations in the MAP, MEASURE, and MANAGE functions of the
+security and privacy considerations in the MAP, MEASURE , and MANAGE functions of the
 AI RMF.
 At the same time, guidance available before publication of this AI RMF does not compre-
 hensively address many AI system risks. For example, existing frameworks and guidance
@@ -1781,9 +1596,7 @@ Technology advances should be monitored and deployed to take advantage of those 
 opments and work towards a future of AI that is both trustworthy and responsible.
 Page 39
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 Appendix C:
 AI Risk Management and Human-AI Interaction
 Organizations that design, develop, or deploy AI systems for use in operational settings
@@ -1823,9 +1636,7 @@ teams, however, they can result in complementarity and improved overall perfor-
 mance.
 Page 40
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 4. Presenting AI system information to humans is complex. Humans perceive and
 derive meaning from AI system output and explanations in different ways, reflecting
 different individual preferences, traits, and skills.
@@ -1855,9 +1666,7 @@ quency and rationale with which humans overrule AI system output in deployed sys
 may be useful to collect and analyze.
 Page 41
 
-
-NIST AI 100-1
-AI RMF 1.0
+NIST AI 100-1 AI RMF 1.0
 Appendix D:
 Attributes of the AI RMF
 NIST described several key attributes of the AI RMF when work on the Framework first
@@ -1889,8 +1698,7 @@ of outcomes and approaches rather than prescribe one-size-fits-all requirements.
 8. Take advantage of and foster greater awareness of existing standards, guidelines, best
 practices, methodologies, and tools for managing AI risks – as well as illustrate the
 need for additional, improved resources.
-9. Be law- and regulation-agnostic.
-The Framework should support organizations’
+9. Be law- and regulation-agnostic. The Framework should support organizations’
 abilities to operate under applicable domestic and international legal or regulatory
 regimes.
 10. Be a living document. The AI RMF should be readily updated as technology, under-
@@ -1898,7 +1706,6 @@ standing, and approaches to AI trustworthiness and uses of AI change and as stak
 holders learn from implementing AI risk management generally and this framework
 in particular.
 Page 42
-
 
 This publication is available free of charge from:
 https://doi.org/10.6028/NIST.AI.100-1

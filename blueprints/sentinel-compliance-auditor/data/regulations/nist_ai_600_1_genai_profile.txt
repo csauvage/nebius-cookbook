@@ -18,8 +18,7 @@ https://doi.org/10.6028/NIST.AI.600-1
  
  
  
- 
- 
+  
 
 
  
@@ -64,12 +63,14 @@ from the community, including the NIST Generative AI Public Working Group, and N
 researchers: Chloe Autio, Jesse Dunietz, Patrick Hall, Shomik Jain, Kamie Roberts, Reva Schwartz, Martin 
 Stanley, and Elham Tabassi. 
 NIST Technical Series Policies 
-Copyright, Use, and Licensing Statements 
+Copyright, Use, and Licensing Statements
+ 
 NIST Technical Series Publication Identifier Syntax 
 Publication History 
 Approved by the NIST Editorial Review Board on 07-25-2024 
 Contact Information 
-ai-inquiries@nist.gov 
+ai-inquiries@nist.gov
+ 
 National Institute of Standards and Technology 
 Attn: NIST AI Innovation Lab, Information Technology Laboratory 
 100 Bureau Drive (Mail Stop 8900) Gaithersburg, MD 20899-8900 
@@ -84,32 +85,25 @@ intended to imply that the entities, materials, or equipment are necessarily the
 purpose. Any mention of commercial, non-proﬁt, academic partners, or their products, or references is 
 for information only; it is not intended to imply endorsement or recommendation by any U.S. 
 Government agency. 
- 
-
+  
 
  
  
  
 Table of Contents 
-1. 
-Introduction ..............................................................................................................................................1 
-2. 
-Overview of Risks Unique to or Exacerbated by GAI .....................................................................2 
-3. 
-Suggested Actions to Manage GAI Risks ......................................................................................... 12 
+1. Introduction ..............................................................................................................................................1  
+2. Overview of Risks Unique to or Exacerbated by GAI .....................................................................2  
+3. Suggested Actions to Manage GAI Risks ......................................................................................... 12 
 Appendix A. Primary GAI Considerations ............................................................................................... 47 
 Appendix B. References ................................................................................................................................ 54 
  
  
  
- 
- 
-
+  
 
  
 1 
-1. 
-Introduction 
+1. Introduction 
 This document is a cross-sectoral proﬁle of and companion resource for the AI Risk Management 
 Framework (AI RMF 1.0) for Generative AI,1 pursuant to President Biden’s Executive Order (EO) 14110 on 
 Safe, Secure, and Trustworthy Artiﬁcial Intelligence.2 The AI RMF was released in January 2023, and is 
@@ -141,7 +135,6 @@ billions of parameters; is applicable across a wide range of contexts.”
 through the Director of the National Institute of Standards and Technology (NIST), to develop a companion 
 resource to the AI RMF, NIST AI 100–1, for generative AI. 
 
-
  
 2 
 This work was informed by public feedback and consultations with diverse stakeholder groups as part of NIST’s 
@@ -158,8 +151,7 @@ Responsible AI Resource Center (AIRC), and added to The Language of Trustworthy 
 Terms. 
 This document was also informed by public comments and consultations from several Requests for Information. 
  
-2. 
-Overview of Risks Unique to or Exacerbated by GAI 
+2. Overview of Risks Unique to or Exacerbated by GAI 
 In the context of the AI RMF, risk refers to the composite measure of an event’s probability (or 
 likelihood) of occurring and the magnitude or degree of the consequences of the corresponding event. 
 Some risks can be assessed as likely to materialize in a given context, particularly those that have been 
@@ -167,17 +159,14 @@ empirically demonstrated in similar contexts. Other risks may be unlikely to mat
 context, or may be more speculative and therefore uncertain. 
 AI risks can diﬀer from or intensify traditional software risks. Likewise, GAI can exacerbate existing AI 
 risks, and creates unique risks. GAI risks can vary along many dimensions: 
-• 
-Stage of the AI lifecycle: Risks can arise during design, development, deployment, operation, 
+• Stage of the AI lifecycle: Risks can arise during design, development, deployment, operation, 
 and/or decommissioning. 
-• 
-Scope: Risks may exist at individual model or system levels, at the application or implementation 
+• Scope: Risks may exist at individual model or system levels, at the application or implementation 
 levels (i.e., for a speciﬁc use case), or at the ecosystem level – that is, beyond a single system or 
 organizational context. Examples of the latter include the expansion of “algorithmic 
 monocultures,3” resulting from repeated use of the same model, or impacts on access to 
 opportunity, labor markets, and the creative economies.4 
-• 
-Source of risk: Risks may emerge from factors related to the design, training, or operation of the 
+• Source of risk: Risks may emerge from factors related to the design, training, or operation of the 
 GAI model itself, stemming in some cases from GAI model or system inputs, and in other cases, 
 from GAI system outputs. Many GAI risks, however, originate from human behavior, including 
  
@@ -189,13 +178,11 @@ systems to correlated failures (like unexpected shocks), due to multiple actors 
 the impact of GAI on the labor market, though some industry surveys indicate that that both employees and 
 employers are pondering this disruption.  
 
-
  
 3 
 the abuse, misuse, and unsafe repurposing by humans (adversarial or not), and others result 
 from interactions between a human and an AI system.  
-• 
-Time scale: GAI risks may materialize abruptly or across extended periods. Examples include 
+• Time scale: GAI risks may materialize abruptly or across extended periods. Examples include 
 immediate (and/or prolonged) emotional harm and potential risks to physical safety due to the 
 distribution of harmful deepfake images, or the long-term eﬀect of disinformation on societal 
 trust in public institutions. 
@@ -227,13 +214,12 @@ risk management eﬀorts. To help streamline risk management eﬀorts, each risk
  
 5 These risks can be further categorized by organizations depending on their unique approaches to risk deﬁnition 
 and management. One possible way to further categorize these risks, derived in part from the UK’s International 
-Scientiﬁc Report on the Safety of Advanced AI, could be: 1) Technical / Model risks (or risk from malfunction): 
+Scientiﬁc Report on the Safety of Advanced AI, could be: 1 ) Technical / Model risks (or risk from malfunction): 
 Confabulation; Dangerous or Violent Recommendations; Data Privacy; Value Chain and Component Integration; 
 Harmful Bias, and Homogenization; 2) Misuse by humans (or malicious use): CBRN Information or Capabilities; 
 Data Privacy; Human-AI Conﬁguration; Obscene, Degrading, and/or Abusive Content; Information Integrity; 
 Information Security; 3) Ecosystem / societal risks (or systemic risks): Data Privacy; Environmental; Intellectual 
 Property. We also note that some risks are cross-cutting between these categories.  
-
 
  
 4 
@@ -280,7 +266,6 @@ AI behaviors for diﬀerent subgroups constitutes a harm. In discussing harms fr
 behavior, this document highlights examples where someone’s situation is worsened relative to what it would have 
 been in the absence of any AI system, making the outcome unambiguously a harm of the system.  
 
-
  
 5 
 operations, or other cyberattacks; increased attack surface for targeted cyberattacks, which may 
@@ -305,7 +290,7 @@ relevant biological and chemical threat knowledge and information is often publi
 could facilitate its analysis or synthesis, particularly by individuals without formal scientiﬁc training or 
 expertise.  
 Recent research on this topic found that LLM outputs regarding biological threat creation and attack 
-planning provided minimal assistance beyond traditional search engine queries, suggesting that state-of-
+planning pr ovided minimal assistance beyond traditional search engine queries, suggesting that state-of-
 the-art LLMs at the time these studies were conducted do not substantially increase the operational 
 likelihood of such an attack. The physical synthesis development, production, and use of chemical or 
 biological agents will continue to require both applicable expertise and supporting materials and 
@@ -321,7 +306,6 @@ While some of these described capabilities lie beyond the reach of existing GAI 
 assessments of this risk would be enhanced by monitoring both the ability of AI tools to facilitate CBRN 
 weapons planning and GAI systems’ connection or access to relevant data and tools. 
 Trustworthy AI Characteristic: Safe, Explainable and Interpretable 
-
 
  
 6 
@@ -365,7 +349,6 @@ content, creative generation of non-factual content can be a desired behavior.
 10 For example, legal confabulations have been shown to be pervasive in current state-of-the-art LLMs. See also, 
 e.g.,  
 
-
  
 7 
 unethical behavior. Text-to-image models also make it easy to create images that could be used to 
@@ -377,7 +360,7 @@ prompts (also relevant to CBRN Information or Capabilities, Data Privacy, Inform
 Obscene, Degrading and/or Abusive Content). Crafting such prompts deliberately is known as 
 “jailbreaking,” or, manipulating prompts to circumvent output controls. Limitations of GAI systems can be 
 harmful or dangerous in certain contexts. Studies have observed that users may disclose mental health 
-issues in conversations with chatbots – and that users exhibit negative reactions to unhelpful responses 
+issues i n conversations with chatbots  – and that users exhibit negative reactions to unhelpful responses 
 from these chatbots during situations of distress. 
 This risk encompasses diﬃculty controlling creation of and public exposure to oﬀensive or hateful 
 language, and denigrating or stereotypical content generated by AI. This kind of speech may contribute 
@@ -397,7 +380,7 @@ during adversarial attacks, LLMs have revealed sensitive information (from the p
 included in their training data. This problem has been referred to as data memorization, and may pose 
 exacerbated privacy risks even for data present only in a small number of training samples.  
 In addition to revealing sensitive information in GAI training data, GAI models may be able to correctly 
-infer PII or sensitive data that was not in their training data nor disclosed by the user by stitching 
+infer P II or sensitive data that was not in their training data nor disclosed by the user by stitching 
 together information from disparate sources. These inferences can have negative impact on an individual 
 even if the inferences are not accurate (e.g., confabulations), and especially if they reveal information 
 that the individual considers sensitive or that is used to disadvantage or harm them. 
@@ -406,7 +389,6 @@ inferences of PII can contribute to downstream or secondary harmful impacts. For
 inferences made by GAI models based on PII or protected attributes can contribute to adverse decisions, 
 leading to representational or allocative harms to individuals or groups (see Harmful Bias and 
 Homogenization below).  
-
 
  
 8 
@@ -420,7 +402,7 @@ content, hardware used, and type of task or application.
 Current estimates suggest that training a single transformer LLM can emit as much carbon as 300 round-
 trip ﬂights between San Francisco and New York. In a study comparing energy consumption and carbon 
 emissions for LLM inference, generative tasks (e.g., text summarization) were found to be more energy- 
-and carbon-intensive than discriminative or non-generative tasks (e.g., text classiﬁcation).  
+and carbon-i ntensive th an discriminative or non-generative tasks (e.g., text classiﬁcation).  
 Methods for creating smaller versions of trained models, such as model distillation or compression, 
 could reduce environmental impacts at inference time, but training and tuning such models may still 
 contribute to their environmental impacts. Currently there is no agreed upon method to estimate 
@@ -448,7 +430,6 @@ endangered languages more diﬃcult if GAI systems become embedded in everyday p
 otherwise have been opportunities to use these languages.  
 Bias is mutually reinforcing with the problem of undesired homogenization, in which GAI systems 
 produce skewed distributions of outputs that are overly uniform (for example, repetitive aesthetic styles 
-
 
  
 9 
@@ -488,7 +469,6 @@ and creates reasonable expectations about when its validity may expire.”11
  
 11 This deﬁnition of information integrity is derived from the 2022 White House Roadmap for Researchers on 
 Priorities Related to Information Integrity Research and Development.  
-
 
  
 10 
@@ -531,7 +511,6 @@ weights. To identify and secure potential attack points in AI systems or speci�
  
 12 See also https://doi.org/10.6028/NIST.AI.100-4, to be published. 
 
-
  
 11 
 value chain (e.g., data inputs, processing, GAI training, or deployment environments), conventional 
@@ -548,19 +527,17 @@ Another cybersecurity risk to GAI is data poisoning, in which an adversary compr
 dataset used by a model to manipulate its outputs or operation. Malicious tampering with data or parts 
 of the model could exacerbate risks associated with GAI system outputs. 
 Trustworthy AI Characteristics: Privacy Enhanced, Safe, Secure and Resilient, Valid and Reliable 
-2.10. 
-Intellectual Property 
+2.10. Intellectual Property 
 Intellectual property risks from GAI systems may arise where the use of copyrighted works is not a fair 
 use under the fair use doctrine. If a GAI system’s training data included copyrighted material, GAI 
 outputs displaying instances of training data memorization (see Data Privacy above) could infringe on 
 copyright. 
 How GAI relates to copyright, including the status of generated content that is similar to but does not 
-strictly copy work protected by copyright, is currently being debated in legal fora. Similar discussions are 
+strictly copy w ork protected by copyright , is currently being debated in legal fora. Similar discussions are 
 taking place regarding the use or emulation of personal identity, likeness, or voice without permission.  
 Trustworthy AI Characteristics: Accountable and Transparent, Fair with Harmful Bias Managed, Privacy 
 Enhanced  
-2.11. 
-Obscene, Degrading, and/or Abusive Content 
+2.11. Obscene, Degrading, and/or Abusive Content 
 GAI can ease the production of and access to illegal non-consensual intimate imagery (NCII) of adults, 
 and/or child sexual abuse material (CSAM). GAI-generated obscene, abusive or degrading content can 
 create privacy, psychological and emotional, and even physical harms, and in some cases may be illegal.  
@@ -574,15 +551,13 @@ even suicidal thoughts.
 Data used for training GAI models may unintentionally include CSAM and NCII. A recent report noted 
 that several commonly used GAI training datasets were found to contain hundreds of known images of 
 
-
  
 12 
 CSAM. Even when trained on “clean” data, increasingly capable GAI models can synthesize or produce 
 synthetic NCII and CSAM. Websites, mobile apps, and custom-built models that generate synthetic NCII 
 have moved from niche internet forums to mainstream, automated, and scaled online businesses.  
 Trustworthy AI Characteristics: Fair with Harmful Bias Managed, Safe, Privacy Enhanced 
-2.12. 
-Value Chain and Component Integration 
+2.12. Value Chain and Component Integration 
 GAI value chains involve many third-party components such as procured datasets, pre-trained models, 
 and software libraries. These components might be improperly obtained or not properly vetted, leading 
 to diminished transparency or accountability for downstream users. While this is a risk for traditional AI 
@@ -598,8 +573,7 @@ Inaccuracies in these labels can impact the “stability” or robustness of the
 GAI practitioners consider during the model selection process.  
 Trustworthy AI Characteristics: Accountable and Transparent, Explainable and Interpretable, Fair with 
 Harmful Bias Managed, Privacy Enhanced, Safe, Secure and Resilient, Valid and Reliable 
-3. 
-Suggested Actions to Manage GAI Risks 
+3. Suggested Actions to Manage GAI Risks 
 The following suggested actions target risks unique to or exacerbated by GAI. 
 In addition to the suggested actions below, AI risk management activities and actions set forth in the AI 
 RMF 1.0 and Playbook are already applicable for managing GAI risks. Organizations are encouraged to 
@@ -607,45 +581,35 @@ apply the activities suggested in the AI RMF and its Playbook when managing the 
 Implementation of the suggested actions will vary depending on the type of risk, characteristics of GAI 
 systems, stage of the GAI lifecycle, and relevant AI actors involved.  
 Suggested actions to manage GAI risks can be found in the tables below: 
-• 
-The suggested actions are organized by relevant AI RMF subcategories to streamline these 
+• The suggested actions are organized by relevant AI RMF subcategories to streamline these 
 activities alongside implementation of the AI RMF.  
-• 
-Not every subcategory of the AI RMF is included in this document.13 Suggested actions are 
+• Not every subcategory of the AI RMF is included in this document.13 Suggested actions are 
 listed for only some subcategories.  
  
  
 13 As this document was focused on the GAI PWG eﬀorts and primary considerations (see Appendix A), AI RMF 
 subcategories not addressed here may be added later.  
 
-
  
 13 
-• 
-Not every suggested action applies to every AI Actor14 or is relevant to every AI Actor Task. For 
+• Not every suggested action applies to every AI Actor14 or is relevant to every AI Actor Task. For 
 example, suggested actions relevant to GAI developers may not be relevant to GAI deployers. 
 The applicability of suggested actions to relevant AI actors should be determined based on 
 organizational considerations and their unique uses of GAI systems. 
 Each table of suggested actions includes: 
-• 
-Action ID: Each Action ID corresponds to the relevant AI RMF function and subcategory (e.g., GV-
+• Action ID: Each Action ID corresponds to the relevant AI RMF function and subcategory (e.g., GV-
 1.1-001 corresponds to the ﬁrst suggested action for Govern 1.1, GV-1.1-002 corresponds to the 
 second suggested action for Govern 1.1). AI RMF functions are tagged as follows: GV = Govern; 
 MP = Map; MS = Measure; MG = Manage. 
-• 
-Suggested Action: Steps an organization or AI actor can take to manage GAI risks.  
-• 
-GAI Risks: Tags linking suggested actions with relevant GAI risks.  
-• 
-AI Actor Tasks: Pertinent AI Actor Tasks for each subcategory. Not every AI Actor Task listed will 
+• Suggested Action: Steps an organization or AI actor can take to manage GAI risks.  
+• GAI Risks: Tags linking suggested actions with relevant GAI risks.  
+• AI Actor Tasks: Pertinent AI Actor Tasks for each subcategory. Not every AI Actor Task listed will 
 apply to every suggested action in the subcategory (i.e., some apply to AI development and 
 others apply to AI deployment).  
 The tables below begin with the AI RMF subcategory, shaded in blue, followed by suggested actions.  
  
 GOVERN 1.1: Legal and regulatory requirements involving AI are understood, managed, and documented.  
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 GV-1.1-001 Align GAI development and use with applicable laws and regulations, including 
 those related to data privacy, copyright and intellectual property law. 
 Data Privacy; Harmful Bias and 
@@ -661,13 +625,10 @@ of AI Actors and AI Actor Tasks.
  
  
 
-
  
 14 
 GOVERN 1.2: The characteristics of trustworthy AI are integrated into organizational policies, processes, procedures, and practices. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 GV-1.2-001 
 Establish transparency policies and processes for documenting the origin and 
 history of training data and generated data for GAI applications to advance digital 
@@ -685,9 +646,7 @@ AI Actor Tasks: Governance and Oversight
  
 GOVERN 1.3: Processes, procedures, and practices are in place to determine the needed level of risk management activities based 
 on the organization’s risk tolerance. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 GV-1.3-001 
 Consider the following factors when updating or deﬁning risk tiers for GAI: Abuses 
 and impacts to information integrity; Dependencies between GAI and other IT or 
@@ -721,7 +680,6 @@ to periodically evaluate whether the model may misuse CBRN information or
 capabilities and/or oﬀensive cyber capabilities. 
 CBRN Information or Capabilities; 
 Information Security 
-
 
  
 15 
@@ -757,39 +715,33 @@ AI Actor Tasks: Governance and Oversight
  
 GOVERN 1.4: The risk management process and its outcomes are established through transparent policies, procedures, and other 
 controls based on organizational risk priorities. 
-Action ID 
-Suggested Action 
-GAI Risks 
-GV-1.4-001 
-Establish policies and mechanisms to prevent GAI systems from generating 
+Action ID Suggested Action GAI Risks 
+GV-1.4-001 Establish policies and mechanisms to prevent GAI systems from generating 
 CSAM, NCII or content that violates the law.  
 Obscene, Degrading, and/or 
 Abusive Content; Harmful Bias 
 and Homogenization; 
 Dangerous, Violent, or Hateful 
-Content 
-GV-1.4-002 
-Establish transparent acceptable use policies for GAI that address illegal use or 
+Content
+ 
+GV-1.4-002 Establish transparent acceptable use policies for GAI that address illegal use or 
 applications of GAI. 
 CBRN Information or 
 Capabilities; Obscene, 
 Degrading, and/or Abusive 
 Content; Data Privacy; Civil 
-Rights violations 
+Rights violations
+ 
 AI Actor Tasks: AI Development, AI Deployment, Governance and Oversight 
  
-
 
  
 16 
 GOVERN 1.5: Ongoing monitoring and periodic review of the risk management process and its outcomes are planned, and 
 organizational roles and responsibilities are clearly deﬁned, including determining the frequency of periodic review. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 GV-1.5-001 Deﬁne organizational responsibilities for periodic review of content provenance 
-and incident monitoring for GAI systems. 
-Information Integrity 
+and incident monitoring for GAI systems. Information Integrity 
 GV-1.5-002 
 Establish organizational policies and procedures for after action reviews of GAI 
 system incident response and incident disclosures, to identify gaps; Update 
@@ -805,12 +757,9 @@ Property
 AI Actor Tasks: Governance and Oversight, Operation and Monitoring 
  
 GOVERN 1.6: Mechanisms are in place to inventory AI systems and are resourced according to organizational risk priorities. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 GV-1.6-001 Enumerate organizational GAI systems for incorporation into AI system inventory 
-and adjust AI system inventory requirements to account for GAI risks. 
-Information Security 
+and adjust AI system inventory requirements to account for GAI risks. Information Security 
 GV-1.6-002 Deﬁne any inventory exemptions in organizational policies for GAI systems 
 embedded into application software. 
 Value Chain and Component 
@@ -819,7 +768,8 @@ GV-1.6-003
 In addition to general model, governance, and risk information, consider the 
 following items in GAI system inventory entries: Data provenance information 
 (e.g., source, signatures, versioning, watermarks); Known issues reported from 
-internal bug tracking or external information sharing resources (e.g., AI incident 
+internal bug tracking or external information sharing resources (e.g., 
+AI incident 
 database, AVID, CVE, NVD, or OECD AI incident monitor); Human oversight roles 
 and responsibilities; Special rights and considerations for intellectual property, 
 licensed works, or personal, privileged, proprietary or sensitive data; Underlying 
@@ -832,14 +782,11 @@ Integration
 AI Actor Tasks: Governance and Oversight 
  
 
-
  
 17 
 GOVERN 1.7: Processes and procedures are in place for decommissioning and phasing out AI systems safely and in a manner that 
 does not increase risks or decrease the organization’s trustworthiness. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 GV-1.7-001 Protocols are put in place to ensure GAI systems are able to be deactivated when 
 necessary.  
 Information Security; Value Chain 
@@ -857,9 +804,7 @@ AI Actor Tasks: AI Deployment, Operation and Monitoring
  
 GOVERN 2.1: Roles and responsibilities and lines of communication related to mapping, measuring, and managing AI risks are 
 documented and are clear to individuals and teams throughout the organization. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 GV-2.1-001 
 Establish organizational roles, policies, and procedures for communicating GAI 
 incidents and performance to AI Actors and downstream stakeholders (including 
@@ -868,11 +813,9 @@ database, AVID, CVE, NVD, or OECD AI incident monitor).
 Human-AI Conﬁguration; Value 
 Chain and Component Integration 
 GV-2.1-002 Establish procedures to engage teams for GAI system incident response with 
-diverse composition and responsibilities based on the particular incident type. 
-Harmful Bias and Homogenization 
+diverse composition and responsibilities based on the particular incident type. Harmful Bias and Homogenization 
 GV-2.1-003 Establish processes to verify the AI Actors conducting GAI incident response tasks 
-demonstrate and maintain the appropriate skills and training. 
-Human-AI Conﬁguration 
+demonstrate and maintain the appropriate skills and training. Human-AI Conﬁguration 
 GV-2.1-004 When systems may raise national security risks, involve national security 
 professionals in mapping, measuring, and managing those risks. 
 CBRN Information or Capabilities; 
@@ -889,14 +832,11 @@ Content
 AI Actor Tasks: Governance and Oversight 
  
 
-
  
 18 
 GOVERN 3.2: Policies and procedures are in place to deﬁne and diﬀerentiate roles and responsibilities for human-AI conﬁgurations 
 and oversight of AI systems. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 GV-3.2-001 
 Policies are in place to bolster oversight of GAI systems with independent 
 evaluations or assessments of GAI models or systems where the type and 
@@ -917,21 +857,15 @@ Deﬁne acceptable use policies for GAI interfaces, modalities, and human-AI
 conﬁgurations (i.e., for chatbots and decision-making tasks), including criteria for 
 the kinds of queries GAI applications should refuse to respond to.  
 Human-AI Conﬁguration 
-GV-3.2-004 
-Establish policies for user feedback mechanisms for GAI systems which include 
-thorough instructions and any mechanisms for recourse. 
-Human-AI Conﬁguration  
-GV-3.2-005 
-Engage in threat modeling to anticipate potential risks from GAI systems. 
-CBRN Information or Capabilities; 
+GV-3.2-004 Establish policies for user feedback mechanisms for GAI systems which include 
+thorough instructions and any mechanisms for recourse. Human-AI Conﬁguration  
+GV-3.2-005 Engage in threat modeling to anticipate potential risks from GAI systems. CBRN Information or Capabilities; 
 Information Security 
 AI Actors: AI Design 
  
 GOVERN 4.1: Organizational policies and practices are in place to foster a critical thinking and safety-ﬁrst mindset in the design, 
 development, deployment, and uses of AI systems to minimize potential negative impacts. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 GV-4.1-001 
 Establish policies and procedures that address continual improvement processes 
 for GAI risk measurement. Address general risks associated with a lack of 
@@ -949,7 +883,6 @@ CBRN Information and Capability;
 Value Chain and Component 
 Integration 
 
-
  
 19 
 GV-4.1-003 
@@ -962,29 +895,21 @@ AI Actor Tasks: AI Deployment, AI Design, AI Development, Operation and Monitori
  
 GOVERN 4.2: Organizational teams document the risks and potential impacts of the AI technology they design, develop, deploy, 
 evaluate, and use, and they communicate about the impacts more broadly. 
-Action ID 
-Suggested Action 
-GAI Risks 
-GV-4.2-001 
-Establish terms of use and terms of service for GAI systems. 
+Action ID Suggested Action GAI Risks 
+GV-4.2-001 Establish terms of use and terms of service for GAI systems. 
 Intellectual Property; Dangerous, 
 Violent, or Hateful Content; 
 Obscene, Degrading, and/or 
 Abusive Content 
-GV-4.2-002 
-Include relevant AI Actors in the GAI system risk identiﬁcation process. 
-Human-AI Conﬁguration 
-GV-4.2-003 
-Verify that downstream GAI system impacts (such as the use of third-party 
+GV-4.2-002 Include relevant AI Actors in the GAI system risk identiﬁcation process. Human-AI Conﬁguration 
+GV-4.2-003 Verify that downstream GAI system impacts (such as the use of third-party 
 plugins) are included in the impact documentation process. 
 Value Chain and Component 
 Integration 
 AI Actor Tasks: AI Deployment, AI Design, AI Development, Operation and Monitoring 
  
 GOVERN 4.3: Organizational practices are in place to enable AI testing, identiﬁcation of incidents, and information sharing. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 GV4.3--001 
 Establish policies for measuring the eﬀectiveness of employed content 
 provenance methodologies (e.g., cryptography, watermarking, steganography, 
@@ -997,11 +922,9 @@ most likely), Title, Reporter, System/Source, Data Reported, Date of Incident,
 Description, Impact(s), Stakeholder(s) Impacted. 
 Information Security 
 
-
  
 20 
-GV-4.3-003 
-Verify information sharing and feedback mechanisms among individuals and 
+GV-4.3-003 Verify information sharing and feedback mechanisms among individuals and 
 organizations regarding any negative impact from GAI systems. 
 Information Integrity; Data 
 Privacy 
@@ -1010,16 +933,12 @@ AI Actor Tasks: AI Impact Assessment, Aﬀected Individuals and Communities, Gov
 GOVERN 5.1: Organizational policies and practices are in place to collect, consider, prioritize, and integrate feedback from those 
 external to the team that developed or deployed the AI system regarding the potential individual and societal impacts related to AI 
 risks. 
-Action ID 
-Suggested Action 
-GAI Risks 
-GV-5.1-001 
-Allocate time and resources for outreach, feedback, and recourse processes in GAI 
+Action ID Suggested Action GAI Risks 
+GV-5.1-001 Allocate time and resources for outreach, feedback, and recourse processes in GAI 
 system development. 
 Human-AI Conﬁguration; Harmful 
 Bias and Homogenization 
-GV-5.1-002 
-Document interactions with GAI systems to users prior to interactive activities, 
+GV-5.1-002 Document interactions with GAI systems to users prior to interactive activities, 
 particularly in contexts involving more signiﬁcant risks.  
 Human-AI Conﬁguration; 
 Confabulation 
@@ -1027,9 +946,7 @@ AI Actor Tasks: AI Design, AI Impact Assessment, Aﬀected Individuals and Commu
  
 GOVERN 6.1: Policies and procedures are in place that address AI risks associated with third-party entities, including risks of 
 infringement of a third-party’s intellectual property or other rights. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 GV-6.1-001 Categorize diﬀerent types of GAI content with associated third-party rights (e.g., 
 copyright, intellectual property, data privacy). 
 Data Privacy; Intellectual 
@@ -1052,7 +969,6 @@ requirements, and content provenance expectations for GAI systems.
 Information Integrity; Information 
 Security; Intellectual Property 
 
-
  
 21 
 GV-6.1-005 
@@ -1065,8 +981,7 @@ Integrity; Information Security;
 Intellectual Property; Value Chain 
 and Component Integration 
 GV-6.1-006 Include clauses in contracts which allow an organization to evaluate third-party 
-GAI processes and standards.  
-Information Integrity 
+GAI processes and standards.  Information Integrity 
 GV-6.1-007 Inventory all third-party entities with access to organizational content and 
 establish approved GAI technology and service provider lists. 
 Value Chain and Component 
@@ -1079,7 +994,8 @@ Intellectual Property
 GV-6.1-009 
 Update and integrate due diligence processes for GAI acquisition and 
 procurement vendor assessments to include intellectual property, data privacy, 
-security, and other risks. For example, update processes to: Address solutions that 
+security, and other risks. For example, update processes 
+to: Address solutions that 
 may rely on embedded GAI technologies; Address ongoing monitoring, 
 assessments, and alerting, dynamic risk assessments, and real-time reporting 
 tools for monitoring third-party GAI risks; Consider policy adjustments across GAI 
@@ -1102,20 +1018,15 @@ AI Actor Tasks: Operation and Monitoring, Procurement, Third-party entities
  
 GOVERN 6.2: Contingency processes are in place to handle failures or incidents in third-party data or AI systems deemed to be 
 high-risk. 
-Action ID 
-Suggested Action 
-GAI Risks 
-GV-6.2-001 
-Document GAI risks associated with system value chain to identify over-reliance 
+Action ID Suggested Action GAI Risks 
+GV-6.2-001 Document GAI risks associated with system value chain to identify over-reliance 
 on third-party data and to identify fallbacks. 
 Value Chain and Component 
 Integration 
-GV-6.2-002 
-Document incidents involving third-party GAI data and systems, including open-
+GV-6.2-002 Document incidents involving third-party GAI data and systems, including open-
 data and open-source software. 
 Intellectual Property; Value Chain 
 and Component Integration 
-
 
  
 22 
@@ -1132,15 +1043,12 @@ Conﬁguration; Information
 Security; Value Chain and 
 Component Integration; Harmful 
 Bias and Homogenization 
-GV-6.2-004 
-Establish policies and procedures for continuous monitoring of third-party GAI 
+GV-6.2-004 Establish policies and procedures for continuous monitoring of third-party GAI 
 systems in deployment. 
 Value Chain and Component 
 Integration 
-GV-6.2-005 
-Establish policies and procedures that address GAI data redundancy, including 
-model weights and other system artifacts. 
-Harmful Bias and Homogenization 
+GV-6.2-005 Establish policies and procedures that address GAI data redundancy, including 
+model weights and other system artifacts. Harmful Bias and Homogenization 
 GV-6.2-006 
 Establish policies and procedures to test and manage risks related to rollover and 
 fallback technologies for GAI systems, acknowledging that rollover and fallback 
@@ -1166,16 +1074,13 @@ which the AI system will be deployed are understood and documented. Consideratio
 along with their expectations; potential positive and negative impacts of system uses to individuals, communities, organizations, 
 society, and the planet; assumptions and related limitations about AI system purposes, uses, and risks across the development or 
 product AI lifecycle; and related TEVV and system metrics. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 MP-1.1-001 
 When identifying intended purposes, consider factors such as internal vs. 
 external use, narrow vs. broad application scope, ﬁne-tuning, and varieties of 
 data sources (e.g., grounding, retrieval-augmented generation). 
 Data Privacy; Intellectual 
 Property 
-
 
  
 23 
@@ -1202,8 +1107,7 @@ Human-AI Conﬁguration; Harmful
 Bias and Homogenization; 
 Dangerous, Violent, or Hateful 
 Content 
-MP-1.1-004 
-Identify and document foreseeable illegal uses or applications of the GAI system 
+MP-1.1-004 Identify and document foreseeable illegal uses or applications of the GAI system 
 that surpass organizational risk tolerances. 
 CBRN Information or Capabilities; 
 Dangerous, Violent, or Hateful 
@@ -1214,9 +1118,7 @@ AI Actor Tasks: AI Deployment
 MAP 1.2: Interdisciplinary AI Actors, competencies, skills, and capacities for establishing context reﬂect demographic diversity and 
 broad domain and user experience expertise, and their participation is documented. Opportunities for interdisciplinary 
 collaboration are prioritized. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 MP-1.2-001 
 Establish and empower interdisciplinary teams that reﬂect a wide range of 
 capabilities, competencies, demographic groups, domain expertise, educational 
@@ -1233,18 +1135,13 @@ Bias and Homogenization
 AI Actor Tasks: AI Deployment 
  
 
-
  
 24 
 MAP 2.1: The speciﬁc tasks and methods used to implement the tasks that the AI system will support are deﬁned (e.g., classiﬁers, 
 generative models, recommenders). 
-Action ID 
-Suggested Action 
-GAI Risks 
-MP-2.1-001 
-Establish known assumptions and practices for determining data origin and 
-content lineage, for documentation and evaluation purposes. 
-Information Integrity 
+Action ID Suggested Action GAI Risks 
+MP-2.1-001 Establish known assumptions and practices for determining data origin and 
+content lineage, for documentation and evaluation purposes. Information Integrity 
 MP-2.1-002 
 Institute test and evaluation for data and content ﬂows within the GAI system, 
 including but not limited to, original data sources, data transformations, and 
@@ -1255,9 +1152,7 @@ AI Actor Tasks: TEVV
 MAP 2.2: Information about the AI system’s knowledge limits and how system output may be utilized and overseen by humans is 
 documented. Documentation provides suﬃcient information to assist relevant AI Actors when making decisions and taking 
 subsequent actions. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 MP-2.2-001 
 Identify and document how the system relies on upstream data sources, 
 including for content provenance, and if it serves as an upstream dependency for 
@@ -1274,16 +1169,13 @@ AI Actor Tasks: End Users
 MAP 2.3: Scientiﬁc integrity and TEVV considerations are identiﬁed and documented, including those related to experimental 
 design, data collection and selection (e.g., availability, representativeness, suitability), system trustworthiness, and construct 
 validation 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 MP-2.3-001 
 Assess the accuracy, quality, reliability, and authenticity of GAI output by 
 comparing it to a set of known ground truth data and by using a variety of 
 evaluation methods (e.g., human oversight and automated evaluation, proven 
 cryptographic techniques, review of content inputs). 
 Information Integrity 
-
 
  
 25 
@@ -1299,28 +1191,21 @@ Information Integrity
 MP-2.3-004 Develop and implement testing techniques to identify GAI produced content (e.g., 
 synthetic media) that might be indistinguishable from human-generated content. Information Integrity 
 MP-2.3-005 Implement plans for GAI systems to undergo regular adversarial testing to identify 
-vulnerabilities and potential manipulation or misuse. 
-Information Security 
+vulnerabilities and potential manipulation or misuse. Information Security 
 AI Actor Tasks: AI Development, Domain Experts, TEVV 
  
 MAP 3.4: Processes for operator and practitioner proﬁciency with AI system performance and trustworthiness – and relevant 
 technical standards and certiﬁcations – are deﬁned, assessed, and documented. 
-Action ID 
-Suggested Action 
-GAI Risks 
-MP-3.4-001 
-Evaluate whether GAI operators and end-users can accurately understand 
+Action ID Suggested Action GAI Risks 
+MP-3.4-001 Evaluate whether GAI operators and end-users can accurately understand 
 content lineage and origin. 
 Human-AI Conﬁguration; 
 Information Integrity 
 MP-3.4-002 Adapt existing training programs to include modules on digital content 
-transparency. 
-Information Integrity 
+transparency. Information Integrity 
 MP-3.4-003 Develop certiﬁcation programs that test proﬁciency in managing GAI risks and 
-interpreting content provenance, relevant to speciﬁc industry and context. 
-Information Integrity 
-MP-3.4-004 Delineate human proﬁciency tests from tests of GAI capabilities. 
-Human-AI Conﬁguration 
+interpreting content provenance, relevant to speciﬁc industry and context. Information Integrity 
+MP-3.4-004 Delineate human proﬁciency tests from tests of GAI capabilities. Human-AI Conﬁguration 
 MP-3.4-005 Implement systems to continually monitor and track the outcomes of human-GAI 
 conﬁgurations for future reﬁnement and improvements. 
 Human-AI Conﬁguration; 
@@ -1336,21 +1221,16 @@ Violent, or Hateful Content
 AI Actor Tasks: AI Design, AI Development, Domain Experts, End-Users, Human Factors, Operation and Monitoring 
  
 
-
  
 26 
 MAP 4.1: Approaches for mapping AI technology and legal risks of its components – including the use of third-party data or 
 software – are in place, followed, and documented, as are risks of infringement of a third-party’s intellectual property or other 
 rights. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 MP-4.1-001 Conduct periodic monitoring of AI-generated content for privacy risks; address any 
-possible instances of PII or sensitive data exposure. 
-Data Privacy 
+possible instances of PII or sensitive data exposure. Data Privacy 
 MP-4.1-002 Implement processes for responding to potential intellectual property infringement 
-claims or other rights. 
-Intellectual Property 
+claims or other rights. Intellectual Property 
 MP-4.1-003 
 Connect new GAI policies, procedures, and processes to existing model, data, 
 software development, and IT governance and to legal, compliance, and risk 
@@ -1392,9 +1272,7 @@ and Homogenization; Dangerous,
 Violent, or Hateful Content; Data 
 Privacy 
 MP-4.1-009 Leverage approaches to detect the presence of PII or sensitive data in generated 
-output text, image, video, or audio. 
-Data Privacy 
-
+output text, image, video, or audio. Data Privacy 
 
  
 27 
@@ -1408,9 +1286,7 @@ AI Actor Tasks: Governance and Oversight, Operation and Monitoring, Procurement,
 MAP 5.1: Likelihood and magnitude of each identiﬁed impact (both potentially beneﬁcial and harmful) based on expected use, past 
 uses of AI systems in similar contexts, public incident reports, feedback from those external to the team that developed or deployed 
 the AI system, or other data are identiﬁed and documented. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 MP-5.1-001 Apply TEVV practices for content provenance (e.g., probing a system's synthetic 
 data generation capabilities for potential misuse or vulnerabilities. 
 Information Integrity; Information 
@@ -1438,8 +1314,7 @@ Dangerous, Violent, or Hateful
 Content; Harmful Bias and 
 Homogenization 
 MP-5.1-005 Conduct adversarial role-playing exercises, GAI red-teaming, or chaos testing to 
-identify anomalous or unforeseen failure modes. 
-Information Security 
+identify anomalous or unforeseen failure modes. Information Security 
 MP-5.1-006 
 Proﬁle threats and negative impacts arising from GAI systems interacting with, 
 manipulating, or generating content, and outlining known and potential 
@@ -1449,14 +1324,11 @@ AI Actor Tasks: AI Deployment, AI Design, AI Development, AI Impact Assessment, 
 Users, Operation and Monitoring 
  
 
-
  
 28 
 MAP 5.2: Practices and personnel for supporting regular engagement with relevant AI Actors and integrating feedback about 
 positive, negative, and unanticipated impacts are in place and documented. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 MP-5.2-001 
 Determine context-based measures to identify if new impacts are present due to 
 the GAI system, including regular engagements with downstream AI Actors to 
@@ -1475,11 +1347,8 @@ Users, Human Factors, Operation and Monitoring
 MEASURE 1.1: Approaches and metrics for measurement of AI risks enumerated during the MAP function are selected for 
 implementation starting with the most signiﬁcant AI risks. The risks or trustworthiness characteristics that will not – or cannot – be 
 measured are properly documented. 
-Action ID 
-Suggested Action 
-GAI Risks 
-MS-1.1-001 Employ methods to trace the origin and modiﬁcations of digital content. 
-Information Integrity 
+Action ID Suggested Action GAI Risks 
+MS-1.1-001 Employ methods to trace the origin and modiﬁcations of digital content. Information Integrity 
 MS-1.1-002 
 Integrate tools designed to analyze content provenance and detect data 
 anomalies, verify the authenticity of digital signatures, and identify patterns 
@@ -1498,14 +1367,13 @@ Bias and Homogenization; CBRN
 Information or Capabilities 
 MS-1.1-005 
 Evaluate novel methods and technologies for the measurement of GAI-related 
-risks including in content provenance, oﬀensive cyber, and CBRN, while 
+risks including in content provenance, oﬀensive cy ber, and CBRN, while 
 maintaining the models’ ability to produce valid, reliable, and factually accurate 
 outputs. 
 Information Integrity; CBRN 
 Information or Capabilities; 
 Obscene, Degrading, and/or 
 Abusive Content 
-
 
  
 29 
@@ -1539,9 +1407,7 @@ AI Actor Tasks: AI Development, Domain Experts, TEVV
 MEASURE 1.3: Internal experts who did not serve as front-line developers for the system and/or independent assessors are 
 involved in regular assessments and updates. Domain experts, users, AI Actors external to the team that developed or deployed the 
 AI system, and aﬀected communities are consulted in support of assessments as necessary per organizational risk tolerance. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 MS-1.3-001 
 Deﬁne relevant groups of interest (e.g., demographic groups, subject matter 
 experts, experience with GAI technology) within the context of use as part of 
@@ -1558,8 +1424,7 @@ context of use.
 Human-AI Conﬁguration; Harmful 
 Bias and Homogenization; CBRN 
 Information or Capabilities 
-MS-1.3-003 
-Verify those conducting structured human feedback exercises are not directly 
+MS-1.3-003 Verify those conducting structured human feedback exercises are not directly 
 involved in system development tasks for the same GAI model. 
 Human-AI Conﬁguration; Data 
 Privacy 
@@ -1567,14 +1432,11 @@ AI Actor Tasks: AI Deployment, AI Development, AI Impact Assessment, Aﬀected I
 End-Users, Operation and Monitoring, TEVV 
  
 
-
  
 30 
 MEASURE 2.2: Evaluations involving human subjects meet applicable requirements (including human subject protection) and are 
 representative of the relevant population. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 MS-2.2-001 Assess and manage statistical biases related to GAI content provenance through 
 techniques such as re-sampling, re-weighting, or adversarial training. 
 Information Integrity; Information 
@@ -1605,20 +1467,15 @@ AI Actor Tasks: AI Development, Human Factors, TEVV
  
 MEASURE 2.3: AI system performance or assurance criteria are measured qualitatively or quantitatively and demonstrated for 
 conditions similar to deployment setting(s). Measures are documented. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 MS-2.3-001 Consider baseline model performance on suites of benchmarks when selecting a 
 model for ﬁne tuning or enhancement with retrieval-augmented generation. 
 Information Security; 
 Confabulation 
-MS-2.3-002 Evaluate claims of model capabilities using empirically validated methods. 
-Confabulation; Information 
+MS-2.3-002 Evaluate claims of model capabilities using empirically validated methods. Confabulation; Information 
 Security 
 MS-2.3-003 Share results of pre-deployment testing with relevant GAI Actors, such as those 
-with system release approval authority. 
-Human-AI Conﬁguration 
-
+with system release approval authority. Human-AI Conﬁguration 
 
  
 31 
@@ -1635,9 +1492,7 @@ AI Actor Tasks: AI Deployment, TEVV
  
 MEASURE 2.5: The AI system to be deployed is demonstrated to be valid and reliable. Limitations of the generalizability beyond the 
 conditions under which the technology was developed are documented. 
-Action ID 
-Suggested Action 
-Risks 
+Action ID Suggested Action Risks 
 MS-2.5-001 Avoid extrapolating GAI system performance or capabilities from narrow, non-
 systematic, and anecdotal assessments. 
 Human-AI Conﬁguration; 
@@ -1648,13 +1503,11 @@ improve GAI system performance, via, e.g., RLHF, ﬁne-tuning, retrieval-
 augmented generation, content moderation, business rules. 
 Human-AI Conﬁguration 
 MS-2.5-003 Review and verify sources and citations in GAI system outputs during pre-
-deployment risk measurement and ongoing monitoring activities. 
-Confabulation 
+deployment risk measurement and ongoing monitoring activities. Confabulation 
 MS-2.5-004 Track and document instances of anthropomorphization (e.g., human images, 
 mentions of human feelings, cyborg imagery or motifs) in GAI system interfaces. Human-AI Conﬁguration 
 MS-2.5-005 Verify GAI system training data and TEVV data provenance, and that ﬁne-tuning 
-or retrieval-augmented generation data is grounded. 
-Information Integrity 
+or retrieval-augmented generation data is grounded. Information Integrity 
 MS-2.5-006 
 Regularly review security and safety guardrails, especially if the GAI system is 
 being operated in novel circumstances. This includes reviewing reasons why the 
@@ -1664,16 +1517,13 @@ Violent, or Hateful Content
 AI Actor Tasks: Domain Experts, TEVV 
  
 
-
  
 32 
 MEASURE 2.6: The AI system is evaluated regularly for safety risks – as identiﬁed in the MAP function. The AI system to be 
 deployed is demonstrated to be safe, its residual negative risk does not exceed the risk tolerance, and it can fail safely, particularly if 
 made to operate beyond its knowledge limits. Safety metrics reﬂect system reliability and robustness, real-time monitoring, and 
 response times for AI system failures. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 MS-2.6-001 
 Assess adverse impacts, including health and wellbeing impacts for value chain 
 or other AI Actors that are exposed to sexually explicit, oﬀensive, or violent 
@@ -1722,13 +1572,10 @@ Information Security
 AI Actor Tasks: AI Deployment, AI Impact Assessment, Domain Experts, Operation and Monitoring, TEVV 
  
 
-
  
 33 
 MEASURE 2.7: AI system security and resilience – as identiﬁed in the MAP function – are evaluated and documented. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 MS-2.7-001 
 Apply established security measures to: Assess likelihood and magnitude of 
 vulnerabilities and threats such as backdoors, compromised dependencies, data 
@@ -1784,27 +1631,22 @@ Information Integrity; Information
 Security; Dangerous, Violent, or 
 Hateful Content 
 
-
  
 34 
 MS-2.7-009 Regularly assess and verify that security measures remain eﬀective and have not 
-been compromised. 
-Information Security 
+been compromised. Information Security 
 AI Actor Tasks: AI Deployment, AI Impact Assessment, Domain Experts, Operation and Monitoring, TEVV 
  
 MEASURE 2.8: Risks associated with transparency and accountability – as identiﬁed in the MAP function – are examined and 
 documented. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 MS-2.8-001 
 Compile statistics on actual policy violations, take-down requests, and intellectual 
 property infringement for organizational GAI systems: Analyze transparency 
 reports across demographic groups, languages groups. 
 Intellectual Property; Harmful Bias 
 and Homogenization 
-MS-2.8-002 Document the instructions given to data annotators or AI red-teamers. 
-Human-AI Conﬁguration 
+MS-2.8-002 Document the instructions given to data annotators or AI red-teamers. Human-AI Conﬁguration 
 MS-2.8-003 
 Use digital content transparency solutions to enable the documentation of each 
 instance where content is generated, modiﬁed, or shared to provide a tamper-
@@ -1812,19 +1654,15 @@ proof history of the content, promote transparency, and enable traceability.
 Robust version control systems can also be applied to track changes across the AI 
 lifecycle over time. 
 Information Integrity 
-MS-2.8-004 Verify adequacy of GAI system user instructions through user testing. 
-Human-AI Conﬁguration 
+MS-2.8-004 Verify adequacy of GAI system user instructions through user testing. Human-AI Conﬁguration 
 AI Actor Tasks: AI Deployment, AI Impact Assessment, Domain Experts, Operation and Monitoring, TEVV 
  
-
 
  
 35 
 MEASURE 2.9: The AI model is explained, validated, and documented, and AI system output is interpreted within its context – as 
 identiﬁed in the MAP function – to inform responsible use and governance. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 MS-2.9-001 
 Apply and document ML explanation results such as: Analysis of embeddings, 
 Counterfactual prompts, Gradient-based attributions, Model 
@@ -1842,14 +1680,13 @@ and Homogenization
 AI Actor Tasks: AI Deployment, AI Impact Assessment, Domain Experts, End-Users, Operation and Monitoring, TEVV 
  
 MEASURE 2.10: Privacy risk of the AI system – as identiﬁed in the MAP function – is examined and documented. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 MS-2.10-001 
 Conduct AI red-teaming to assess issues such as: Outputting of training data 
 samples, and subsequent reverse engineering, model extraction, and 
 membership inference risks; Revealing biometric, conﬁdential, copyrighted, 
-licensed, patented, personal, proprietary, sensitive, or trade-marked information; 
+licensed, patented, personal, proprietary, sensitive, or trade-marked information
+; 
 Tracking or revealing location information of users or members of training 
 datasets. 
 Human-AI Conﬁguration; 
@@ -1862,18 +1699,14 @@ guide the design of provenance data-tracking techniques.
 Human-AI Conﬁguration; 
 Information Integrity 
 MS-2.10-003 Verify deduplication of GAI training data samples, particularly regarding synthetic 
-data. 
-Harmful Bias and Homogenization 
+data. Harmful Bias and Homogenization 
 AI Actor Tasks: AI Deployment, AI Impact Assessment, Domain Experts, End-Users, Operation and Monitoring, TEVV 
  
-
 
  
 36 
 MEASURE 2.11: Fairness and bias – as identiﬁed in the MAP function – are evaluated and results are documented. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 MS-2.11-001 
 Apply use-case appropriate benchmarks (e.g., Bias Benchmark Questions, Real 
 Hateful or Harmful Prompts, Winogender Schemas15) to quantify systemic bias, 
@@ -1893,7 +1726,8 @@ pipelines or business processes with categorical or numeric outcomes that rely
 on GAI, apply general fairness metrics (e.g., demographic parity, equalized odds, 
 equal opportunity, statistical hypothesis tests), to the pipeline or business 
 outcome where appropriate; Custom, context-speciﬁc metrics developed in 
-collaboration with domain experts and aﬀected communities; Measurements of 
+collabo
+ration with domain experts and aﬀected communities; Measurements of 
 the prevalence of denigration in generated content in deployment (e.g., sub-
 sampling a fraction of traﬃc and manually annotating denigrating content). 
 Harmful Bias and Homogenization; 
@@ -1923,7 +1757,6 @@ Harmful Bias and Homogenization
 15 Winogender Schemas is a sample set of paired sentences which diﬀer only by gender of the pronouns used, 
 which can be used to evaluate gender bias in natural language processing coreference resolution systems.  
 
-
  
 37 
 MS-2.11-005 
@@ -1936,15 +1769,11 @@ Operation and Monitoring, TEVV
  
 MEASURE 2.12: Environmental impact and sustainability of AI model training and management activities – as identiﬁed in the MAP 
 function – are assessed and documented. 
-Action ID 
-Suggested Action 
-GAI Risks 
-MS-2.12-001 Assess safety to physical environments when deploying GAI systems. 
-Dangerous, Violent, or Hateful 
+Action ID Suggested Action GAI Risks 
+MS-2.12-001 Assess safety to physical environments when deploying GAI systems. Dangerous, Violent, or Hateful 
 Content 
 MS-2.12-002 Document anticipated environmental impacts of model development, 
-maintenance, and deployment in product design decisions. 
-Environmental 
+maintenance, and deployment in product design decisions. Environmental 
 MS-2.12-003 
 Measure or estimate environmental impacts (e.g., energy and water 
 consumption) for training, ﬁne tuning, and deploying models: Verify tradeoﬀs 
@@ -1952,19 +1781,15 @@ between resources used at inference time versus additional resources required
 at training time. 
 Environmental 
 MS-2.12-004 Verify eﬀectiveness of carbon capture or oﬀset programs for GAI training and 
-applications, and address green-washing concerns. 
-Environmental 
+applications, and address green-washing concerns. Environmental 
 AI Actor Tasks: AI Deployment, AI Impact Assessment, Domain Experts, Operation and Monitoring, TEVV 
  
-
 
  
 38 
 MEASURE 2.13: Eﬀectiveness of the employed TEVV metrics and processes in the MEASURE function are evaluated and 
 documented. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 MS-2.13-001 
 Create measurement error models for pre-deployment metrics to demonstrate 
 construct validity for each metric (i.e., does the metric eﬀectively operationalize 
@@ -1979,11 +1804,8 @@ AI Actor Tasks: AI Deployment, Operation and Monitoring, TEVV
  
 MEASURE 3.2: Risk tracking approaches are considered for settings where AI risks are diﬃcult to assess using currently available 
 measurement techniques or where metrics are not yet available. 
-Action ID 
-Suggested Action 
-GAI Risks 
-MS-3.2-001 
-Establish processes for identifying emergent GAI system risks including 
+Action ID Suggested Action GAI Risks 
+MS-3.2-001 Establish processes for identifying emergent GAI system risks including 
 consulting with external AI Actors. 
 Human-AI Conﬁguration; 
 Confabulation  
@@ -1991,13 +1813,9 @@ AI Actor Tasks: AI Impact Assessment, Domain Experts, Operation and Monitoring, 
  
 MEASURE 3.3: Feedback processes for end users and impacted communities to report problems and appeal system outcomes are 
 established and integrated into AI system evaluation metrics. 
-Action ID 
-Suggested Action 
-GAI Risks 
-MS-3.3-001 
-Conduct impact assessments on how AI-generated content might aﬀect 
-diﬀerent social, economic, and cultural groups. 
-Harmful Bias and Homogenization 
+Action ID Suggested Action GAI Risks 
+MS-3.3-001 Conduct impact assessments on how AI-generated content might aﬀect 
+diﬀerent social, economic, and cultural groups. Harmful Bias and Homogenization 
 MS-3.3-002 
 Conduct studies to understand how end users perceive and interact with GAI 
 content and accompanying content provenance within context of use. Assess 
@@ -2010,7 +1828,6 @@ Evaluate potential biases and stereotypes that could emerge from the AI-
 generated content using appropriate methodologies including computational 
 testing methods as well as evaluating structured feedback input. 
 Harmful Bias and Homogenization 
-
 
  
 39 
@@ -2037,9 +1854,7 @@ AI Actor Tasks: AI Deployment, Aﬀected Individuals and Communities, End-Users,
 MEASURE 4.2: Measurement results regarding AI system trustworthiness in deployment context(s) and across the AI lifecycle are 
 informed by input from domain experts and relevant AI Actors to validate whether the system is performing consistently as 
 intended. Results are documented. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 MS-4.2-001 
 Conduct adversarial testing at a regular cadence to map and measure GAI risks, 
 including tests to address attempts to deceive or manipulate the application of 
@@ -2054,8 +1869,7 @@ controlled and optimized testing environments.
 Human-AI Conﬁguration; 
 Confabulation; Information 
 Security 
-MS-4.2-003 
-Implement interpretability and explainability methods to evaluate GAI system 
+MS-4.2-003 Implement interpretability and explainability methods to evaluate GAI system 
 decisions and verify alignment with intended purpose. 
 Information Integrity; Harmful Bias 
 and Homogenization 
@@ -2073,14 +1887,11 @@ Information Security
 AI Actor Tasks: AI Deployment, Domain Experts, End-Users, Operation and Monitoring, TEVV 
  
 
-
  
 40 
 MANAGE 1.3: Responses to the AI risks deemed high priority, as identiﬁed by the MAP function, are developed, planned, and 
 documented. Risk response options can include mitigating, transferring, avoiding, or accepting. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 MG-1.3-001 
 Document trade-oﬀs, decision processes, and relevant measurement and 
 feedback results for risks that do not surpass organizational risk tolerance, for 
@@ -2097,9 +1908,7 @@ Human-AI Conﬁguration
 AI Actor Tasks: AI Development, AI Deployment, AI Impact Assessment, Operation and Monitoring 
  
 MANAGE 2.2: Mechanisms are in place and applied to sustain the value of deployed AI systems. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 MG-2.2-001 
 Compare GAI system outputs against pre-deﬁned organization risk tolerance, 
 guidelines, and principles, and review and test AI-generated content against 
@@ -2109,10 +1918,8 @@ Obscene, Degrading, and/or
 Abusive Content; Harmful Bias and 
 Homogenization; Dangerous, 
 Violent, or Hateful Content 
-MG-2.2-002 
-Document training data sources to trace the origin and provenance of AI-
-generated content. 
-Information Integrity 
+MG-2.2-002 Document training data sources to trace the origin and provenance of AI-
+generated content. Information Integrity 
 MG-2.2-003 
 Evaluate feedback loops between GAI system content provenance and human 
 reviewers, and update where needed. Implement real-time monitoring systems 
@@ -2124,8 +1931,7 @@ techniques such as re-sampling, re-ranking, or adversarial training to mitigate
 biases in the generated content. 
 Information Security; Harmful Bias 
 and Homogenization 
-MG-2.2-005 
-Engage in due diligence to analyze GAI output for harmful content, potential 
+MG-2.2-005 Engage in due diligence to analyze GAI output for harmful content, potential 
 misinformation, and CBRN-related or NCII content. 
 CBRN Information or Capabilities; 
 Obscene, Degrading, and/or 
@@ -2133,17 +1939,12 @@ Abusive Content; Harmful Bias and
 Homogenization; Dangerous, 
 Violent, or Hateful Content 
 
-
  
 41 
-MG-2.2-006 
-Use feedback from internal and external AI Actors, users, individuals, and 
-communities, to assess impact of AI-generated content. 
-Human-AI Conﬁguration 
-MG-2.2-007 
-Use real-time auditing tools where they can be demonstrated to aid in the 
-tracking and validation of the lineage and authenticity of AI-generated data. 
-Information Integrity 
+MG-2.2-006 Use feedback from internal and external AI Actors, users, individuals, and 
+communities, to assess impact of AI-generated content. Human-AI Conﬁguration 
+MG-2.2-007 Use real-time auditing tools where they can be demonstrated to aid in the 
+tracking and validation of the lineage and authenticity of AI-generated data. Information Integrity 
 MG-2.2-008 
 Use structured feedback mechanisms to solicit and capture user input about AI-
 generated content to detect subtle shifts in quality or alignment with 
@@ -2162,9 +1963,7 @@ Homogenization
 AI Actor Tasks: AI Deployment, AI Impact Assessment, Governance and Oversight, Operation and Monitoring 
  
 MANAGE 2.3: Procedures are followed to respond to and recover from a previously unknown risk when it is identiﬁed. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 MG-2.3-001 
 Develop and update GAI system incident response and recovery plans and 
 procedures to address the following: Review and maintenance of policies and 
@@ -2180,16 +1979,13 @@ AI Actor Tasks: AI Deployment, Operation and Monitoring
  
 MANAGE 2.4: Mechanisms are in place and applied, and responsibilities are assigned and understood, to supersede, disengage, or 
 deactivate AI systems that demonstrate performance or outcomes inconsistent with intended use. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 MG-2.4-001 
 Establish and maintain communication plans to inform AI stakeholders as part of 
 the deactivation or disengagement process of a speciﬁc GAI system (including for 
 open-source models) or context of use, including reasons, workarounds, user 
 access removal, alternative processes, contact information, etc. 
 Human-AI Conﬁguration 
-
 
  
 42 
@@ -2213,9 +2009,7 @@ AI Actor Tasks: AI Deployment, Governance and Oversight, Operation and Monitorin
  
 MANAGE 3.1: AI risks and beneﬁts from third-party resources are regularly monitored, and risk controls are applied and 
 documented. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 MG-3.1-001 
 Apply organizational risk tolerances and controls (e.g., acquisition and 
 procurement processes; assessing personnel credentials and qualiﬁcations, 
@@ -2251,7 +2045,6 @@ licensed content or trade secret material).
 Intellectual Property; CBRN 
 Information or Capabilities 
 
-
  
 43 
 MG-3.1-005 Review various transparency artifacts (e.g., system cards and model cards) for 
@@ -2263,9 +2056,7 @@ AI Actor Tasks: AI Deployment, Operation and Monitoring, Third-party entities
  
 MANAGE 3.2: Pre-trained models which are used for development are monitored as part of AI system regular monitoring and 
 maintenance. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 MG-3.2-001 
 Apply explainable AI (XAI) techniques (e.g., analysis of embeddings, model 
 compression/distillation, gradient-based attributions, occlusion/term reduction, 
@@ -2311,7 +2102,6 @@ to identify deviations from the desired standards and trigger alerts for human
 intervention. 
 Information Integrity 
 
-
  
 44 
 MG-3.2-007 
@@ -2337,9 +2127,7 @@ AI Actor Tasks: AI Deployment, Operation and Monitoring, Third-party entities
 MANAGE 4.1: Post-deployment AI system monitoring plans are implemented, including mechanisms for capturing and evaluating 
 input from users and other relevant AI Actors, appeal and override, decommissioning, incident response, recovery, and change 
 management. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 MG-4.1-001 
 Collaborate with external researchers, industry experts, and community 
 representatives to maintain awareness of emerging best practices and 
@@ -2359,8 +2147,7 @@ content performance and impact, and work in collaboration with AI Actors
 experienced in user research and experience. 
 Human-AI Conﬁguration 
 MG-4.1-004 Implement active learning techniques to identify instances where the model fails 
-or produces unexpected outputs. 
-Confabulation 
+or produces unexpected outputs. Confabulation 
 MG-4.1-005 
 Share transparency reports with internal and external stakeholders that detail 
 steps taken to update the GAI system to enhance transparency and 
@@ -2372,7 +2159,6 @@ Track dataset modiﬁcations for provenance by monitoring data deletions,
 rectiﬁcation requests, and other changes that may impact the veriﬁability of 
 content origins. 
 Information Integrity 
-
 
  
 45 
@@ -2387,12 +2173,9 @@ Monitoring
  
 MANAGE 4.2: Measurable activities for continual improvements are integrated into AI system updates and include regular 
 engagement with interested parties, including relevant AI Actors. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 MG-4.2-001 Conduct regular monitoring of GAI systems and publish reports detailing the 
-performance, feedback received, and improvements made. 
-Harmful Bias and Homogenization 
+performance, feedback received, and improvements made. Harmful Bias and Homogenization 
 MG-4.2-002 
 Practice and follow incident response plans for addressing the generation of 
 inappropriate or harmful content and adapt processes based on ﬁndings to 
@@ -2403,16 +2186,13 @@ Human-AI Conﬁguration;
 Dangerous, Violent, or Hateful 
 Content 
 MG-4.2-003 Use visualizations or other methods to represent GAI model behavior to ease 
-non-technical stakeholders understanding of GAI system functionality. 
-Human-AI Conﬁguration 
+non-technical stakeholders understanding of GAI system functionality. Human-AI Conﬁguration 
 AI Actor Tasks: AI Deployment, AI Design, AI Development, Aﬀected Individuals and Communities, End-Users, Operation and 
 Monitoring, TEVV 
  
 MANAGE 4.3: Incidents and errors are communicated to relevant AI Actors, including aﬀected communities. Processes for tracking, 
 responding to, and recovering from incidents and errors are followed and documented. 
-Action ID 
-Suggested Action 
-GAI Risks 
+Action ID Suggested Action GAI Risks 
 MG-4.3-001 
 Conduct after-action assessments for GAI system incidents to verify incident 
 response and recovery processes are followed and eﬀective, including to follow 
@@ -2424,7 +2204,6 @@ reported errors, near-misses, and negative impacts.
 Confabulation; Information 
 Integrity 
 
-
  
 46 
 MG-4.3-003 
@@ -2435,9 +2214,7 @@ Information Security; Data Privacy
 AI Actor Tasks: AI Deployment, Aﬀected Individuals and Communities, Domain Experts, End-Users, Human Factors, Operation and 
 Monitoring 
  
- 
- 
-
+  
 
  
 47 
@@ -2482,7 +2259,6 @@ accommodations
 • Commercial use 
 • Data provenance 
 
-
  
 48 
 • Data protection 
@@ -2526,13 +2302,13 @@ service providers, including acquisition and procurement due diligence, requests
 materials (SBOMs), application of service level agreements (SLAs), and statement on standards for 
 attestation engagement (SSAE) reports to help with third-party transparency and risk management for 
 GAI systems. 
-A.1.4. Pre-Deployment Testing 
+A.1.4. 
+Pre-Deployment Testing 
 Overview 
 The diverse ways and contexts in which GAI systems may be developed, used, and repurposed 
 complicates risk mapping and pre-deployment measurement eﬀorts. Robust test, evaluation, validation, 
 and veriﬁcation (TEVV) processes can be iteratively applied – and documented – in early stages of the AI 
 lifecycle and informed by representative AI Actors (see Figure 3 of the AI RMF). Until new and rigorous 
-
 
  
 49 
@@ -2549,7 +2325,7 @@ reliability in those domains. Similarly, jailbreaking or prompt engineering test
 assess validity or reliability risks.  
 Measurement gaps can arise from mismatches between laboratory and real-world settings. Current 
 testing approaches often remain focused on laboratory conditions or restricted to benchmark test 
-datasets and in silico techniques that may not extrapolate well to—or directly assess GAI impacts in real-
+datasets and in silico techniques that may not extrapolate well to— or directly assess GAI impacts in real-
 world conditions. For example, current measurement gaps for GAI make it diﬃcult to precisely estimate 
 its potential ecosystem-level or longitudinal risks and related political, social, and economic impacts. 
 Gaps between benchmarks and real-world use of GAI systems may likely be exacerbated due to prompt 
@@ -2558,15 +2334,13 @@ A.1.5. Structured Public Feedback
 Structured public feedback can be used to evaluate whether GAI systems are performing as intended 
 and to calibrate and verify traditional measurement methods. Examples of structured feedback include, 
 but are not limited to: 
-• 
-Participatory Engagement Methods: Methods used to solicit feedback from civil society groups, 
+• Participatory Engagement Methods: Methods used to solicit feedback from civil society groups, 
 aﬀected communities, and users, including focus groups, small user studies, and surveys. 
-• 
-Field Testing: Methods used to determine how people interact with, consume, use, and make 
+• Field Testing: Methods used to determine how people interact with, consume, use, and make 
 sense of AI-generated information, and subsequent actions and eﬀects, including UX, usability, 
 and other structured, randomized experiments.  
-• 
-AI Red-teaming: A structured testing exercise used to probe an AI system to ﬁnd ﬂaws and 
+• AI Red-teaming: A structured testing exercise
+ used to probe an AI system to ﬁnd ﬂaws and 
 vulnerabilities such as inaccurate, harmful, or discriminatory outputs, often in a controlled 
 environment and in collaboration with system developers. 
 Information gathered from structured public feedback can inform design, implementation, deployment 
@@ -2575,7 +2349,6 @@ can serve multiple purposes, including improving data quality and preprocessing,
 decision making, and enhancing system documentation and debugging practices. When implementing 
 feedback activities, organizations should follow human subjects research requirements and best 
 practices such as informed consent and subject compensation. 
-
 
  
 50 
@@ -2610,30 +2383,24 @@ expertise, and awareness of socio-cultural aspects within the deployment context
 should be given additional analysis before they are incorporated into organizational governance and 
 decision making, policy and procedural updates, and AI risk management eﬀorts. 
 Various types of AI red-teaming may be appropriate, depending on the use case: 
-• 
-General Public: Performed by general users (not necessarily AI or technical experts) who are 
+• General Public: Performed by general users (not necessarily AI or technical experts) who are 
 expected to use the model or interact with its outputs, and who bring their own lived 
 experiences and perspectives to the task of AI red-teaming. These individuals may have been 
 provided instructions and material to complete tasks which may elicit harmful model behaviors. 
 This type of exercise can be more eﬀective with large groups of AI red-teamers. 
-• 
-Expert: Performed by specialists with expertise in the domain or speciﬁc AI red-teaming context 
+• Expert: Performed by specialists with expertise in the domain or speciﬁc AI red-teaming context 
 of use (e.g., medicine, biotech, cybersecurity).  
-• 
-Combination: In scenarios when it is diﬃcult to identify and recruit specialists with suﬃcient 
+• Combination: In scenarios when it is diﬃcult to identify and recruit specialists with suﬃcient 
 domain and contextual expertise, AI red-teaming exercises may leverage both expert and 
-
 
  
 51 
 general public participants. For example, expert AI red-teamers could modify or verify the 
 prompts written by general public AI red-teamers. These approaches may also expand coverage 
 of the AI risk attack surface.  
-• 
-Human / AI: Performed by GAI in combination with specialist or non-specialist human teams. 
+• Human / AI: Performed by GAI in combination with specialist or non-specialist human teams. 
 GAI-led red-teaming can be more cost eﬀective than human red-teamers alone. Human or GAI-
-led AI red-teaming may be better suited for eliciting diﬀerent types of harms. 
- 
+led AI red-teaming may be better suited for eliciting diﬀerent types of harms.  
 A.1.6. Content Provenance 
 Overview 
 GAI technologies can be leveraged for many applications such as content generation and synthetic data. 
@@ -2645,13 +2412,15 @@ information access about both authentic and synthetic content to users, enabling
 trustworthiness in AI systems. When combined with other organizational accountability mechanisms, 
 digital content transparency approaches can enable processes to trace negative outcomes back to their 
 source, improve information integrity, and uphold public trust. Provenance data tracking and synthetic 
-content detection mechanisms provide information about the origin and history of content to assist in 
+content detection mechanisms provide information about the origin 
+and history of content to assist in 
 GAI risk management eﬀorts. 
 Provenance metadata can include information about GAI model developers or creators of GAI content, 
 date/time of creation, location, modiﬁcations, and sources. Metadata can be tracked for text, images, 
 videos, audio, and underlying datasets. The implementation of provenance data tracking techniques can 
 help assess the authenticity, integrity, intellectual property rights, and potential manipulations in digital 
-content. Some well-known techniques for provenance data tracking include digital watermarking, 
+content. Some well-known techniques for provenance data tracking include digital watermarking
+, 
 metadata recording, digital ﬁngerprinting, and human authentication, among others. 
 Provenance Data Tracking Approaches 
 Provenance data tracking techniques for GAI systems can be used to track the history and origin of data 
@@ -2662,21 +2431,17 @@ and history of input data through metadata and digital watermarking techniques. 
 tracking processes can include and assist AI Actors across the lifecycle who may not have full visibility or 
 control over the various trade-oﬀs and cascading impacts of early-stage model decisions on downstream 
 performance and synthetic outputs. For example, by selecting a watermarking model to prioritize 
-robustness (the durability of a watermark), an AI actor may inadvertently diminish computational 
-complexity (the resources required to implement watermarking). Organizational risk management 
+robustness (the durability of a watermark), an AI actor may inadvertently diminish 
+computational 
+complexity ( the resources required to implement watermarking).  Organizational risk management 
 eﬀorts for enhancing content provenance include:  
-• 
-Tracking provenance of training data and metadata for GAI systems; 
-• 
-Documenting provenance data limitations within GAI systems; 
-
+• Tracking provenance of training data and metadata for GAI systems; 
+• Documenting provenance data limitations within GAI systems; 
 
  
 52 
-• 
-Monitoring system capabilities and limitations in deployment through rigorous TEVV processes; 
-• 
-Evaluating how humans engage, interact with, or adapt to GAI content (especially in decision 
+• Monitoring system capabilities and limitations in deployment through rigorous TEVV processes; 
+• Evaluating how humans engage, interact with, or adapt to GAI content (especially in decision 
 making tasks informed by GAI content), and how they react to applied provenance techniques 
 such as overt disclosures. 
 Organizations can document and delineate GAI system objectives and limitations to identify gaps where 
@@ -2685,9 +2450,11 @@ robust watermarking techniques and corresponding detectors to identify the sourc
 metadata recording techniques and metadata management tools and repositories to trace content 
 origins and modiﬁcations. Further narrowing of GAI task deﬁnitions to include provenance data can 
 enable organizations to maximize the utility of provenance data and risk management eﬀorts. 
-A.1.7. Enhancing Content Provenance through Structured Public Feedback 
+A.1.7. 
+Enhancing Content Provenance through Structured Public Feedback 
 While indirect feedback methods such as automated error collection systems are useful, they often lack 
-the context and depth that direct input from end users can provide. Organizations can leverage feedback 
+the context and depth
+ that direct input from end users can provide. Organizations can leverage feedback 
 approaches described in the Pre-Deployment Testing section to capture input from external sources such 
 as through AI red-teaming.  
 Integrating pre- and post-deployment external feedback into the monitoring process for GAI models and 
@@ -2710,10 +2477,10 @@ and intellectual property rights; or harm to property, communities, or the envir
 occur in the aggregate (i.e., for systemic discrimination) or acutely (i.e., for one individual). 
 State of AI Incident Tracking and Disclosure 
 Formal channels do not currently exist to report and document AI incidents. However, a number of 
-publicly available databases have been created to document their occurrence. These reporting channels 
+publicly available databases
+ have been created to document their occurrence. These reporting channels 
 make decisions on an ad hoc basis about what kinds of incidents to track. Some, for example, track by 
 amount of media coverage.  
-
 
  
 53 
@@ -2728,14 +2495,13 @@ guidelines for publicly available incident reporting which include information a
 responsibilities. These guidelines would help AI system operators identify GAI incidents across the AI 
 lifecycle and with AI Actors regardless of role. Documentation and review of third-party inputs and 
 plugins for GAI systems is especially important for AI Actors in the context of incident disclosure; LLM 
-inputs and content delivered through these plugins is often distributed, with inconsistent or insuﬃcient 
+inputs and content delivered through these plugins is often distributed,
+ with inconsistent or insuﬃcient 
 access control. 
 Documentation practices including logging, recording, and analyzing GAI incidents can facilitate 
 smoother sharing of information with relevant AI Actors. Regular information sharing, change 
 management records, version history and metadata can also empower AI Actors responding to and 
-managing AI incidents.  
- 
-
+managing AI incidents.   
 
  
 54 
@@ -2748,9 +2514,11 @@ Badyal, N. et al. (2023) Intentional Biases in LLM Responses. arXiv. https://arx
 Bing Chat: Data Exﬁltration Exploit Explained. Embrace The Red. 
 https://embracethered.com/blog/posts/2023/bing-chat-data-exﬁltration-poc-and-ﬁx/ 
 Bommasani, R. et al. (2022) Picking on the Same Person: Does Algorithmic Monoculture lead to Outcome 
-Homogenization? arXiv. https://arxiv.org/pdf/2211.13972 
+Homogenization? arXiv. https://arxiv.org/pdf/2211.13972
+ 
 Boyarskaya, M. et al. (2020) Overcoming Failures of Imagination in AI Infused System Development and 
-Deployment. arXiv. https://arxiv.org/pdf/2011.13416 
+Deployment. arXiv. https://arxiv.org/pdf/2011.13416
+ 
 Browne, D. et al. (2023) Securing the AI Pipeline. Mandiant. 
 https://www.mandiant.com/resources/blog/securing-ai-pipeline 
 Burgess, M. (2024) Generative AI’s Biggest Security Flaw Is Not Easy to Fix. WIRED. 
@@ -2759,7 +2527,7 @@ Burtell, M. et al. (2024) The Surprising Power of Next Word Prediction: Large La
 Explained, Part 1. Georgetown Center for Security and Emerging Technology. 
 https://cset.georgetown.edu/article/the-surprising-power-of-next-word-prediction-large-language-
 models-explained-part-1/ 
-Canadian Centre for Cyber Security (2023) Generative artiﬁcial intelligence (AI) - ITSAP.00.041. 
+Canadian Centre for Cyber Security (2023) Generative artiﬁcial intelligence (AI) - ITSAP .00.041. 
 https://www.cyber.gc.ca/en/guidance/generative-artiﬁcial-intelligence-ai-itsap00041 
 Carlini, N., et al. (2021) Extracting Training Data from Large Language Models. Usenix. 
 https://www.usenix.org/conference/usenixsecurity21/presentation/carlini-extracting 
@@ -2775,7 +2543,6 @@ ResearchGate. https://www.researchgate.net/publication/374505266_Ethical_Tension
 AI_Companionship_A_Dialectical_Inquiry_into_Replika 
 Dahl, M. et al. (2024) Large Legal Fictions: Proﬁling Legal Hallucinations in Large Language Models. arXiv. 
 https://arxiv.org/abs/2401.01301 
-
 
  
 55 
@@ -2801,7 +2568,8 @@ Models. Project Zero. https://googleprojectzero.blogspot.com/2024/06/project-nap
 Greshake, K. et al. (2023) Not what you've signed up for: Compromising Real-World LLM-Integrated 
 Applications with Indirect Prompt Injection. arXiv. https://arxiv.org/abs/2302.12173 
 Hagan, M. (2024) Good AI Legal Help, Bad AI Legal Help: Establishing quality standards for responses to 
-people’s legal problem stories. SSRN. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4696936 
+people’s legal problem stories. SSRN. https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4696936
+ 
 Haran, R. (2023) Securing LLM Systems Against Prompt Injection. NVIDIA. 
 https://developer.nvidia.com/blog/securing-llm-systems-against-prompt-injection/ 
 Information Technology Industry Council (2024) Authenticating AI-Generated Content. 
@@ -2813,10 +2581,10 @@ Article 248. https://doi.org/10.1145/3571730
 Jones-Jang, S. et al. (2022) How do people react to AI failure? Automation bias, algorithmic aversion, and 
 perceived controllability. Oxford. https://academic.oup.com/jcmc/article/28/1/zmac029/6827859] 
 Jussupow, E. et al. (2020) Why Are We Averse Towards Algorithms? A Comprehensive Literature Review 
-on Algorithm Aversion. ECIS 2020. https://aisel.aisnet.org/ecis2020_rp/168/ 
+on Algorithm Aversion. ECIS 2020. https://aisel.aisnet.org/ecis2020_rp/168/
+ 
 Kalai, A., et al. (2024) Calibrated Language Models Must Hallucinate. arXiv. 
 https://arxiv.org/pdf/2311.14648 
-
 
  
 56 
@@ -2858,7 +2626,6 @@ Descriptions of AI Actor Tasks.
 https://airc.nist.gov/AI_RMF_Knowledge_Base/AI_RMF/Appendices/Appendix_A#:~:text=AI%20actors%
 20in%20this%20category,data%20providers%2C%20system%20funders%2C%20product 
 
-
  
 57 
 National Institute of Standards and Technology (2023) AI Risk Management Framework, Appendix B: 
@@ -2884,21 +2651,22 @@ OpenAI (2023) GPT-4 System Card. https://cdn.openai.com/papers/gpt-4-system-card
 OpenAI (2024) GPT-4 Technical Report. https://arxiv.org/pdf/2303.08774 
 Padmakumar, V. et al. (2024) Does writing with language models reduce content diversity? ICLR. 
 https://arxiv.org/pdf/2309.05196 
-Park, P. et. al. (2024) AI deception: A survey of examples, risks, and potential solutions. Patterns, 5(5). 
+Park, P.  et. al. (2024) AI deception: A survey of examples, risks, and potential solutions. Patterns, 5(5). 
 arXiv. https://arxiv.org/pdf/2308.14752 
 Partnership on AI (2023) Building a Glossary for Synthetic Media Transparency Methods, Part 1: Indirect 
 Disclosure. https://partnershiponai.org/glossary-for-synthetic-media-transparency-methods-part-1-
 indirect-disclosure/ 
-Qu, Y. et al. (2023) Unsafe Diﬀusion: On the Generation of Unsafe Images and Hateful Memes From Text-
+Qu, Y . et al. (2023) Unsafe Diﬀusion: On the Generation of Unsafe Images and Hateful Memes From Text-
 To-Image Models. arXiv. https://arxiv.org/pdf/2305.13873 
 Rafat, K. et al. (2023) Mitigating carbon footprint for knowledge distillation based deep learning model 
 compression. PLOS One. https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0285668 
 Said, I. et al. (2022) Nonconsensual Distribution of Intimate Images: Exploring the Role of Legal Attitudes 
 in Victimization and Perpetration. Sage. 
-https://journals.sagepub.com/doi/full/10.1177/08862605221122834#bibr47-08862605221122834 
+https://journals.sagepub.com/doi/full/10.1177/08862605221122834#bibr47-08862605221122834
+ 
 Sandbrink, J. (2023) Artiﬁcial intelligence and biological misuse: Diﬀerentiating risks of language models 
-and biological design tools. arXiv. https://arxiv.org/pdf/2306.13952 
-
+and biological design tools. arXiv. https://arxiv.org/pdf/2306.13952
+ 
 
  
 58 
@@ -2915,7 +2683,8 @@ Shumailov, I. et al. (2023) The curse of recursion: training on generated data m
 https://arxiv.org/pdf/2305.17493v2 
 Smith, A. et al. (2023) Hallucination or Confabulation? Neuroanatomy as metaphor in Large Language 
 Models. PLOS Digital Health. 
-https://journals.plos.org/digitalhealth/article?id=10.1371/journal.pdig.0000388 
+https://journals.plos.org/digitalhealth/article?id=10.1371/journal.pdig.0000388
+ 
 Soice, E. et al. (2023) Can large language models democratize access to dual-use biotechnology? arXiv. 
 https://arxiv.org/abs/2306.03809 
 Solaiman, I. et al. (2023) The Gradient of Generative AI Release: Methods and Considerations. arXiv. 
@@ -2924,7 +2693,7 @@ Staab, R. et al. (2023) Beyond Memorization: Violating Privacy via Inference Wit
 Models. arXiv. https://arxiv.org/pdf/2310.07298 
 Stanford, S. et al. (2023) Whose Opinions Do Language Models Reﬂect? arXiv. 
 https://arxiv.org/pdf/2303.17548 
-Strubell, E. et al. (2019) Energy and Policy Considerations for Deep Learning in NLP. arXiv. 
+Strubell, E. et al. (2019) Energy and Policy Considerations for Deep Learning in NLP . arXiv. 
 https://arxiv.org/pdf/1906.02243 
 The White House (2016) Circular No. A-130, Managing Information as a Strategic Resource. 
 https://www.whitehouse.gov/wp-
@@ -2940,7 +2709,6 @@ Thiel, D. (2023) Investigation Finds AI Image Generation Models Trained on Child
 Policy Center. https://cyber.fsi.stanford.edu/news/investigation-ﬁnds-ai-image-generation-models-
 trained-child-abuse 
 
-
  
 59 
 Tirrell, L. (2017) Toxic Speech: Toward an Epidemiology of Discursive Harm. Philosophical Topics, 45(2), 
@@ -2955,10 +2723,11 @@ Urbina, F. et al. (2022) Dual use of artiﬁcial-intelligence-powered drug disco
 Intelligence. https://www.nature.com/articles/s42256-022-00465-9 
 Wang, X. et al. (2023) Energy and Carbon Considerations of Fine-Tuning BERT. ACL Anthology. 
 https://aclanthology.org/2023.ﬁndings-emnlp.607.pdf 
-Wang, Y. et al. (2023) Do-Not-Answer: A Dataset for Evaluating Safeguards in LLMs. arXiv. 
+Wang, Y . et al. (2023) Do-Not-Answer: A Dataset for Evaluating Safeguards in LLMs. arXiv. 
 https://arxiv.org/pdf/2308.13387 
 Wardle, C. et al. (2017) Information Disorder: Toward an interdisciplinary framework for research and 
-policy making. Council of Europe. https://rm.coe.int/information-disorder-toward-an-interdisciplinary-
+policy making. Council of Europe. 
+https://rm.coe.int/information-disorder-toward-an-interdisciplinary-
 framework-for-researc/168076277c 
 Weatherbed, J. (2024) Trolls have ﬂooded X with graphic Taylor Swift AI fakes. The Verge. 
 https://www.theverge.com/2024/1/25/24050334/x-twitter-taylor-swift-ai-fake-images-trending 
@@ -2971,9 +2740,11 @@ https://arxiv.org/pdf/2310.11986
 Weidinger, L. et al. (2022) Taxonomy of Risks posed by Language Models. FAccT ’22. 
 https://dl.acm.org/doi/pdf/10.1145/3531146.3533088 
 West, D. (2023) AI poses disproportionate risks to women. Brookings. 
-https://www.brookings.edu/articles/ai-poses-disproportionate-risks-to-women/ 
+https://www.brookings.edu/articles/ai-poses-disproportionate-risks-to-women/
+ 
 Wu, K. et al. (2024) How well do LLMs cite relevant medical references? An evaluation framework and 
-analyses. arXiv. https://arxiv.org/pdf/2402.02008 
+analyses. arXiv. https://arxiv.org/pdf/2402.02008
+ 
 Yin, L. et al. (2024) OpenAI’s GPT Is A Recruiter’s Dream Tool. Tests Show There’s Racial Bias. Bloomberg. 
 https://www.bloomberg.com/graphics/2024-openai-gpt-hiring-racial-discrimination/ 
 Yu, Z. et al. (March 2024) Don’t Listen To Me: Understanding and Exploring Jailbreak Prompts of Large 
@@ -2981,16 +2752,15 @@ Language Models. arXiv. https://arxiv.org/html/2403.17336v1
 Zaugg, I. et al. (2022) Digitally-disadvantaged languages. Policy Review. 
 https://policyreview.info/pdf/policyreview-2022-2-1654.pdf 
 
-
  
 60 
-Zhang, Y. et al. (2023) Human favoritism, not AI aversion: People’s perceptions (and bias) toward 
+Zhang, Y . et al. (2023) Human favoritism, not AI aversion: People’s perceptions (and bias) toward 
 generative AI, human experts, and human–GAI collaboration in persuasive content generation. Judgment 
 and Decision Making. https://www.cambridge.org/core/journals/judgment-and-decision-
 making/article/human-favoritism-not-ai-aversion-peoples-perceptions-and-bias-toward-generative-ai-
 human-experts-and-humangai-collaboration-in-persuasive-content-
 generation/419C4BD9CE82673EAF1D8F6C350C4FA8 
-Zhang, Y. et al. (2023) Siren’s Song in the AI Ocean: A Survey on Hallucination in Large Language Models. 
+Zhang, Y . et al. (2023) Siren’s Song in the AI Ocean: A Survey on Hallucination in Large Language Models. 
 arXiv. https://arxiv.org/pdf/2309.01219 
 Zhao, X. et al. (2023) Provable Robust Watermarking for AI-Generated Text. Semantic Scholar. 
 https://www.semanticscholar.org/paper/Provable-Robust-Watermarking-for-AI-Generated-Text-Zhao-
