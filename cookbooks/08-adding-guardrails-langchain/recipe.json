@@ -23,7 +23,7 @@
     "Python 3.12+",
     "uv installed (https://docs.astral.sh/uv/)",
     "A Nebius API key",
-    "Docker for local Postgres"
+    "Postgres 15+ running locally"
   ],
   "models": [
     { "id": "meta-llama/Llama-3.3-70B-Instruct", "role": "primary" },
@@ -32,7 +32,7 @@
   "quickstart": {
     "clone": "git clone https://github.com/nebius/nebius-partner-cookbook && cd nebius-cookbook/cookbooks/08-adding-guardrails-langchain",
     "configure": "cp .env.example .env  # then fill NEBIUS_API_KEY",
-    "run": "docker compose up -d postgres && uv sync && make dev"
+    "run": "createdb nebius_cookbook && uv sync && make dev"
   },
   "endpoints": [
     {
@@ -86,5 +86,5 @@
     { "name": "Clément Sauvage", "url": "https://clementsauvage.me" }
   ],
   "publishedAt": "2026-06-04",
-  "updatedAt": "2026-05-26"
+  "updatedAt": "2026-06-02"
 }

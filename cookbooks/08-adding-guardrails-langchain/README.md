@@ -41,7 +41,7 @@ request ──► LangSmith run ──► input guardrails ──┬─► rejec
 
 - Python 3.12+
 - [uv](https://docs.astral.sh/uv/)
-- Docker for local Postgres
+- Postgres 15+ running locally
 - A Nebius API key from the [Nebius console](https://nebius.com)
 - Optional: a LangSmith API key from [LangSmith](https://docs.langchain.com/langsmith/home)
 
@@ -52,7 +52,7 @@ cp .env.example .env
 # Open .env and fill NEBIUS_API_KEY.
 # Optionally set LANGSMITH_TRACING=true and fill LANGSMITH_API_KEY.
 
-docker compose up -d postgres
+createdb nebius_cookbook
 uv sync
 make dev
 ```
@@ -148,6 +148,8 @@ Here the user sees status events while the model runs, then receives a single ap
 | `GUARDRAILS_TOPIC` | `books and reading recommendations` | Human-readable topic boundary. |
 | `GUARDRAILS_MAX_OUTPUT_CHARS` | `6000` | Maximum approved output length. |
 | `LANGSMITH_TRACING` | `false` | Inherited LangSmith tracing toggle. |
+| `LANGSMITH_PROJECT` | `Nebius Cookbook` | Inherited LangSmith project name. |
+| `LANGSMITH_ENDPOINT` | `https://eu.api.smith.langchain.com` | Inherited LangSmith API URL. |
 | `MEMORY_BACKEND` | `postgres` | Inherited long-term memory backend. |
 | `POSTGRESQL_ADDON_URI` | local Postgres URL | Inherited memory database. Clever Cloud injects this when a Postgres add-on is linked. |
 | `NEBIUS_API_KEY` | required | Nebius API key. |
@@ -160,6 +162,22 @@ The app creates `prod_cbk_08.user_memories` on first use, separate from the memo
 
 `app/core/guardrails.py` contains the deterministic policy.
 It is intentionally cheap and testable: marker-based prompt-injection checks, topic-boundary checks, PII redaction, and output claim checks all run without network access.
+
+The policy is exposed through LangChain-compatible middleware classes:
+
+```python
+class BookInputGuardrailMiddleware(AgentMiddleware):
+    def before_agent(self, state: dict[str, Any], runtime: object) -> dict[str, Any] | None:
+        ...
+
+
+class BookOutputGuardrailMiddleware(AgentMiddleware):
+    def after_agent(self, state: dict[str, Any], runtime: object) -> dict[str, Any] | None:
+        ...
+```
+
+The FastAPI route calls the same middleware-backed facade directly because this cookbook keeps its existing LangGraph streaming contract.
+If you later migrate the agent to `create_agent(...)`, the same middleware objects can be passed into LangChain's agent middleware stack.
 
 The marker lists are not LLM instructions.
 They are the first layer of defense before any model call.
@@ -177,6 +195,10 @@ The redacted prompt is what gets stored in short-term memory and passed to Nebiu
 Output validation runs after generation.
 The route buffers model tokens, validates the final answer, then emits `answer`.
 If output validation fails, the route emits `error` and does not reveal the buffered text.
+
+LangSmith annotations trace both guardrail stages.
+When tracing is enabled, the root `agent.run` trace contains child spans for `guardrails.input.validate`, memory recall, routing, the Nebius stream, `guardrails.output.validate`, and memory persistence.
+The trace records the rule and outcome, but the sanitizers keep prompt previews redacted.
 
 ## Production Checklist
 
@@ -220,6 +242,7 @@ They also assert that PII is redacted before model invocation and that unsafe ou
 ## Reference
 
 - LangChain guardrails — [docs.langchain.com/oss/python/langchain/guardrails](https://docs.langchain.com/oss/python/langchain/guardrails)
+- LangSmith custom instrumentation — [docs.langchain.com/langsmith/annotate-code](https://docs.langchain.com/langsmith/annotate-code)
 
 ## License
 

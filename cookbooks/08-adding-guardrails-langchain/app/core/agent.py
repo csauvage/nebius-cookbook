@@ -11,8 +11,14 @@ from typing import Literal, TypedDict
 from langchain_core.messages import BaseMessage
 from langchain_core.prompts import ChatPromptTemplate
 from langgraph.graph import END, START, StateGraph
+from langsmith import traceable
 from openai.types.chat import ChatCompletionMessageParam
 
+from app.core.langsmith_annotations import (
+    process_langsmith_inputs,
+    process_langsmith_outputs,
+    summarize_agent_events,
+)
 from app.core.nebius_client import NebiusClient
 from app.core.nebius_pricing import NebiusPricing
 from app.observability.metrics import agent_first_token_seconds, agent_route_total
@@ -133,6 +139,12 @@ class Agent:
         return graph.compile()
 
     @staticmethod
+    @traceable(
+        name="agent.route_request",
+        run_type="chain",
+        process_inputs=process_langsmith_inputs,
+        process_outputs=process_langsmith_outputs,
+    )
     def _route_request(state: AgentState) -> dict[str, str]:
         prompt = state["prompt"].strip()
         history_text = " ".join(item.get("content", "") for item in state.get("history", [])[-4:])
@@ -165,6 +177,12 @@ class Agent:
             "route_reason": route_reason,
         }
 
+    @traceable(
+        name="agent.prepare_direct_messages",
+        run_type="chain",
+        process_inputs=process_langsmith_inputs,
+        process_outputs=process_langsmith_outputs,
+    )
     def _prepare_direct_messages(
         self, state: AgentState
     ) -> dict[str, str | int | list[ChatCompletionMessageParam]]:
@@ -184,6 +202,12 @@ class Agent:
             "max_tokens": min(state["requested_max_tokens"], self._direct_max_tokens),
         }
 
+    @traceable(
+        name="agent.prepare_deliberate_messages",
+        run_type="chain",
+        process_inputs=process_langsmith_inputs,
+        process_outputs=process_langsmith_outputs,
+    )
     def _prepare_deliberate_messages(
         self, state: AgentState
     ) -> dict[str, str | int | list[ChatCompletionMessageParam]]:
@@ -208,6 +232,12 @@ class Agent:
             "max_tokens": min(state["requested_max_tokens"], self._deliberate_max_tokens),
         }
 
+    @traceable(
+        name="agent.render_prompt_messages",
+        run_type="chain",
+        process_inputs=process_langsmith_inputs,
+        process_outputs=process_langsmith_outputs,
+    )
     def _messages_from_template(
         self,
         *,
@@ -234,11 +264,23 @@ class Agent:
         return [self._to_openai_message(message) for message in messages]
 
     @staticmethod
+    @traceable(
+        name="agent.to_openai_message",
+        run_type="chain",
+        process_inputs=process_langsmith_inputs,
+        process_outputs=process_langsmith_outputs,
+    )
     def _to_openai_message(message: BaseMessage) -> ChatCompletionMessageParam:
         content = message.content if isinstance(message.content, str) else str(message.content)
         role = "system" if message.type == "system" else "user"
         return {"role": role, "content": content}
 
+    @traceable(
+        name="agent.stream_response",
+        run_type="chain",
+        process_inputs=process_langsmith_inputs,
+        reduce_fn=summarize_agent_events,
+    )
     async def run(
         self,
         prompt: str,

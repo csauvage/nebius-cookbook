@@ -7,6 +7,7 @@ from dataclasses import dataclass
 
 import httpx
 import structlog
+from langsmith import traceable
 from openai import AsyncOpenAI
 from openai.types.chat import ChatCompletionMessageParam
 from tenacity import (
@@ -17,6 +18,10 @@ from tenacity import (
 )
 
 from app.config import Settings, get_settings
+from app.core.langsmith_annotations import (
+    process_langsmith_inputs,
+    summarize_chat_chunks,
+)
 from app.observability.metrics import nebius_request_duration, nebius_tokens_total
 
 logger = structlog.get_logger()
@@ -46,6 +51,13 @@ class NebiusClient:
         wait=wait_exponential(multiplier=0.5, min=0.5, max=8.0),
         stop=stop_after_attempt(3),
         reraise=True,
+    )
+    @traceable(
+        name="nebius.chat_stream",
+        run_type="llm",
+        metadata={"provider": "nebius"},
+        process_inputs=process_langsmith_inputs,
+        reduce_fn=summarize_chat_chunks,
     )
     async def stream_chat(
         self,

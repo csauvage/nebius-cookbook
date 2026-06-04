@@ -4,9 +4,14 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass, field
-from typing import Literal
+from typing import Any, Literal
+
+from langchain.agents.middleware import AgentMiddleware
+from langchain_core.messages import AIMessage, AnyMessage, HumanMessage
+from langsmith import traceable
 
 from app.config import Settings
+from app.core.langsmith_annotations import process_langsmith_inputs, process_langsmith_outputs
 from app.observability.metrics import guardrail_events_total
 
 EMAIL_RE = re.compile(r"[\w.+-]+@[\w.-]+\.[A-Za-z]{2,}")
@@ -155,12 +160,49 @@ class GuardrailDecision:
 
 
 class Guardrails:
-    """Cheap-first guardrails before and after model generation."""
+    """Facade around LangChain-compatible guardrail middleware."""
 
     def __init__(self, settings: Settings) -> None:
-        self._settings = settings
+        self.input_middleware = BookInputGuardrailMiddleware(settings)
+        self.output_middleware = BookOutputGuardrailMiddleware(settings)
 
     def validate_input(self, prompt: str) -> GuardrailDecision:
+        """Validate and possibly redact user input."""
+        return self.input_middleware.validate_prompt(prompt)
+
+    def validate_output(self, text: str) -> GuardrailDecision:
+        """Validate generated text before streaming it to the client."""
+        return self.output_middleware.validate_answer(text)
+
+
+class BookInputGuardrailMiddleware(AgentMiddleware):
+    """LangChain middleware for pre-model book-domain input validation."""
+
+    def __init__(self, settings: Settings) -> None:
+        super().__init__()
+        self._settings = settings
+
+    def before_agent(self, state: dict[str, Any], runtime: object) -> dict[str, Any] | None:
+        """Apply input guardrails to the last human message in a LangChain agent state."""
+        messages = list(state.get("messages", []))
+        prompt = _last_human_text(messages)
+        if prompt is None:
+            return None
+
+        decision = self.validate_prompt(prompt)
+        if not decision.allowed:
+            raise ValueError(f"input guardrail blocked: {decision.rule}")
+        if decision.text == prompt:
+            return None
+        return {"messages": _replace_last_human_text(messages, decision.text)}
+
+    @traceable(
+        name="guardrails.input.validate",
+        run_type="chain",
+        process_inputs=process_langsmith_inputs,
+        process_outputs=process_langsmith_outputs,
+    )
+    def validate_prompt(self, prompt: str) -> GuardrailDecision:
         """Validate and possibly redact user input."""
         if not self._settings.guardrails_enabled:
             return _decision(True, prompt, "input", "disabled", "passed")
@@ -191,7 +233,34 @@ class Guardrails:
 
         return _decision(True, prompt, "input", "all", "passed")
 
-    def validate_output(self, text: str) -> GuardrailDecision:
+
+class BookOutputGuardrailMiddleware(AgentMiddleware):
+    """LangChain middleware for post-model answer validation."""
+
+    def __init__(self, settings: Settings) -> None:
+        super().__init__()
+        self._settings = settings
+
+    def after_agent(self, state: dict[str, Any], runtime: object) -> dict[str, Any] | None:
+        """Validate the last AI message in a LangChain agent state."""
+        messages = list(state.get("messages", []))
+        answer = _last_ai_text(messages)
+        if answer is None:
+            return None
+        decision = self.validate_answer(answer)
+        if not decision.allowed:
+            raise ValueError(f"output guardrail blocked: {decision.rule}")
+        if decision.text == answer:
+            return None
+        return {"messages": _replace_last_ai_text(messages, decision.text)}
+
+    @traceable(
+        name="guardrails.output.validate",
+        run_type="chain",
+        process_inputs=process_langsmith_inputs,
+        process_outputs=process_langsmith_outputs,
+    )
+    def validate_answer(self, text: str) -> GuardrailDecision:
         """Validate generated text before streaming it to the client."""
         if not self._settings.guardrails_enabled:
             return _decision(True, text, "output", "disabled", "passed")
@@ -212,6 +281,40 @@ class Guardrails:
                 return _decision(False, text, "output", "safety", "blocked", marker)
 
         return _decision(True, text, "output", "all", "passed")
+
+
+def _last_human_text(messages: list[AnyMessage]) -> str | None:
+    for message in reversed(messages):
+        if isinstance(message, HumanMessage):
+            return str(message.content)
+    return None
+
+
+def _last_ai_text(messages: list[AnyMessage]) -> str | None:
+    for message in reversed(messages):
+        if isinstance(message, AIMessage):
+            return str(message.content)
+    return None
+
+
+def _replace_last_human_text(messages: list[AnyMessage], text: str) -> list[AnyMessage]:
+    replaced = list(messages)
+    for index in range(len(replaced) - 1, -1, -1):
+        message = replaced[index]
+        if isinstance(message, HumanMessage):
+            replaced[index] = HumanMessage(content=text, id=message.id, name=message.name)
+            break
+    return replaced
+
+
+def _replace_last_ai_text(messages: list[AnyMessage], text: str) -> list[AnyMessage]:
+    replaced = list(messages)
+    for index in range(len(replaced) - 1, -1, -1):
+        message = replaced[index]
+        if isinstance(message, AIMessage):
+            replaced[index] = AIMessage(content=text, id=message.id, name=message.name)
+            break
+    return replaced
 
 
 def _decision(

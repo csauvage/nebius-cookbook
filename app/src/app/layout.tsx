@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { IBM_Plex_Sans, IBM_Plex_Mono, Jersey_15 } from "next/font/google";
-import { ThemeToggle } from "@/components";
+import { GitHubCorner, ThemeToggle } from "@/components";
 import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
@@ -60,6 +60,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="min-h-dvh antialiased">
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
         {children}
+        <GitHubCorner />
         <ThemeToggle />
       </body>
     </html>
