@@ -21,4 +21,6 @@ include = ["sentinel*"]
 
 [project.optional-dependencies]
 deep = ["deepagents>=0.6.0"]
-dev = ["pytest", "ruff", "langgraph-cli>=0.2.0"]
+dev = ["pytest", "ruff", "langgraph-cli[inmem]>=0.2.0"]
+rag = ["pymupdf>=1.24.0"]
+ui = ["fastapi>=0.115.0", "uvicorn>=0.34.0", "langgraph-sdk>=0.1.60"]
