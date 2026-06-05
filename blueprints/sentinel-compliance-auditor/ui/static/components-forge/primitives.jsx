@@ -277,7 +277,10 @@ const StreamPane = ({ children, status, maxHeight = 480, padding = "20px 24px" }
   );
 };
 
-// ── MARKDOWN — renders a markdown string as sanitised HTML via `marked`.
+// ── MARKDOWN — renders a markdown string to HTML via `marked`, then sanitises
+// it with DOMPurify before injection. `marked` does NOT sanitise on its own, so
+// the DOMPurify pass is what neutralises any script/event-handler markup that
+// could ride in via agent output (SOPs, web-search results, etc.).
 const _markedOpts = (() => {
   if (typeof marked === "undefined") return null;
   marked.setOptions({ breaks: true, gfm: true });
@@ -288,7 +291,9 @@ const Markdown = ({ text, style }) => {
   const html = React.useMemo(() => {
     if (!text) return "";
     if (typeof marked === "undefined") return text.replace(/</g, "&lt;");
-    return marked.parse(text);
+    const raw = marked.parse(text);
+    // If DOMPurify failed to load, fall back to escaping rather than inject raw HTML.
+    return typeof DOMPurify !== "undefined" ? DOMPurify.sanitize(raw) : raw.replace(/</g, "&lt;");
   }, [text]);
   return <div className="forge-md" style={style} dangerouslySetInnerHTML={{ __html: html }} />;
 };
