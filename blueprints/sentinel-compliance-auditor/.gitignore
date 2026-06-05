@@ -9,7 +9,4 @@ output/
 .DS_Store
 .idea/
 .mcp.json
-tmp.txt
 .codex/
-.streamlit/
-screenshots/
