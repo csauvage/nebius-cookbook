@@ -84,6 +84,13 @@ make dev     # LangGraph dev server on port 2024
 make ui      # UI on port 8080 (connects to LangGraph)
 ```
 
+`UI_API_KEY` is **required** — set it in `.env` first (e.g. `openssl rand -hex 32`);
+the UI server refuses to start without it, even locally. Then open
+http://localhost:8080: the UI prompts for the key on load and sends it as an
+`X-API-Key` header on every request, and the server rejects any `/api/*` call
+without it (so no agent run, Pinecone, or Jira call happens for an unauthenticated
+caller).
+
 ### Test
 
 ```bash
@@ -102,6 +109,12 @@ make ui           # UI on port 8080
 # Cloud deployment
 make deploy       # Deploy to LangGraph Cloud
 ```
+
+**Exposing the UI publicly:** `make ui` binds `0.0.0.0:8080`. Before putting it on
+a public address, set a strong `UI_API_KEY` (e.g. `openssl rand -hex 32`) to gate
+the API, and front the server with a reverse proxy / load balancer that
+terminates **TLS** and applies **rate limiting** — those are intentionally left to
+the proxy layer rather than the app.
 
 ## Audit Approach
 
@@ -268,6 +281,7 @@ Compliance level distribution: 170 compliant (40%), 161 partial (38%), 89 gap (2
 | `JIRA_API_TOKEN` | For Jira | API token from id.atlassian.com |
 | `JIRA_PROJECT_KEY` | For Jira | Target Jira project key (e.g. `SENT`) |
 | `LANGGRAPH_URL` | Optional | Override UI backend URL |
+| `UI_API_KEY` | Yes (UI) | Shared secret that gates the UI's `/api/*` endpoints. The UI **refuses to start** without it (even locally); every API call must supply a matching `X-API-Key`. Generate with `openssl rand -hex 32`. |
 
 ## Cost
 
