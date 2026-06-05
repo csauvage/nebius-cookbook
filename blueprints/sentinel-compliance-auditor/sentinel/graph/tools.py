@@ -50,17 +50,6 @@ def _get_shared_http_client():
     return _shared_http_client
 
 
-def get_audit_results() -> dict:
-    return _audit_results
-
-
-def reset_audit_results() -> None:
-    _audit_results["findings"] = []
-    _audit_results["cell_metrics"] = []
-    _audit_results["total_input_tokens"] = 0
-    _audit_results["total_output_tokens"] = 0
-
-
 @tool
 def list_regulations() -> str:
     """List all regulations available in the knowledge base. Returns regulation names and document sources."""
