@@ -23,8 +23,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from openai import AsyncOpenAI
 
-from scripts.company_context import BUSINESS_UNITS, COMPANY_PROFILE
-from scripts.sop_taxonomy import SOP_DEFINITIONS, build_taxonomy
+from scripts.company_context import COMPANY_PROFILE
+from scripts.sop_taxonomy import build_taxonomy
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 DATA_DIR = PROJECT_ROOT / "data"

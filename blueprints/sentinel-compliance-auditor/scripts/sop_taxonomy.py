@@ -112,7 +112,7 @@ WEAKNESS_TEMPLATES: dict[str, dict[str, list[str]]] = {
 }
 
 
-def _compliance_level(sop_id: str, regulation: str, index: int) -> str:
+def _compliance_level(sop_id: str, regulation: str) -> str:
     seed = hashlib.md5(f"{sop_id}:{regulation}".encode()).hexdigest()
     val = int(seed[:8], 16) % 100
     if val < 40:
@@ -1582,12 +1582,12 @@ def build_taxonomy() -> list[dict[str, Any]]:
     from scripts.company_context import BUSINESS_UNITS
 
     enriched = []
-    for i, sop in enumerate(SOP_DEFINITIONS):
+    for sop in SOP_DEFINITIONS:
         bu_info = BUSINESS_UNITS[sop["business_unit"]]
         compliance_profile = {}
         weaknesses = {}
         for reg in sop["regulations"]:
-            level = _compliance_level(sop["sop_id"], reg, i)
+            level = _compliance_level(sop["sop_id"], reg)
             compliance_profile[reg] = level
             w = _pick_weaknesses(sop["sop_id"], reg, level)
             if w:
@@ -1606,7 +1606,6 @@ def build_taxonomy() -> list[dict[str, Any]]:
 
 
 if __name__ == "__main__":
-    import json
     import sys
     sys.path.insert(0, "/Users/tikhon/Projects/sentinel_agent")
     taxonomy = build_taxonomy()

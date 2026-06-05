@@ -58,17 +58,3 @@ def partial_finding():
         remediation="Extend MFA to all environments.",
         reasoning="Partial coverage across environments.",
     )
-
-
-@pytest.fixture
-def mixed_findings(compliant_finding, gap_finding, partial_finding):
-    return [compliant_finding, gap_finding, partial_finding]
-
-
-@pytest.fixture
-def sample_cell_metrics():
-    return [
-        {"sop_id": "SOP-ISEC-001", "findings": 1, "latency": 2.5, "input_tokens": 500, "output_tokens": 200, "retrieval_steps": 2},
-        {"sop_id": "SOP-ISEC-002", "findings": 1, "latency": 3.1, "input_tokens": 600, "output_tokens": 300, "retrieval_steps": 3},
-        {"sop_id": "SOP-ISEC-003", "findings": 1, "latency": 1.8, "input_tokens": 400, "output_tokens": 150, "retrieval_steps": 1},
-    ]

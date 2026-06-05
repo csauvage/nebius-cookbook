@@ -14,7 +14,6 @@ import re
 import sys
 from collections import Counter, defaultdict
 from pathlib import Path
-from typing import Optional
 
 MATRIX_PATH = Path("data/compliance_matrix.json")
 REVISED_MATRIX_PATH = Path("data/compliance_matrix_revised.json")
@@ -495,7 +494,6 @@ def validate_single(run_id, gt):
     predicted = {key: worst_level(levels) for key, levels in all_findings.items()}
 
     pred_sops = set(k[0] for k in predicted)
-    pred_regs = set(k[1] for k in predicted)
     pred_levels = Counter(predicted.values())
 
     print(f"\n  Aggregated: {len(predicted)} SOP-regulation pairs, {len(pred_sops)} SOPs")

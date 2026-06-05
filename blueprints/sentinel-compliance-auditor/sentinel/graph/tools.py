@@ -567,20 +567,6 @@ def _audit_single_sop_impl(sop_id: str, provider: str = "nebius", use_tavily: bo
     return "\n".join(lines)
 
 
-@tool
-def audit_single_sop(sop_id: str) -> str:
-    """Audit one SOP against all relevant regulations using a sub-agent with access to the regulation knowledge base (Pinecone) and web search (Tavily). Accepts an SOP ID (e.g. 'SOP-AIML-009') or title (e.g. 'Algorithmic Bias Detection'). The sub-agent determines which regulations apply and iteratively retrieves regulatory text."""
-    result = _audit_single_sop_impl(sop_id, provider="nebius", use_tavily=True)
-    for attempt in range(1, MAX_RETRIES + 1):
-        if not _is_retryable(result):
-            break
-        delay = _retry_delay(attempt, result)
-        logger.info("Retry attempt %d/%d for %s (waiting %.0fs)", attempt, MAX_RETRIES, sop_id, delay)
-        time.sleep(delay)
-        result = _audit_single_sop_impl(sop_id, provider="nebius", use_tavily=True)
-    return result
-
-
 def _is_retryable(result: str) -> bool:
     """Check if a single-SOP audit result indicates a retryable failure.
 
@@ -670,12 +656,6 @@ def _audit_all_sops_impl(single_sop_tool, max_workers: int | None = None) -> str
         "Per-SOP breakdown:\n" + "\n".join(sorted(results))
     )
     return summary
-
-
-@tool
-def audit_all_sops() -> str:
-    """Run the full audit across ALL SOPs using sub-agents. Each SOP gets its own auditor sub-agent with access to the regulation knowledge base and web search. Fans out with configurable parallelism (MAX_AUDIT_WORKERS)."""
-    return _audit_all_sops_impl(audit_single_sop)
 
 
 def _slug(text: str) -> str:

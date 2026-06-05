@@ -461,55 +461,6 @@ const ToolCard = ({ done, name, arg, duration, result }) =>
   </Panel>;
 
 
-const SubReturn = ({ sop, reg, level, note }) => {
-  const tone = { compliant: "var(--forge-mint-warm)", partial: "var(--forge-amber)", gap: "var(--forge-red)" }[level];
-  return (
-    <div style={{
-      display: "flex", alignItems: "center", gap: 10,
-      padding: "10px 12px", borderRadius: 10,
-      background: "rgba(255,255,255,0.03)",
-      border: "1px solid rgba(255,255,255,0.06)"
-    }}>
-      <span style={{ width: 8, height: 8, borderRadius: 2, background: tone }} />
-      <div style={{ font: "600 12px/1.3 var(--forge-mono)", color: "var(--forge-on-dark-strong)", minWidth: 92 }}>{sop}</div>
-      <div style={{ font: "500 11px/1.3 var(--forge-mono)", color: "var(--forge-on-dark-mute)", minWidth: 116 }}>{reg}</div>
-      <div style={{ font: "400 11px/14px var(--forge-font)", color: "var(--forge-on-dark-mute)", flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{note}</div>
-    </div>);
-
-};
-
-const HeatDot = ({ status }) => {
-  const map = {
-    compliant: "var(--forge-mint-warm)",
-    partial: "var(--forge-amber)",
-    gap: "var(--forge-red)",
-    running: "var(--forge-lime)",
-    pending: "rgba(255,255,255,0.10)"
-  };
-  return (
-    <div style={{
-      width: "100%", aspectRatio: "1 / 1", borderRadius: 3,
-      background: map[status] || map.pending,
-      boxShadow: status === "running" ? "0 0 0 2px rgba(212,250,80,0.30)" : "none"
-    }} />);
-
-};
-
-const CountChip = ({ label, value, dot }) =>
-<div style={{
-  display: "flex", flexDirection: "column", gap: 8,
-  padding: "12px 14px", borderRadius: 12,
-  border: "1px solid rgba(255,255,255,0.08)",
-  background: "rgba(255,255,255,0.02)"
-}}>
-    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-      <span style={{ width: 8, height: 8, borderRadius: 2, background: dot }} />
-      <span className="f-kicker" style={{ color: "var(--forge-on-dark-mute)", letterSpacing: "0.12em" }}>{label}</span>
-    </div>
-    <div style={{ font: "800 28px/1 var(--forge-font)", color: "var(--forge-on-dark-strong)", letterSpacing: "-0.02em" }}>{value}</div>
-  </div>;
-
-
 const Th = ({ children, align }) =>
 <th style={{
   font: "600 11px/1 var(--forge-font)", letterSpacing: "0.12em", textTransform: "uppercase",
