@@ -144,6 +144,12 @@ async def _require_api_key(request: Request, call_next):
     return await call_next(request)
 
 
+@app.get("/api/auth-check")
+def auth_check():
+    """Lightweight endpoint for the UI to validate an API key without triggering Pinecone."""
+    return {"ok": True}
+
+
 # ── helpers ──────────────────────────────────────────────────────────────────
 
 def _langgraph_client():

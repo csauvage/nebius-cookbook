@@ -11,7 +11,7 @@
   const API_BASE = window.FORGE_API_BASE || "";
   const KEY_STORAGE = "sentinel_api_key";
   // Cheap, gated endpoint used to verify a key before accepting it.
-  const VALIDATE_PATH = "/api/kb-stats";
+  const VALIDATE_PATH = "/api/auth-check";
 
   function getKey() {
     try {
