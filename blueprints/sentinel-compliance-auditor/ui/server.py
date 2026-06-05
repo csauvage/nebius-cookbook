@@ -113,24 +113,31 @@ PARALLEL_AGENTS = [
 app = FastAPI(title="Sentinel UI", version="0.1.0")
 
 if not UI_API_KEY:
+    # Fail closed: the UI must never run without a key, even locally. Refusing to
+    # start (rather than warning) removes the "forgot to set it in prod" footgun.
+    import sys
+
     print(
-        "[sentinel-ui] WARNING: UI_API_KEY is not set — the /api/* endpoints are "
-        "UNAUTHENTICATED. Set UI_API_KEY (and front the server with TLS) before "
-        "exposing this UI on a public address.",
+        "[sentinel-ui] FATAL: UI_API_KEY is not set. The UI refuses to start "
+        "without it. Set UI_API_KEY in .env (e.g. `openssl rand -hex 32`). TLS + "
+        "rate limiting are expected at your reverse proxy / load balancer.",
+        file=sys.stderr,
         flush=True,
     )
+    raise SystemExit(1)
 
 
 @app.middleware("http")
 async def _require_api_key(request: Request, call_next):
-    """Gate every /api/* call behind a shared X-API-Key, except the LB health probe.
+    """Gate every /api/* call behind the shared X-API-Key, except the LB health probe.
 
-    No-op when UI_API_KEY is unset (local dev). The check runs before any route
-    handler, so no agent run / LangGraph thread is started for an unauthorized
-    caller. Constant-time comparison avoids a timing side-channel.
+    UI_API_KEY is guaranteed set (the process exits at import otherwise), so the
+    gate always enforces. The check runs before any route handler, so no agent
+    run / LangGraph thread is started for an unauthorized caller. Constant-time
+    comparison avoids a timing side-channel.
     """
     path = request.url.path
-    if UI_API_KEY and path.startswith("/api/") and path != "/api/health":
+    if path.startswith("/api/") and path != "/api/health":
         provided = request.headers.get("x-api-key", "")
         if not secrets.compare_digest(provided, UI_API_KEY):
             return JSONResponse({"detail": "invalid or missing API key"}, status_code=401)

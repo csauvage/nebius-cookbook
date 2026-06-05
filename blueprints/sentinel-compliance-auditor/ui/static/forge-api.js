@@ -10,6 +10,8 @@
 (function () {
   const API_BASE = window.FORGE_API_BASE || "";
   const KEY_STORAGE = "sentinel_api_key";
+  // Cheap, gated endpoint used to verify a key before accepting it.
+  const VALIDATE_PATH = "/api/kb-stats";
 
   function getKey() {
     try {
@@ -61,14 +63,39 @@
       input.style.cssText =
         "width:100%;box-sizing:border-box;padding:9px 11px;background:#0d0d10;" +
         "border:1px solid #2a2a30;border-radius:6px;color:#e7e7ea;outline:none;";
+      const err = document.createElement("div");
+      err.style.cssText = "min-height:16px;margin-top:8px;color:#ff6b6b;font-size:12px;";
       const btn = document.createElement("button");
       btn.textContent = "Continue";
       btn.style.cssText =
-        "margin-top:14px;width:100%;padding:9px;background:#d4fa50;color:#0d0d10;" +
+        "margin-top:10px;width:100%;padding:9px;background:#d4fa50;color:#0d0d10;" +
         "border:0;border-radius:6px;font-weight:700;cursor:pointer;";
-      const submit = () => {
+      // Validate the key against a gated endpoint; only close on success so a
+      // wrong key keeps the modal open with an error instead of falling through
+      // to a broken UI.
+      const submit = async () => {
         const v = input.value.trim();
         if (!v) return;
+        btn.disabled = true;
+        btn.textContent = "Checking…";
+        err.textContent = "";
+        let ok = false;
+        try {
+          const resp = await fetch(API_BASE + VALIDATE_PATH, {
+            headers: { Accept: "application/json", "X-API-Key": v },
+          });
+          ok = resp.ok;
+        } catch (_e) {
+          ok = false;
+        }
+        if (!ok) {
+          err.textContent = "Invalid key — please try again.";
+          btn.disabled = false;
+          btn.textContent = "Continue";
+          input.focus();
+          input.select();
+          return;
+        }
         setKey(v);
         if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
         _pending = null;
@@ -81,6 +108,7 @@
       card.appendChild(title);
       card.appendChild(hint);
       card.appendChild(input);
+      card.appendChild(err);
       card.appendChild(btn);
       overlay.appendChild(card);
       document.body.appendChild(overlay);
