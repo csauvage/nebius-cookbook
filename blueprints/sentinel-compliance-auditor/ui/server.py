@@ -503,7 +503,15 @@ def _stream_one(
             "trace_url": _trace_url(rid),
         }))
 
+    outer_tokens = {"input": 0, "output": 0}
     sub_tokens = {"input": 0, "output": 0}
+
+    def _emit_usage():
+        out_q.put(json.dumps({
+            "type": "usage", "agent": prefix,
+            "input_tokens": outer_tokens["input"] + sub_tokens["input"],
+            "output_tokens": outer_tokens["output"] + sub_tokens["output"],
+        }))
 
     try:
         client = _langgraph_client()
@@ -516,25 +524,27 @@ def _stream_one(
         ):
             payload = _normalize_event(event, prefix)
             if payload is not None:
-                out_q.put(payload)
                 parsed = json.loads(payload)
-                if parsed.get("type") == "tool_result":
+                if parsed.get("type") == "usage":
+                    outer_tokens["input"] = parsed["input_tokens"]
+                    outer_tokens["output"] = parsed["output_tokens"]
+                    _emit_usage()
+                elif parsed.get("type") == "tool_result":
+                    out_q.put(payload)
                     text = parsed.get("text", "")
                     if isinstance(text, str):
-                        m = _TOTAL_TOKENS_RE.search(text)
-                        if not m:
-                            m = _SUB_TOKENS_RE.search(text)
-                        if m:
-                            sub_tokens["input"] = int(m.group(1).replace(",", ""))
-                            sub_tokens["output"] = int(m.group(2).replace(",", ""))
-                elif parsed.get("type") == "usage":
-                    if sub_tokens["input"] or sub_tokens["output"]:
-                        updated = json.dumps({
-                            "type": "usage", "agent": prefix,
-                            "input_tokens": parsed["input_tokens"] + sub_tokens["input"],
-                            "output_tokens": parsed["output_tokens"] + sub_tokens["output"],
-                        })
-                        out_q.put(updated)
+                        m_total = _TOTAL_TOKENS_RE.search(text)
+                        m_sub = _SUB_TOKENS_RE.search(text)
+                        if m_total:
+                            sub_tokens["input"] = int(m_total.group(1).replace(",", ""))
+                            sub_tokens["output"] = int(m_total.group(2).replace(",", ""))
+                            _emit_usage()
+                        elif m_sub:
+                            sub_tokens["input"] += int(m_sub.group(1).replace(",", ""))
+                            sub_tokens["output"] += int(m_sub.group(2).replace(",", ""))
+                            _emit_usage()
+                else:
+                    out_q.put(payload)
     except Exception as exc:
         out_q.put(json.dumps({"type": "error", "agent": prefix, "error": str(exc)}))
     finally:
