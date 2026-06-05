@@ -297,7 +297,7 @@ def _compute_kb_stats() -> dict[str, Any]:
       between `reg::` and `::chunk-`, map to framework via REGULATION_MAP.
     """
     from sentinel.retrieval.regulations import _get_index
-    from sentinel.retrieval.ingest_regulations import REGULATION_MAP, _detect_regulation
+    from sentinel.retrieval.ingest_regulations import _detect_regulation
 
     index = _get_index()
     stats = index.describe_index_stats()

@@ -98,7 +98,7 @@ def list_regulations() -> str:
             sources = ", ".join(sorted(regs[reg]))
             lines.append(f"- {reg}: {sources}")
         return f"{len(regs)} regulations in knowledge base:\n" + "\n".join(lines)
-    except Exception as e:
+    except Exception:
         return _list_regulations_local()
 
 
