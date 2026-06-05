@@ -4,7 +4,7 @@ Convert eCFR XML files to clean, readable plain text.
 Preserves hierarchical structure: PART > SUBPART > SECTION > APPENDIX.
 """
 
-import xml.etree.ElementTree as ET
+import defusedxml.ElementTree as ET  # hardened drop-in for xml.etree (prevents XXE/entity-expansion)
 import html
 import os
 import re
