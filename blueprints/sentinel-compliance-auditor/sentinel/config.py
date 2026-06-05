@@ -12,8 +12,6 @@ REGULATIONS_DIR = DATA_DIR / "regulations"
 
 NEBIUS_API_KEY = os.environ.get("NEBIUS_API_KEY", "")
 NEBIUS_BASE_URL = "https://api.tokenfactory.nebius.com/v1/"
-NEBIUS_TESTING_API_KEY = os.environ.get("NEBIUS_TESTING_API_KEY", "")
-NEBIUS_TESTING_BASE_URL = "https://api.tokenfactory.testing.us.nebius.com/v1/"
 NEBIUS_MODELS = {
     "deepseek-v4-pro": "deepseek-ai/DeepSeek-V4-Pro",
     "nemotron": "nvidia/Nemotron-3-Ultra-550b-a55b",

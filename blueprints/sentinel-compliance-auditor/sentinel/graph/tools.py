@@ -343,13 +343,12 @@ def _build_subagent_model(provider: str = "nebius", model_name: str | None = Non
             metadata={"ls_provider": "openai", "ls_model_name": name},
             **extra_kwargs,
         )
-    from sentinel.config import MODEL, NEBIUS_API_KEY, NEBIUS_BASE_URL, NEBIUS_TESTING_API_KEY, NEBIUS_TESTING_BASE_URL
+    from sentinel.config import MODEL, NEBIUS_API_KEY, NEBIUS_BASE_URL
     name = model_name or MODEL
-    is_testing = "Nemotron" in name
     kwargs = dict(
         model=name,
-        api_key=NEBIUS_TESTING_API_KEY if is_testing else NEBIUS_API_KEY,
-        base_url=NEBIUS_TESTING_BASE_URL if is_testing else NEBIUS_BASE_URL,
+        api_key=NEBIUS_API_KEY,
+        base_url=NEBIUS_BASE_URL,
         temperature=0.1,
         stream_usage=True,
         http_client=http_client,

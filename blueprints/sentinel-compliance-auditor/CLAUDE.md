@@ -43,7 +43,7 @@ Sub-agent invocations are wrapped in a try/except — transient errors (e.g. Neb
 - **Prototype** (`sentinel_prototype`): GPT-5.5 via OpenAI API — no Tavily
 - **Grounded** (`sentinel_grounded`): GPT-5.5 via OpenAI API + Tavily web search
 - **Optimized** (`sentinel_optimized`): DeepSeek-V4-Pro on Nebius (`https://api.tokenfactory.nebius.com/v1/`) + Tavily
-- **Production** (`sentinel_nemotron`): Nemotron-3-Ultra-550b on Nebius testing endpoint + Tavily
+- **Production** (`sentinel_nemotron`): Nemotron-3-Ultra-550b on Nebius + Tavily
 - **Additional**: Kimi-K2.6 (`sentinel_kimi`), GLM-5.1 (`sentinel_glm`) via `_build_agent_nebius_model()`
 - `model_name` is threaded through `build_tools()` → `_audit_single_sop_impl()` → `_build_subagent_model()` so sub-agents use the same model as the outer agent
 - Only DeepSeek models set `max_tokens` on sub-agents — other Nebius models reject `max_completion_tokens`
@@ -129,7 +129,7 @@ The `create_jira_ticket` (single) and `create_jira_tickets` (batch, accepts JSON
 
 ## Environment variables
 
-Required: `NEBIUS_API_KEY`. Optional: `OPENAI_API_KEY` (Prototype/Grounded agents), `PINECONE_API_KEY` (Pinecone RAG), `TAVILY_API_KEY` (grounding), `LANGSMITH_API_KEY` (tracing + cloud auth), `NEBIUS_TESTING_API_KEY` (Nemotron/Production agent), `JIRA_BASE_URL` / `JIRA_EMAIL` / `JIRA_API_TOKEN` / `JIRA_PROJECT_KEY` (Jira actuation). `LANGGRAPH_DEFAULT_RECURSION_LIMIT` sets the outer agent recursion limit for cloud deployment (default: 25). See `.env.example`.
+Required: `NEBIUS_API_KEY`. Optional: `OPENAI_API_KEY` (Prototype/Grounded agents), `PINECONE_API_KEY` (Pinecone RAG), `TAVILY_API_KEY` (grounding), `LANGSMITH_API_KEY` (tracing + cloud auth), `JIRA_BASE_URL` / `JIRA_EMAIL` / `JIRA_API_TOKEN` / `JIRA_PROJECT_KEY` (Jira actuation). `LANGGRAPH_DEFAULT_RECURSION_LIMIT` sets the outer agent recursion limit for cloud deployment (default: 25). See `.env.example`.
 
 ## Patterns to follow
 

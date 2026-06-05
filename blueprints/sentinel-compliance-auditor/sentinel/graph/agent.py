@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from langchain_openai import ChatOpenAI
 
-from sentinel.config import OPENAI_API_KEY, OPENAI_MODEL, MODEL, NEBIUS_API_KEY, NEBIUS_BASE_URL, NEBIUS_TESTING_API_KEY, NEBIUS_TESTING_BASE_URL, NEBIUS_MODELS
+from sentinel.config import OPENAI_API_KEY, OPENAI_MODEL, MODEL, NEBIUS_API_KEY, NEBIUS_BASE_URL, NEBIUS_MODELS
 from sentinel.graph.tools import (
     build_tools,
     get_audit_results,
@@ -152,21 +152,8 @@ def _build_agent_nebius_model(model_key: str):
 
 
 def build_agent_nemotron():
-    """Build the Sentinel agent with Nemotron Ultra on Nebius testing endpoint."""
-    model_id = NEBIUS_MODELS["nemotron"]
-    model = ChatOpenAI(
-        model=model_id,
-        api_key=NEBIUS_TESTING_API_KEY,
-        base_url=NEBIUS_TESTING_BASE_URL,
-        temperature=0.1,
-        stream_usage=True,
-        metadata={"ls_provider": "nebius", "ls_model_name": model_id},
-    )
-    tools = build_tools(provider="nebius", use_tavily=True, model_name=model_id)
-    try:
-        return _build_deep_agent(model, tools)
-    except ImportError:
-        return _build_react_agent(model, tools)
+    """Build the Sentinel agent with Nemotron Ultra on Nebius."""
+    return _build_agent_nebius_model("nemotron")
 
 
 def build_agent_kimi():
