@@ -282,11 +282,14 @@ Audit the SOP against ALL applicable regulations. You must determine which regul
 
 ## Process
 1. First, call `read_sop` to review the SOP content
-2. Based on the SOP's subject matter, search the regulation knowledge base with targeted queries for each potentially applicable regulation (HIPAA, SOC 2, GDPR, EU AI Act, NIST AI RMF, SR 11-7, California AI laws)
-3. For each regulation that applies, retrieve the specific sections/requirements relevant to this SOP
-4. If you need clarification on a regulation's current interpretation or recent enforcement, use `search_web`
-5. Assess the SOP against each applicable requirement. After completing each assessment, IMMEDIATELY call `record_finding` with the result — do not wait until the end.
-6. After all requirements are assessed, output a single short sentence summarizing counts (e.g. "Done — 12 findings recorded."). Do NOT repeat findings in your final message.
+2. Work through regulations ONE AT A TIME. For each applicable regulation:
+   a. Retrieve the relevant sections from the knowledge base (2–4 targeted queries)
+   b. Assess the SOP against each requirement you found
+   c. Call `record_finding` for EACH requirement IMMEDIATELY after assessing it — before moving to the next regulation
+3. If you need clarification on a regulation's current interpretation, use `search_web`
+4. After all requirements are assessed, output a single short sentence summarizing counts (e.g. "Done — 12 findings recorded."). Do NOT repeat findings in your final message.
+
+IMPORTANT: Retrieve, assess, and record findings for each regulation before moving to the next. This ensures partial progress is saved if the audit is interrupted.
 
 ## Rules
 - Every `retrieve_regulation_rag` and `search_web` call MUST include a non-empty `query` argument. Never emit a tool call with empty `{}` args — if you have nothing specific to search for, don't call the tool. When issuing parallel tool calls, double-check that each call's argument dict contains a concrete `query` string.
@@ -441,15 +444,17 @@ def _audit_single_sop_impl(sop_id: str, provider: str = "nebius", use_tavily: bo
                     "content": f"Audit SOP {actual_id}: {title} (Business Unit: {business_unit})",
                 }],
             },
-            config={"recursion_limit": 80},
+            config={"recursion_limit": 120},
         )
     except Exception as e:
         elapsed = time.time() - start
         logger.error("Sub-agent for %s failed after %.1fs: %s", actual_id, elapsed, e)
         if not recorded_findings:
             return f"FAILED: {actual_id} — sub-agent error: {e}"
-        logger.info("%s: sub-agent errored but %d findings were recorded via tool", actual_id, len(recorded_findings))
-    elapsed = time.time() - start
+        logger.info("%s: sub-agent errored but %d findings were recorded via tool — surfacing partial results", actual_id, len(recorded_findings))
+        truncated = True
+    else:
+        elapsed = time.time() - start
 
     messages = result.get("messages", []) if result else []
     for msg in messages:
@@ -555,7 +560,8 @@ def _audit_single_sop_impl(sop_id: str, provider: str = "nebius", use_tavily: bo
         for m in messages if getattr(m, "usage_metadata", None)
     )
 
-    lines = [f"{actual_id} ({title}): {len(findings)} findings — {compliant}C/{partial}P/{gap}G"]
+    partial_tag = " [PARTIAL — sub-agent hit limit]" if (truncated and findings_source == "tool") else (" [truncated]" if truncated else "")
+    lines = [f"{actual_id} ({title}): {len(findings)} findings — {compliant}C/{partial}P/{gap}G{partial_tag}"]
     for f in findings:
         lines.append(f"  {f.clause_id}: {f.compliance_level.value} ({f.severity.value}) — {f.gap_description or 'Compliant'}")
     lines.append(f"Sub-agent tokens: {sub_in + sub_out:,} ({sub_in:,} in / {sub_out:,} out)")
