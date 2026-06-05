@@ -53,10 +53,9 @@ Sub-agent tools:
 
 | Module | Purpose |
 |--------|---------|
-| `sentinel/graph/agent.py` | Agent builders, `run_audit()` entry point |
+| `sentinel/graph/agent.py` | Agent builders |
 | `sentinel/graph/tools.py` | All `@tool` definitions, sub-agent builder, prompts |
 | `sentinel/graph/naive_agent.py` | Naive RAG baseline graph |
-| `sentinel/llm.py` | OpenAI client provider switching |
 | `sentinel/models.py` | Pydantic models, enums |
 | `sentinel/config.py` | API keys, model names, pricing |
 | `sentinel/retrieval/local.py` | SOP loading and search |

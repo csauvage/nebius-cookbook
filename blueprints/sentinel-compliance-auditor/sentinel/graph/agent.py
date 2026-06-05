@@ -4,12 +4,7 @@ from __future__ import annotations
 from langchain_openai import ChatOpenAI
 
 from sentinel.config import OPENAI_API_KEY, OPENAI_MODEL, MODEL, NEBIUS_API_KEY, NEBIUS_BASE_URL, NEBIUS_MODELS
-from sentinel.graph.tools import (
-    build_tools,
-    get_audit_results,
-    reset_audit_results,
-)
-from sentinel.llm import set_provider
+from sentinel.graph.tools import build_tools
 
 SENTINEL_SYSTEM_PROMPT = """You are Sentinel, an expert regulatory compliance auditor for Meridian Health Technologies, an AI-powered healthcare fintech company.
 
@@ -186,48 +181,3 @@ def agent_kimi():
 
 def agent_glm():
     return build_agent_glm()
-
-
-def run_audit(
-    query: str,
-    provider: str = "nebius",
-    run_name: str | None = None,
-    tags: list[str] | None = None,
-) -> dict:
-    """Run the full Sentinel audit and return findings + metrics."""
-    reset_audit_results()
-    set_provider(provider)
-
-    use_tavily = provider != "openai"
-    model = _build_model(provider)
-    tools = build_tools(provider=provider, use_tavily=use_tavily)
-    try:
-        agent = _build_deep_agent(model, tools)
-    except ImportError:
-        agent = _build_react_agent(model, tools)
-
-    active_model = OPENAI_MODEL if provider == "openai" else MODEL
-    config = {
-        "recursion_limit": 25,
-        "metadata": {
-            "model": active_model,
-            "provider": provider,
-        },
-    }
-    if run_name:
-        config["run_name"] = run_name
-    if tags:
-        config["tags"] = tags
-
-    result = agent.invoke(
-        {"messages": [{"role": "user", "content": query}]},
-        config=config,
-    )
-
-    audit_data = get_audit_results()
-    return {
-        "findings": audit_data["findings"],
-        "cell_metrics": audit_data["cell_metrics"],
-        "agent_response": result["messages"][-1].content if result.get("messages") else "",
-        "status": f"Audit complete: {len(audit_data['findings'])} findings",
-    }

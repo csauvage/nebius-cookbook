@@ -202,7 +202,6 @@
     getEvalResults: () => getJSON("/api/eval-results"),
     getDataset:     () => getJSON("/api/dataset"),
     getFindings:    () => getJSON("/api/findings"),
-    getAgents:      () => getJSON("/api/agents"),
     streamAudit:    (message, graph_id, handlers) =>
       streamSSE("/api/audit/stream", { message, graph_id }, handlers),
     streamRace:     (message, question_id, handlers) =>

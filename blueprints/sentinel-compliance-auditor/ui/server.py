@@ -42,7 +42,6 @@ from sentinel.config import (
     JIRA_PROJECT_KEY,
     MODEL,
     OPENAI_MODEL,
-    PRICING,
     SOP_BUSINESS_UNITS,
 )
 
@@ -659,18 +658,6 @@ async def race_stream(req: RaceRequest):
         _drain_sse(out_q, n_producers=len(PARALLEL_AGENTS)),
         media_type="text/event-stream",
     )
-
-
-# ── meta ────────────────────────────────────────────────────────────────────
-
-@app.get("/api/agents")
-def agents():
-    """The 3 race configurations + their pricing — for the Compare UI."""
-    return {
-        "agents": [
-            {**a, "pricing": PRICING.get(a["model"], {})} for a in PARALLEL_AGENTS
-        ],
-    }
 
 
 # ── static files ────────────────────────────────────────────────────────────

@@ -22,7 +22,7 @@ make deploy               # Deploy to LangGraph Cloud (remote Docker build)
 Regulation texts live in `data/regulations/` as `.txt` and `.md` files. Regulation texts are chunked, embedded (Qwen3-Embedding-8B on Nebius, 4096 dimensions), and stored in Pinecone namespace `regulations`. Sub-agents retrieve raw text chunks via semantic search with metadata filtering by regulation name. Multiple retrieval calls per regulation, per SOP.
 
 Key modules:
-- `sentinel/retrieval/regulations.py` — Pinecone regulation text retrieval: `retrieve_regulation_text()`, `retrieve_for_sop()`, `format_regulation_context()`
+- `sentinel/retrieval/regulations.py` — Pinecone regulation text retrieval: `retrieve_regulation_text()`, `format_regulation_context()`
 - `sentinel/retrieval/ingest_regulations.py` — chunks .txt/.md files, embeds, upserts into Pinecone
 - `scripts/extract_pdf_text.py` — extracts text from regulation PDFs (pypdf) for ingestion
 
@@ -47,10 +47,10 @@ Sub-agent invocations are wrapped in a try/except — transient errors (e.g. Neb
 - **Additional**: Kimi-K2.6 (`sentinel_kimi`), GLM-5.1 (`sentinel_glm`) via `_build_agent_nebius_model()`
 - `model_name` is threaded through `build_tools()` → `_audit_single_sop_impl()` → `_build_subagent_model()` so sub-agents use the same model as the outer agent
 - Only DeepSeek models set `max_tokens` on sub-agents — other Nebius models reject `max_completion_tokens`
-- Provider switching is handled by `set_provider()` in `llm.py` and `_build_model()` in `agent.py`
+- Provider switching is handled by `_build_model()` in `agent.py`
 
 ### Recursion limits
-- **Outer agent**: 25 graph nodes — set in `run_audit()` config and via `LANGGRAPH_DEFAULT_RECURSION_LIMIT` env var for cloud deployment. Typical runs use ~11 nodes.
+- **Outer agent**: 25 graph nodes — set via `LANGGRAPH_DEFAULT_RECURSION_LIMIT` env var for cloud deployment. Typical runs use ~11 nodes.
 - **Sub-agents**: 80 graph nodes — set in `_audit_single_sop_impl()` at `subagent.invoke()`. Typical sub-agents use 25–37 nodes (p95=37, max observed=65).
 
 ### deepagents optional dependency
@@ -66,13 +66,12 @@ When an audit finding is a gap or partial at medium+ severity, the `create_jira_
 
 | Module | Purpose |
 |--------|---------|
-| `sentinel/graph/agent.py` | Agent builders (`agent_prototype`, `agent_grounded`, `agent_optimized`, `agent_nemotron`), `run_audit()` entry point |
+| `sentinel/graph/agent.py` | Agent builders (`agent_prototype`, `agent_grounded`, `agent_optimized`, `agent_nemotron`) |
 | `sentinel/graph/tools.py` | LangChain `@tool` definitions: `audit_single_sop` (sub-agent), `audit_sops`, `audit_all_sops`, `list_sops`, `list_regulations`, `retrieve_regulation_text_tool`, `create_jira_ticket`, `create_jira_tickets`; sub-agent builder `_build_subagent_tools()` with `record_finding` tool |
-| `sentinel/llm.py` | OpenAI client provider switching (`set_provider()`, `get_client()`, `get_model()`) |
 | `sentinel/models.py` | Pydantic models (`AuditFinding`, `SOPChunk`, `AuditMetrics`), enums (`ComplianceLevel`, `Severity`) |
 | `sentinel/config.py` | API keys, model names, paths, pricing, business unit list |
 | `sentinel/retrieval/local.py` | SOP loading: `list_all_sops()`, `load_sop_by_id()`, `load_sop_chunks()` |
-| `sentinel/retrieval/regulations.py` | Pinecone regulation text retrieval: `retrieve_regulation_text()`, `retrieve_for_sop()`, `format_regulation_context()` |
+| `sentinel/retrieval/regulations.py` | Pinecone regulation text retrieval: `retrieve_regulation_text()`, `format_regulation_context()` |
 | `sentinel/retrieval/ingest_regulations.py` | Regulation text chunker + Pinecone ingestion (`REGULATION_MAP`, `EDITION_PATTERNS`, edition metadata) |
 | `sentinel/retrieval/ingest.py` | SOP markdown parser (`parse_sop()`), chunker, Pinecone ingestion |
 | `sentinel/actuation/jira_client.py` | Sync Jira Cloud REST client used by the `create_jira_ticket` tool |
@@ -134,7 +133,7 @@ Required: `NEBIUS_API_KEY`. Optional: `OPENAI_API_KEY` (Prototype/Grounded agent
 ## Patterns to follow
 
 - The outer agent (Sentinel) uses `langchain_openai.ChatOpenAI` via `_build_model()` in `agent.py`
-- Sub-agents (`audit_single_sop`) also use `ChatOpenAI` directly — they do NOT go through `llm.py`
+- Sub-agents (`audit_single_sop`) also use `ChatOpenAI` directly via `_build_subagent_model()`
 - Tools in `sentinel/graph/tools.py` are decorated with `@tool` from `langchain_core.tools`
 - Audit results are accumulated in the module-level `_audit_results` dict in `tools.py`
 - SOP lookup (`load_sop_by_id`) supports exact ID, exact title, and fuzzy substring matching

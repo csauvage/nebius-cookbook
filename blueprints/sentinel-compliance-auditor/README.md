@@ -97,7 +97,7 @@ caller).
 make test    # Run all 73 regression tests
 ```
 
-Tests cover JSON parsing/repair, SOP loading, metrics, provider switching, and config validation. No API keys or external services required.
+Tests cover JSON parsing/repair, SOP loading, metrics, and config validation. No API keys or external services required.
 
 ### Deploy
 
@@ -143,7 +143,6 @@ sentinel_agent/
 ├── sentinel/                  # Core agent package
 │   ├── config.py              # API keys, model config, pricing, paths
 │   ├── models.py              # Pydantic models (AuditFinding, SOPChunk, AuditMetrics)
-│   ├── llm.py                 # OpenAI client provider switching
 │   ├── graph/
 │   │   ├── agent.py           # ReAct agent (deepagents fallback to LangGraph)
 │   │   └── tools.py           # LangChain tools: sub-agent auditing + retrieval
