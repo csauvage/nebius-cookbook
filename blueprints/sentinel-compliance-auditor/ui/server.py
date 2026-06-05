@@ -16,6 +16,7 @@ import json
 import os
 import queue
 import re
+import secrets
 import threading
 import time
 from pathlib import Path
@@ -27,7 +28,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(PROJECT_ROOT / ".env")
 
 from fastapi import FastAPI, HTTPException, Request
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -58,6 +59,12 @@ EVAL_AGENTS = {
 DATASET_PATH = PROJECT_ROOT / "data" / "eval" / "qa_dataset.jsonl"
 SOPS_DIR = PROJECT_ROOT / "data" / "sops"
 REGULATIONS_DIR = PROJECT_ROOT / "data" / "regulations"
+
+# Shared-secret gate for the JSON+SSE API. When set, every /api/* request
+# (except /api/health for LB probes) must send a matching X-API-Key header.
+# Leave empty for local dev to disable the gate. TLS + rate limiting are
+# expected to be handled by the reverse proxy / load balancer in front.
+UI_API_KEY = os.environ.get("UI_API_KEY", "")
 
 LANGGRAPH_URL = os.environ.get("LANGGRAPH_URL", "http://localhost:2024")
 LANGSMITH_API_KEY = os.environ.get("LANGSMITH_API_KEY", "")
@@ -104,6 +111,30 @@ PARALLEL_AGENTS = [
 ]
 
 app = FastAPI(title="Sentinel UI", version="0.1.0")
+
+if not UI_API_KEY:
+    print(
+        "[sentinel-ui] WARNING: UI_API_KEY is not set — the /api/* endpoints are "
+        "UNAUTHENTICATED. Set UI_API_KEY (and front the server with TLS) before "
+        "exposing this UI on a public address.",
+        flush=True,
+    )
+
+
+@app.middleware("http")
+async def _require_api_key(request: Request, call_next):
+    """Gate every /api/* call behind a shared X-API-Key, except the LB health probe.
+
+    No-op when UI_API_KEY is unset (local dev). The check runs before any route
+    handler, so no agent run / LangGraph thread is started for an unauthorized
+    caller. Constant-time comparison avoids a timing side-channel.
+    """
+    path = request.url.path
+    if UI_API_KEY and path.startswith("/api/") and path != "/api/health":
+        provided = request.headers.get("x-api-key", "")
+        if not secrets.compare_digest(provided, UI_API_KEY):
+            return JSONResponse({"detail": "invalid or missing API key"}, status_code=401)
+    return await call_next(request)
 
 
 # ── helpers ──────────────────────────────────────────────────────────────────
