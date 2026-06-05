@@ -20,7 +20,7 @@ const AuditScreen = ({ loadStatus }) => {
 
   // composer state
   const [draft, setDraft] = React.useState("");
-  const [selectedAgent, setSelectedAgent] = React.useState("sentinel_production");
+  const [selectedAgent, setSelectedAgent] = React.useState("sentinel_nemotron");
   const [audit, setAudit] = React.useState({
     status: "idle",        // idle | running | done | error
     tokens: [],            // streamed text chunks
