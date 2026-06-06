@@ -224,10 +224,14 @@ Nexus compiles that structure once, write-time, into typed artifacts. The agent
 reads a fact with a confidence score; it does not infer a fact from prose.
 
 **Why KnowQL over a raw vector query?** A `top_k` similarity search returns
-"things that look like the question." KnowQL lets the agent state *intent*,
-*provenance* requirements, an *output shape*, and a *budget* — so knowledge is a
-contract, not a guess. It also makes knowledge **auditable**: the query is a
-declarative object you can log, diff, and replay.
+"things that look like the question" — you get back nearest neighbors and
+re-derive everything else yourself.
+KnowQL turns knowledge into a contract: the agent states its intent, applies a
+filter, sets provenance requirements, specifies an output shape and confidence
+threshold, and caps a budget.
+Two of those are what a raw vector query simply can't express — provenance
+requirements and a confidence gate — which is also why the result is auditable:
+the query is a declarative object you can log, diff, and replay.
 
 **Where governance lives.** PII tagging, versioning, and RBAC are Nexus
 concerns, not app concerns. Keeping them in the knowledge layer means every
