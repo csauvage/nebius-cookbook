@@ -4,7 +4,7 @@
 
 Recipe **01 of 10** in the Agent Blueprint Recipes arc:
 
-> **Foundation** → Retrieval → Grounding → Orchestration → Thread Memory → User Memory → Observability → Guardrails → Actions → Simulation
+> **Foundation** → Knowledge → Grounding → Orchestration → Thread Memory → User Memory → Observability → Guardrails → Actions → Simulation
 
 You called OpenAI from a Python script and it worked. Now what?
 
@@ -35,7 +35,7 @@ It is also the deployment baseline that later recipes extend.
 - A Nebius API key — get one from the [Nebius console](https://nebius.com)
 - (optional) Docker, if you want to build the production image
 
-No partner service account is needed until the retrieval and memory recipes.
+No partner service account is needed until the knowledge and memory recipes.
 
 ## Run it
 
@@ -239,7 +239,7 @@ See the full deployment notes in [`docs/rate-limiting.md`](../../docs/rate-limit
 
 **Why a stateless server?** No session store means any instance can serve any request — horizontal scaling is just "add a replica," and a crash loses nothing. The cost is bandwidth: the client resends history each turn. For a chat workload that is a few KB; when it stops being cheap (long transcripts, RAG context), the answer is a server-side store keyed by session ID, not in-process state. Recipe #5 (Short-Term Memory) takes that step deliberately.
 
-**Why no agent framework?** A framework would hide exactly the boundaries this recipe exists to show. `core/agent.py` is ~50 lines and is explicitly designed to be subclassed — the later recipes add planning, retrieval, and tools on top of this same shape.
+**Why no agent framework?** A framework would hide exactly the boundaries this recipe exists to show. `core/agent.py` is ~50 lines and is explicitly designed to be subclassed — the later recipes add planning, knowledge, and tools on top of this same shape.
 
 **Why duplicate infrastructure per cookbook?** Every recipe is autonomous: cloning one directory is enough to run it, with no shared base package. That costs some duplication and buys a reader the ability to study one cookbook in isolation. It is a documentation decision, not an architectural recommendation — in a real monorepo, factor the common middleware into a shared library.
 

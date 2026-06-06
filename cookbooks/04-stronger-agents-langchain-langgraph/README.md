@@ -4,7 +4,7 @@
 
 Recipe **04 of 10** in the Agent Blueprint Recipes arc:
 
-> Foundation → Retrieval → Grounding → **Orchestration** → Thread Memory → User Memory → Observability → Guardrails → Actions → Simulation
+> Foundation → Knowledge → Grounding → **Orchestration** → Thread Memory → User Memory → Observability → Guardrails → Actions → Simulation
 
 The first three cookbooks prove the Nebius integration path: call the model, ground it in private data, then add fresh web context.
 The next production problem is latency.
@@ -128,7 +128,7 @@ The client can still send `temperature` and `max_tokens`, but the graph clamps `
 
 ## Why this is faster
 
-The earlier retrieval and real-time examples prove the full production path: embed, retrieve, search, synthesize, then stream.
+The earlier knowledge and real-time examples prove the full production path: embed, retrieve, search, synthesize, then stream.
 That path is valuable when the prompt needs domain knowledge or fresh context.
 It is wasteful when the user asks a small direct question.
 

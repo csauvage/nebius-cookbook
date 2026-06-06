@@ -4,7 +4,7 @@
 
 Recipe **09 of 10** in the Agent Blueprint Recipes arc:
 
-> Foundation → Retrieval → Grounding → Orchestration → Thread Memory → User Memory → Observability → Guardrails → **Actions** → Simulation
+> Foundation → Knowledge → Grounding → Orchestration → Thread Memory → User Memory → Observability → Guardrails → **Actions** → Simulation
 
 Cookbook #8 taught the agent to refuse unsafe or off-topic requests.
 This recipe keeps that full stack and adds one new production capability: the agent can propose an external action.

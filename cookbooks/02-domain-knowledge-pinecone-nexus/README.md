@@ -1,8 +1,8 @@
-# Retrieval — Domain Knowledge with Pinecone Nexus
+# Knowledge — Domain Knowledge with Pinecone Nexus
 
 Recipe **02 of 10** in the Agent Blueprint Recipes arc:
 
-> Foundation → **Retrieval** → Grounding → Orchestration → Thread Memory → User Memory → Observability → Guardrails → Actions → Simulation
+> Foundation → **Knowledge** → Grounding → Orchestration → Thread Memory → User Memory → Observability → Guardrails → Actions → Simulation
 
 Cookbook #1 gave you a fluent agent. But fluency isn't knowledge — ask it about
 your own product or internal docs and it will guess. Classic RAG patches this
@@ -13,22 +13,22 @@ route: a **knowledge engine**.
 ## What you'll build
 
 A FastAPI service that uses [Pinecone Nexus](https://www.pinecone.io/blog/knowledge-infrastructure-for-agents/)
-as the agent's knowledge layer. Nexus moves reasoning *upstream — from retrieval
-to knowledge compilation* — so the agent queries curated, task-ready knowledge
+as the agent's knowledge layer. Nexus moves reasoning *upstream into knowledge
+compilation* — so the agent queries curated, task-ready knowledge
 instead of sifting raw chunks.
 
 At the time this cookbook is being written, **Pinecone Nexus is not yet
 generally available**.
 That matters for the implementation.
 The recipe is framed around the Nexus mental model and architecture, but the
-runnable fallback is **standard Pinecone-backed RAG retrieval**: embed your
-records on Nebius, store them in Pinecone, retrieve the most relevant context at
+runnable fallback is **standard Pinecone-backed RAG knowledge**: embed your
+records on Nebius, store them in Pinecone, look up the most relevant context at
 request time, and pass that context to the answer model.
 
 So this cookbook should be read in two layers:
 
 1. **Target architecture:** Nexus as the long-term knowledge engine.
-2. **Practical implementation today:** classic Pinecone retrieval as the
+2. **Practical implementation today:** classic Pinecone knowledge as the
    production-available substitute.
 
 The three Nexus pieces this recipe leans on:
@@ -61,9 +61,9 @@ question ──► KnowQL query ──► Composable Retriever ──► typed, 
 
 - **Answer model:** `meta-llama/Llama-3.3-70B-Instruct` on Nebius.
 - **Embedding model:** `Qwen/Qwen3-Embedding-8B` on Nebius — the vector
-  representation behind compilation and KnowQL retrieval. Served from the
+  representation behind compilation and KnowQL knowledge. Served from the
   OpenAI-compatible embeddings endpoint, `POST {NEBIUS_BASE_URL}/embeddings`.
-- **Knowledge engine:** Pinecone Nexus — compilation, retrieval, and governance
+- **Knowledge engine:** Pinecone Nexus — compilation, knowledge, and governance
   (PII tagging, versioning, RBAC) happen here, not in app code.
 
 Until Nexus reaches GA, the actual recipe implementation should be understood as
@@ -73,7 +73,7 @@ the compatible fallback shape:
 flowchart LR
     A[Documents] --> B[Normalize and vectorize]
     B --> C[Pinecone index]
-    D[Question] --> E[Vector retrieval and filters]
+    D[Question] --> E[Vector knowledge and filters]
     C --> E
     E --> F[Cited context]
     F --> G[Nebius answer model]
@@ -178,10 +178,10 @@ Once the Goodreads book vectors are stored in Pinecone, the query script runs a
 simple RAG loop:
 
 1. Embed the user's book request with Nebius.
-2. Retrieve matching `book` vectors from Pinecone.
-3. Expand around the first matches with related retrieval for the same author,
+2. Look up matching `book` vectors from Pinecone.
+3. Expand around the first matches with related knowledge for the same author,
    same theme, and same publication year.
-4. Pass the retrieved book context to the Nebius chat model.
+4. Pass the book knowledge context to the Nebius chat model.
 5. Return grounded recommendations with citation markers.
 
 That supports two common reader workflows:
@@ -201,15 +201,15 @@ uv run python scripts/query_goodreads_pinecone.py \
   --show-matches
 ```
 
-By default, retrieval is filtered to `record_type=book`, so author and genre
+By default, knowledge lookup is filtered to `record_type=book`, so author and genre
 helper vectors do not leak into the answer set.
 The related pass uses metadata from the first retrieved books.
-Same-author and same-year retrieval work with the existing book metadata.
-Same-theme retrieval uses the `genres` metadata written by the current
+Same-author and same-year knowledge lookup work with the existing book metadata.
+Same-theme knowledge lookup uses the `genres` metadata written by the current
 vectorizer, so older vectors created before that field was added need to be
 upserted again before explicit theme filtering can work.
 
-This is the main retrieval lesson of the cookbook: **vectorization is not just
+This is the main knowledge lesson of the cookbook: **vectorization is not just
 "chunk and embed."**
 The quality of the final knowledge engine depends on source selection, record
 joining, text construction, and batching strategy long before the serving path
@@ -225,8 +225,8 @@ reads a fact with a confidence score; it does not infer a fact from prose.
 
 **Why KnowQL over a raw vector query?** A `top_k` similarity search returns
 "things that look like the question." KnowQL lets the agent state *intent*,
-*provenance* requirements, an *output shape*, and a *budget* — so retrieval is a
-contract, not a guess. It also makes retrieval **auditable**: the query is a
+*provenance* requirements, an *output shape*, and a *budget* — so knowledge is a
+contract, not a guess. It also makes knowledge **auditable**: the query is a
 declarative object you can log, diff, and replay.
 
 **Where governance lives.** PII tagging, versioning, and RBAC are Nexus
@@ -245,7 +245,7 @@ live web search instead.
 | Symptom | Cause | Handling |
 |---|---|---|
 | Agent answers from stale facts | Data estate changed, artifacts not recompiled | Recompile on a data-change event; surface artifact `compiledAt` in the answer |
-| Low-confidence retrieval | The question has no good artifact coverage | Gate on the KnowQL `confidence` primitive; fall back to "I don't have that" rather than guess |
+| Low-confidence knowledge | The question has no good artifact coverage | Gate on the KnowQL `confidence` primitive; fall back to "I don't have that" rather than guess |
 | Conflicting facts | Two sources disagree | Lean on Nexus's deterministic conflict resolution; expose the resolved provenance in citations |
 | Cold start — no artifacts | Service deployed before first `/ingest` | `/readyz` should report not-ready until at least one artifact set is compiled |
 
@@ -280,7 +280,7 @@ event: status
 data: {"phase": "sending_to_nebius","message":"Sending to Nebius Token Factory"}
 
 event: status
-data: {"phase": "retrieving","message":"Requesting Pinecone Results"}
+data: {"phase": "knowledge","message":"Requesting Pinecone Knowledge"}
 
 event: context
 data: {"books": [...]}
@@ -311,7 +311,7 @@ If lookup fails, the app falls back to optional pricing env vars in `.env`:
 
 | Method | Path          | Purpose                                                  |
 | ------ | ------------- | -------------------------------------------------------- |
-| POST   | `/agent/run`  | Recommend books from Pinecone-backed Goodreads retrieval, streamed as SSE. |
+| POST   | `/agent/run`  | Recommend books from Pinecone-backed Goodreads knowledge, streamed as SSE. |
 | GET    | `/healthz`    | Liveness probe.                                          |
 | GET    | `/readyz`     | Readiness probe.                                         |
 

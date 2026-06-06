@@ -2,7 +2,7 @@
   "$schema": "../../schemas/recipe.schema.json",
   "slug": "domain-knowledge-pinecone-nexus",
   "order": 2,
-  "eyebrow": "Retrieval",
+  "eyebrow": "Knowledge",
   "title": "Domain Knowledge with Pinecone Nexus",
   "upcoming": false,
   "tagline": "Compile your data into task-ready knowledge artifacts with Pinecone Nexus — and ground answers with typed, per-field citations.",
@@ -13,10 +13,10 @@
     "primary": ["nebius-agentkit", "pinecone-nexus"],
     "secondary": ["fastapi", "structlog", "prometheus", "docker"]
   },
-  "tags": ["agent", "rag", "retrieval", "knowledge-engine", "pinecone-nexus", "citations"],
+  "tags": ["agent", "rag", "knowledge", "knowledge-engine", "pinecone-nexus", "citations"],
   "story": {
     "problem": "The agent from Cookbook #1 is fluent but ignorant — and bolting on classic RAG just hands it raw documents at inference time, burning tokens, adding latency, and inviting hallucination.",
-    "solution": "Use Pinecone Nexus as a knowledge engine instead of a plain vector store: its Context Compiler turns your data estate into task-specific knowledge artifacts, and the agent queries them with KnowQL — moving reasoning upstream from retrieval to knowledge compilation.",
+    "solution": "Use Pinecone Nexus as a knowledge engine instead of a plain vector store: its Context Compiler turns your data estate into task-specific knowledge artifacts, and the agent queries them with KnowQL — moving reasoning upstream into knowledge compilation.",
     "outcome": "An agent that answers domain questions from compiled, governed knowledge — with typed fields, per-field citations, and confidence scores instead of plausible guesses."
   },
   "prerequisites": [
@@ -40,7 +40,7 @@
       "method": "POST",
       "path": "/agent/run",
       "streaming": true,
-      "description": "Recommend books from Pinecone-backed Goodreads retrieval and stream SSE events back."
+      "description": "Recommend books from Pinecone-backed Goodreads knowledge and stream SSE events back."
     },
     {
       "method": "GET",

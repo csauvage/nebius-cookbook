@@ -4,7 +4,7 @@
 
 Recipe **05 of 10** in the Agent Blueprint Recipes arc:
 
-> Foundation → Retrieval → Grounding → Orchestration → **Thread Memory** → User Memory → Observability → Guardrails → Actions → Simulation
+> Foundation → Knowledge → Grounding → Orchestration → **Thread Memory** → User Memory → Observability → Guardrails → Actions → Simulation
 
 Cookbook #4 made orchestration explicit with LangGraph.
 This recipe keeps that orchestration and adds the next production capability: short-term memory inside one conversation thread.

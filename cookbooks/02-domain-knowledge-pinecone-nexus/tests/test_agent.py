@@ -123,7 +123,7 @@ def test_agent_run_streams_book_rag_events(monkeypatch) -> None:
     assert "I am mapping your reading taste" in body
     assert "The vector is ready" in body
     assert "I have the candidates" in body
-    assert "Requesting Pinecone Results" in body
+    assert "Requesting Pinecone Knowledge" in body
     assert "Synthesizing" in body
     assert "event: context" in body
     assert "Dune" in body

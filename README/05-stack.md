@@ -1,6 +1,6 @@
 ## Stack
 
-The **recipe** stack is deliberately small and boring. Every recipe makes the same technical choices so that what you learn in one cookbook transfers directly to the next. **Blueprints** are not bound by this — a blueprint picks whatever a real application of its kind would use (e.g. a React frontend, LangGraph for orchestration and deployment, Pinecone for retrieval), so its stack is documented in its own README.
+The **recipe** stack is deliberately small and boring. Every recipe makes the same technical choices so that what you learn in one cookbook transfers directly to the next. **Blueprints** are not bound by this — a blueprint picks whatever a real application of its kind would use (e.g. a React frontend, LangGraph for orchestration and deployment, Pinecone for knowledge), so its stack is documented in its own README.
 
 ### Recipes (Python)
 

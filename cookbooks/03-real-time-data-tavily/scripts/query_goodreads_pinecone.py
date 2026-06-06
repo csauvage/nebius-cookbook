@@ -102,7 +102,7 @@ def colorize(text: str, *styles: str) -> str:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Recommend books with Nebius + Pinecone retrieval over Goodreads vectors."
+        description="Recommend books with Nebius + Pinecone knowledge over Goodreads vectors."
     )
     parser.add_argument(
         "query",
@@ -158,7 +158,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--show-matches",
         action="store_true",
-        help="Print retrieved Pinecone matches before the generated answer.",
+        help="Print Pinecone knowledge matches before the generated answer.",
     )
     parser.add_argument(
         "--no-answer",

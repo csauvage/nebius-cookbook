@@ -17,7 +17,7 @@
   "story": {
     "problem": "Cookbook #2 can recommend from a Pinecone-backed Goodreads corpus, but that corpus stops around 2017 and cannot carry constantly changing pricing, availability, editions, or newly released books.",
     "solution": "Keep Pinecone for curated book memory, then add Tavily — a Nebius partner — for live web grounding before the Nebius answer model writes the final recommendation.",
-    "outcome": "A streaming book recommender that combines static semantic retrieval with fresh web context, cites both retrieved books and live sources, and keeps time, tokens, and cost visible."
+    "outcome": "A streaming book recommender that combines static semantic knowledge with fresh web context, cites both curated books and live sources, and keeps time, tokens, and cost visible."
   },
   "prerequisites": [
     "Python 3.12+",

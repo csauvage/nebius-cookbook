@@ -4,7 +4,7 @@
 
 Recipe **06 of 10** in the Agent Blueprint Recipes arc:
 
-> Foundation → Retrieval → Grounding → Orchestration → Thread Memory → **User Memory** → Observability → Guardrails → Actions → Simulation
+> Foundation → Knowledge → Grounding → Orchestration → Thread Memory → **User Memory** → Observability → Guardrails → Actions → Simulation
 
 This recipe keeps the progression intact.
 It still uses the LangGraph orchestration from Cookbook #4 and the short-term `thread_id` memory from Cookbook #5.

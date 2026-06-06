@@ -2,7 +2,7 @@
 
 Recipe **03 of 10** in the Agent Blueprint Recipes arc:
 
-> Foundation → Retrieval → **Grounding** → Orchestration → Thread Memory → User Memory → Observability → Guardrails → Actions → Simulation
+> Foundation → Knowledge → **Grounding** → Orchestration → Thread Memory → User Memory → Observability → Guardrails → Actions → Simulation
 
 Cookbook #2 gave us a Pinecone-backed book recommender over a Goodreads-style
 corpus.
@@ -31,7 +31,7 @@ pipeline:
 ```mermaid
 flowchart LR
     A[User book request] --> B[Nebius embedding]
-    B --> C[Pinecone book retrieval]
+    B --> C[Pinecone book knowledge]
     C --> D[Related books by author, theme, year]
     D --> E[Tavily fresh web search]
     E --> F[Nebius answer model]
@@ -120,7 +120,7 @@ event: status
 data: {"phase":"embedding","message":"Preparing the semantic query"}
 
 event: status
-data: {"phase":"retrieving","message":"Requesting Pinecone Results"}
+data: {"phase":"knowledge","message":"Requesting Pinecone Knowledge"}
 
 event: context
 data: {"books":[...]}
@@ -146,7 +146,7 @@ data: {"embeddingTokens":36,"inputTokens":1420,"outputTokens":390,"totalTokens":
 
 ## How it differs from cookbook #2
 
-Cookbook #2 stops after Pinecone retrieval.
+Cookbook #2 stops after Pinecone knowledge.
 That is enough when the answer should stay inside the static corpus.
 
 Cookbook #3 adds one more step before synthesis:
@@ -188,7 +188,7 @@ quality signals, and publication year when available.
 |---|---:|---|
 | `NEBIUS_API_KEY` | yes | Nebius Token Factory API key |
 | `NEBIUS_MODEL` | no | Chat model for progress and synthesis |
-| `NEBIUS_EMBEDDING_MODEL` | no | Embedding model for Pinecone retrieval |
+| `NEBIUS_EMBEDDING_MODEL` | no | Embedding model for Pinecone knowledge |
 | `PINECONE_API_KEY` | yes | Pinecone API key |
 | `PINECONE_INDEX_NAME` | yes | Index containing the book vectors |
 | `PINECONE_NAMESPACE` | no | Namespace for the Goodreads vectors |

@@ -752,8 +752,8 @@ function EmptyState({ slug, onPick }: { slug: string; onPick: (prompt: string) =
               Ask for books by topic, author, year, or after a recent read.
               <br />
               {isFreshBookRecommender
-                ? "Pinecone retrieves candidates; Tavily adds fresh web context."
-                : "Pinecone retrieves candidates; Nebius synthesizes the shortlist."}
+                ? "Pinecone supplies knowledge candidates; Tavily adds fresh web context."
+                : "Pinecone supplies knowledge candidates; Nebius synthesizes the shortlist."}
             </>
           ) : isOrchestrationAgent ? (
             <>

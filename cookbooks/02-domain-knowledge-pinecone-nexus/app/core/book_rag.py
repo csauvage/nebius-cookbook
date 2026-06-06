@@ -222,7 +222,7 @@ class BookRag:
                         "role": "user",
                         "content": (
                             "Create exactly three progress messages for these phases: "
-                            "1) prepare a Nebius embedding, 2) search Pinecone, "
+                            "1) prepare a Nebius embedding, 2) query Pinecone knowledge, "
                             "3) synthesize book recommendations. "
                             "Make them specific to this request without pretending results "
                             "are known yet.\n"

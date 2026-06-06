@@ -80,7 +80,7 @@ async def run_agent(
                 "agent_message",
                 {"text": progress_messages[1]},
             )
-            yield _sse("status", {"phase": "retrieving", "message": "Requesting Pinecone Results"})
+            yield _sse("status", {"phase": "knowledge", "message": "Requesting Pinecone Knowledge"})
             books = await asyncio.to_thread(
                 rag.retrieve_books_from_vector,
                 query_vector,

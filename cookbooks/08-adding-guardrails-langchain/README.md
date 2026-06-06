@@ -4,7 +4,7 @@
 
 Recipe **08 of 10** in the Agent Blueprint Recipes arc:
 
-> Foundation → Retrieval → Grounding → Orchestration → Thread Memory → User Memory → Observability → **Guardrails** → Actions → Simulation
+> Foundation → Knowledge → Grounding → Orchestration → Thread Memory → User Memory → Observability → **Guardrails** → Actions → Simulation
 
 Cookbook #7 made the stateful agent observable.
 This recipe keeps that full stack and adds the first hard production boundary: the service must reject or sanitize unsafe interactions before they become model calls or user-visible output.
