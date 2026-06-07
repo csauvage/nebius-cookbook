@@ -79,7 +79,7 @@ jobs:
           clever login --token "$CLEVER_TOKEN" --secret "$CLEVER_SECRET"
           clever link "$CLEVER_APP_ID_FRONTEND"
           clever env set NODE_ENV production
-          clever env set NODE_OPTIONS "$CLEVER_NODE_OPTIONS"
+          clever env set NODE_OPTIONS -- "$CLEVER_NODE_OPTIONS"
           clever env set NEXT_TELEMETRY_DISABLED 1
           clever env set HOSTNAME 0.0.0.0
           clever env set CC_NODE_BUILD_TOOL bun
