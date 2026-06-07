@@ -70,6 +70,7 @@ jobs:
           CLEVER_APP_ID_FRONTEND: ${{ secrets.CLEVER_APP_ID_FRONTEND }}
           NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
           NEXT_PUBLIC_GITHUB_REPO: ${{ vars.NEXT_PUBLIC_GITHUB_REPO }}
+          CLEVER_NODE_OPTIONS: "--max-old-space-size=2048"
         run: |
           if [ -z "${CLEVER_APP_ID_FRONTEND:-}" ]; then
             echo "Missing GitHub secret CLEVER_APP_ID_FRONTEND for the frontend Clever app." >&2
@@ -78,6 +79,7 @@ jobs:
           clever login --token "$CLEVER_TOKEN" --secret "$CLEVER_SECRET"
           clever link "$CLEVER_APP_ID_FRONTEND"
           clever env set NODE_ENV production
+          clever env set NODE_OPTIONS "$CLEVER_NODE_OPTIONS"
           clever env set NEXT_TELEMETRY_DISABLED 1
           clever env set HOSTNAME 0.0.0.0
           clever env set CC_NODE_BUILD_TOOL bun
