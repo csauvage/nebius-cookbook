@@ -43,8 +43,8 @@ class Settings(BaseSettings):
     log_level: Literal["debug", "info", "warning", "error"] = Field(default="info")
     langsmith_tracing: bool = Field(default=False)
     langsmith_api_key: str | None = Field(default=None)
-    langsmith_project: str = Field(default="Nebius Cookbook")
-    langsmith_endpoint: HttpUrl = Field(default=HttpUrl("https://eu.api.smith.langchain.com"))
+    langsmith_project: str = Field(default="nebius-cookbook-guardrails")
+    langsmith_endpoint: HttpUrl = Field(default=HttpUrl("https://api.smith.langchain.com"))
 
     # Long-term memory inherited from Cookbook #6
     memory_backend: Literal["postgres", "memory"] = Field(default="postgres")

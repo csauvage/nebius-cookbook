@@ -155,10 +155,8 @@
     "addons": [
       "CLEVER_PG_ADDON"
     ],
-    "values": {
-      "LANGSMITH_TRACING": "true",
-      "LANGSMITH_ENDPOINT": "https://eu.api.smith.langchain.com",
-      "LANGSMITH_PROJECT": "Agent Blueprint Recipes"
+    "mapped_vars": {
+      "LANGSMITH_PROJECT": "LANGSMITH_PROJECT_COOKBOOK_07"
     },
     "vars": [
       "ENV",
@@ -176,6 +174,8 @@
       "DIRECT_RESPONSE_MAX_TOKENS",
       "DELIBERATE_RESPONSE_MAX_TOKENS",
       "FIRST_TOKEN_TARGET_MS",
+      "LANGSMITH_TRACING",
+      "LANGSMITH_ENDPOINT",
       "MEMORY_BACKEND",
       "LONG_TERM_MEMORY_LIMIT"
     ],
@@ -189,10 +189,8 @@
     "addons": [
       "CLEVER_PG_ADDON"
     ],
-    "values": {
-      "LANGSMITH_TRACING": "true",
-      "LANGSMITH_ENDPOINT": "https://eu.api.smith.langchain.com",
-      "LANGSMITH_PROJECT": "Agent Blueprint Recipes"
+    "mapped_vars": {
+      "LANGSMITH_PROJECT": "LANGSMITH_PROJECT_COOKBOOK_08"
     },
     "vars": [
       "ENV",
@@ -210,6 +208,8 @@
       "DIRECT_RESPONSE_MAX_TOKENS",
       "DELIBERATE_RESPONSE_MAX_TOKENS",
       "FIRST_TOKEN_TARGET_MS",
+      "LANGSMITH_TRACING",
+      "LANGSMITH_ENDPOINT",
       "MEMORY_BACKEND",
       "LONG_TERM_MEMORY_LIMIT",
       "GUARDRAILS_ENABLED",

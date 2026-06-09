@@ -148,8 +148,8 @@ Here the user sees status events while the model runs, then receives a single ap
 | `GUARDRAILS_TOPIC` | `books and reading recommendations` | Human-readable topic boundary. |
 | `GUARDRAILS_MAX_OUTPUT_CHARS` | `6000` | Maximum approved output length. |
 | `LANGSMITH_TRACING` | `false` | Inherited LangSmith tracing toggle. |
-| `LANGSMITH_PROJECT` | `Agent Blueprint Recipes` | Inherited LangSmith project name. |
-| `LANGSMITH_ENDPOINT` | `https://eu.api.smith.langchain.com` | Inherited LangSmith API URL. |
+| `LANGSMITH_PROJECT` | `nebius-cookbook-guardrails` | Inherited LangSmith project name. |
+| `LANGSMITH_ENDPOINT` | `https://api.smith.langchain.com` | Inherited LangSmith API URL. |
 | `MEMORY_BACKEND` | `postgres` | Inherited long-term memory backend. |
 | `POSTGRESQL_ADDON_URI` | local Postgres URL | Inherited memory database. Clever Cloud injects this when a Postgres add-on is linked. |
 | `NEBIUS_API_KEY` | required | Nebius API key. |
