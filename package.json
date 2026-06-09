@@ -23,7 +23,7 @@
     "build:blueprints": "bun run scripts/build-blueprints.ts",
     "backend": "bun run scripts/start-backend.ts",
     "start:backend": "bun run scripts/start-backend.ts",
-    "validate": "bun run scripts/validate-recipes.ts && bun run scripts/validate-blueprints.ts",
+    "validate": "bun run scripts/validate-recipes.ts && bun run scripts/validate-blueprints.ts && bun run scripts/validate-cookbook-deploy-config.ts",
     "new": "bun run scripts/new-cookbook.ts",
     "test:cookbooks": "bun run scripts/test-cookbooks.ts",
     "check:links": "bun run scripts/check-links.ts",

@@ -75,6 +75,8 @@ Each cookbook entry contains:
 - `unset` — old Clever environment variable names to remove during deploy.
 
 The committed config lives at `.github/cookbook-clever-config.json`.
+`bun run validate` checks that every cookbook with a `pyproject.toml` has a Clever mapping, that scaffold-only cookbooks do not, and that every referenced GitHub variable or secret is exposed in `.github/workflows/deploy-cookbooks.yml`.
+Cookbook #10 is currently scaffold-only, so it is intentionally skipped until it has a runnable FastAPI app.
 
 ```json
 {
