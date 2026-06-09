@@ -85,7 +85,13 @@ jobs:
                   addons: ($config[.].addons // []),
                   vars: ($config[.].vars // []),
                   secrets: ($config[.].secrets // []),
-                  unset: ($config[.].unset // [])
+                  unset: ($config[.].unset // []),
+                  values_b64: (($config[.].values // {}) | @base64),
+                  mapped_vars_b64: (($config[.].mapped_vars // {}) | @base64),
+                  addons_b64: (($config[.].addons // []) | @base64),
+                  vars_b64: (($config[.].vars // []) | @base64),
+                  secrets_b64: (($config[.].secrets // []) | @base64),
+                  unset_b64: (($config[.].unset // []) | @base64)
                 }
               | select((.app_id_var | type) == "string" and .app_id_var != "")
             ]
@@ -143,12 +149,12 @@ jobs:
           CLEVER_SECRET: ${{ secrets.CLEVER_SECRET }}
           CLEVER_APP_ID_VAR: ${{ matrix.app_id_var }}
           COOKBOOK: ${{ matrix.cookbook }}
-          COOKBOOK_VALUE_MAP: ${{ toJson(matrix.values) }}
-          COOKBOOK_MAPPED_VAR_NAMES: ${{ toJson(matrix.mapped_vars) }}
-          COOKBOOK_ADDON_NAMES: ${{ toJson(matrix.addons) }}
-          COOKBOOK_VAR_NAMES: ${{ toJson(matrix.vars) }}
-          COOKBOOK_SECRET_NAMES: ${{ toJson(matrix.secrets) }}
-          COOKBOOK_UNSET_NAMES: ${{ toJson(matrix.unset) }}
+          COOKBOOK_VALUE_MAP_B64: ${{ matrix.values_b64 }}
+          COOKBOOK_MAPPED_VAR_NAMES_B64: ${{ matrix.mapped_vars_b64 }}
+          COOKBOOK_ADDON_NAMES_B64: ${{ matrix.addons_b64 }}
+          COOKBOOK_VAR_NAMES_B64: ${{ matrix.vars_b64 }}
+          COOKBOOK_SECRET_NAMES_B64: ${{ matrix.secrets_b64 }}
+          COOKBOOK_UNSET_NAMES_B64: ${{ matrix.unset_b64 }}
           CLEVER_APP_ID_COOKBOOK_01: ${{ secrets.CLEVER_APP_ID_COOKBOOK_01 }}
           CLEVER_APP_ID_COOKBOOK_02: ${{ secrets.CLEVER_APP_ID_COOKBOOK_02 }}
           CLEVER_APP_ID_COOKBOOK_03: ${{ secrets.CLEVER_APP_ID_COOKBOOK_03 }}
@@ -225,6 +231,16 @@ jobs:
           clever env set CC_PYTHON_BACKEND uvicorn --alias "$alias"
           clever env set CC_PYTHON_UV_RUN_COMMAND "uv run uvicorn app.main:app --host 0.0.0.0 --port 8080" --alias "$alias"
           clever env set PORT 8080 --alias "$alias"
+
+          decode_json() {
+            local encoded="$1"
+            local fallback="$2"
+            if [ -z "$encoded" ]; then
+              printf '%s' "$fallback"
+              return
+            fi
+            printf '%s' "$encoded" | base64 -d
+          }
 
           link_addons_json() {
             local names_json="$1"
@@ -303,11 +319,11 @@ jobs:
             done
           }
 
-          link_addons_json "${COOKBOOK_ADDON_NAMES:-[]}"
-          sync_values_json "${COOKBOOK_VALUE_MAP:-{}}"
-          sync_mapped_names_json "${COOKBOOK_MAPPED_VAR_NAMES:-{}}"
-          sync_names_json "${COOKBOOK_VAR_NAMES:-[]}" "variable"
-          sync_names_json "${COOKBOOK_SECRET_NAMES:-[]}" "secret"
+          link_addons_json "$(decode_json "${COOKBOOK_ADDON_NAMES_B64:-}" "[]")"
+          sync_values_json "$(decode_json "${COOKBOOK_VALUE_MAP_B64:-}" "{}")"
+          sync_mapped_names_json "$(decode_json "${COOKBOOK_MAPPED_VAR_NAMES_B64:-}" "{}")"
+          sync_names_json "$(decode_json "${COOKBOOK_VAR_NAMES_B64:-}" "[]")" "variable"
+          sync_names_json "$(decode_json "${COOKBOOK_SECRET_NAMES_B64:-}" "[]")" "secret"
 
           unset_names_json() {
             local names_json="$1"
@@ -323,6 +339,6 @@ jobs:
             done
           }
 
-          unset_names_json "${COOKBOOK_UNSET_NAMES:-[]}"
+          unset_names_json "$(decode_json "${COOKBOOK_UNSET_NAMES_B64:-}" "[]")"
 
           clever deploy --alias "$alias" --force --same-commit-policy rebuild
