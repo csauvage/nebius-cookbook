@@ -75,8 +75,9 @@ for (const cookbook of deployableCookbooks) {
   }
 }
 
-for (const cookbook of Object.keys(configByCookbook).sort()) {
-  const entry = configByCookbook[cookbook];
+for (const [cookbook, entry] of Object.entries(configByCookbook).sort(([left], [right]) =>
+  left.localeCompare(right),
+)) {
   if (!cookbookDirs.includes(cookbook)) {
     errors.push(`${cookbook}: config entry does not match a cookbooks/ directory`);
     continue;
